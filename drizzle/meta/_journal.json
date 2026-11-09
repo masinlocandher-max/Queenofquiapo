@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1794210360332,
+      "tag": "0000_pageant_applications",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1794213780000,
+      "tag": "0001_throttle",
+      "breakpoints": true
+    }
+  ]
+}

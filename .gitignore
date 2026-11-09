@@ -1,0 +1,9 @@
+/dist/
+/node_modules/
+/.wrangler/
+/supabase/.temp/
+.env
+.env.*
+.dev.vars*
+!.env.example
+/.sites-runtime/

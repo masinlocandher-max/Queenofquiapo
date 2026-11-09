@@ -1,0 +1,28 @@
+.application-wrap{width:min(calc(100% - 40px),760px);margin:auto;padding:clamp(28px,5vw,58px) 0 clamp(54px,8vw,92px);font:400 16px/1.5 var(--sans)}
+.application .subpage-lead{max-width:50ch}
+.form-guide,.section-help,.photo-field p,.receipt p{color:var(--soft)}
+.form-guide{margin:0 0 26px;font-size:14px}
+.form-part{margin:0 0 34px;padding:0 0 29px;border:0;border-bottom:1px solid var(--rule);min-width:0}
+.form-part legend,.receipt h2{padding:0;font:400 clamp(25px,4.8vw,36px)/1.15 var(--serif);letter-spacing:-.045em;color:var(--ink);margin:0 0 15px}
+.form-part legend span{display:inline-block;font:500 12px/1 var(--sans);color:var(--lilac);letter-spacing:.04em;vertical-align:middle;margin-right:8px}
+.section-help{font-size:14px;margin:0 0 16px;line-height:1.6}
+.field-grid,.upload-grid{display:grid;gap:16px;min-width:0}.field-grid.measures{grid-template-columns:repeat(2,minmax(0,1fr))}
+.field-grid label,.photo-field label{font:550 15px/1.45 var(--sans);display:block;min-width:0}
+.field-grid small{color:var(--soft);font-size:13px;font-weight:400}.field-grid small:not(.optional){display:block;margin-top:5px}
+.field-grid input,.field-grid textarea{border:1px solid #89769c;border-radius:9px;width:100%;min-width:0;display:block;margin-top:6px;background:#15122a;color:var(--ink);font:400 16px/1.4 var(--sans);padding:12px;min-height:47px}
+.field-grid textarea{resize:vertical}.form-part input:focus-visible,.form-part textarea:focus-visible,.form-part button:focus-visible{outline:2px solid #f0d8ff;outline-offset:3px}
+.photo-field{border:1px solid var(--rule);border-radius:13px;padding:16px;background:#201a3500;min-width:0}
+.photo-field p{font:400 14px/1.5 var(--sans);margin:4px 0 13px}
+.photo-field input[type=file]{color:var(--soft);font:400 13px/1.5 var(--sans);width:100%;min-height:44px;max-width:100%}
+.photo-field input::file-selector-button{padding:10px 11px;color:#f5e9ff;border:1px solid #8b709f;background:#332640;border-radius:8px;margin-right:9px;font:550 13px/1.4 var(--sans);cursor:pointer}
+.photo-field .photo-error{color:#ffc8d5;font-size:13px;margin:5px 0}.photo-error:empty,.submit-message:empty{display:none}
+.photo-preview{display:block;width:100%;height:165px;object-fit:contain;background:#0c0a19;border-radius:7px;margin-top:10px}.application [hidden]{display:none!important}
+.consent{display:flex;gap:12px;align-items:flex-start;line-height:1.55;font-size:15px;margin:17px 0 20px;cursor:pointer}
+.consent input{width:21px;height:21px;flex:0 0 auto;accent-color:var(--lilac);margin:2px 0 0}
+.form-part.send{border-bottom:0;padding-bottom:0;margin-bottom:0}
+.send .pearl:disabled{opacity:.65;cursor:wait}.submit-message{font-size:14px;color:var(--lilac)}.submit-error,.application-notice{border-left:2px solid #efa6c5;color:#ffdae4;background:#30202f;padding:10px 14px;line-height:1.5}
+.receipt{background:linear-gradient(150deg,#292139,#17152b);border:1px solid var(--rule);border-radius:17px;padding:clamp(20px,4vw,38px)}.receipt h2{margin:0}.receipt-id strong{display:block;color:var(--ink);overflow-wrap:anywhere;letter-spacing:.03em}.receipt .pearl{margin-top:8px}
+@media(min-width:640px){.field-grid,.upload-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 20px}.wide{grid-column:1/-1}.field-grid.measures{grid-template-columns:repeat(4,minmax(0,1fr))}.photo-field{padding:20px}}
+
+.withdrawal{padding-top:18px;margin-top:22px;border-top:1px solid var(--rule);font:400 14px/1.55 var(--sans)}
+.withdrawal summary{color:var(--soft);cursor:pointer;padding:8px 0;width:fit-content}.withdrawal button{display:inline-block;min-height:44px;margin:0 9px 7px 0;padding:7px 11px;border:1px solid var(--rule);border-radius:7px;font:500 14px/1.4 var(--sans)}.withdrawal button:disabled{opacity:.6}

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f4f0f7">
+  <meta name="description" content="Apply for Queen of Quiapo. Send your candidate details, measurements and two photographs for screening.">
+  <meta property="og:title" content="Apply Now · Queen of Quiapo">
+  <meta property="og:description" content="Prepare your close-up and full-body photos and complete your candidate application.">
+  <title>Apply Now · Queen of Quiapo</title>
+  <link rel="icon" href="/assets/icon.png">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/subpages.css">
+  <link rel="stylesheet" href="/application-form.css">
+  <script src="/script.js" defer></script>
+  <script src="/apply.js" defer></script>
+  <link rel="stylesheet" href="/pearl.css">
+</head>
+<body class="pearl-site page-apply subpage application">
+<a class="skip" href="#application">Skip to application</a>
+<header class="mast"><div class="mast-inner">
+  <a class="mast-brand" href="/" aria-label="Queen of Quiapo homepage"><img src="/assets/icon.png" alt="" width="28" height="28"><span>Queen of Quiapo</span></a>
+  <nav class="desk-nav" aria-label="Main navigation"><a href="/about/"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/ui-icons.svg#pageant"/></svg><span>About</span></a><a href="/schedule/"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/ui-icons.svg#calendar"/></svg><span>Pageant Schedule</span></a><a href="/apply/" aria-current="page"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/ui-icons.svg#apply"/></svg><span>Apply Now</span></a><a href="/vote/"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/ui-icons.svg#vote"/></svg><span>Vote</span></a></nav>
+  <button class="menu-trigger icon-button" type="button" data-open="menu-dialog" aria-label="Open navigation" aria-controls="menu-dialog" aria-haspopup="dialog"><svg viewBox="0 0 28 20" aria-hidden="true"><path d="M2 5h24M2 15h24"/></svg></button>
+</div></header>
+<main>
+  <header class="subpage-hero"><div class="subpage-wrap">
+    <h1>Apply for<br><em>Queen of Quiapo</em></h1>
+    <p class="subpage-lead">Send your details and two photos for screening. Have a close-up and a full-body swimsuit photo ready, both against a white background.</p>
+    <div class="subpage-actions"><a class="pearl" href="#application">Start application</a><a class="quiet-link" href="/schedule/">Pageant Schedule</a></div>
+  </div></header>
+  <div class="application-wrap" id="application">
+    <noscript><p class="application-notice">Please enable JavaScript in your browser to send your application and receive your reference number.</p></noscript>
+    <nav class="form-index" aria-label="Application sections"><h2>Application sections</h2><ol><li><a href="#candidate-details">Candidate details</a></li><li><a href="#measurements">Height and vital stats</a></li><li><a href="#profile">Your pageant profile</a></li><li><a href="#photos">Required photographs</a></li><li><a href="#submit">Send application</a></li></ol></nav>
+    <form id="candidate-form" method="post" enctype="multipart/form-data" action="/api/applications">
+      <input type="hidden" name="submissionId">
+      <p class="form-guide">Complete the required fields. Fields marked optional may be left blank.</p>
+      <fieldset class="form-part"><legend id="candidate-details"><span>01</span> Candidate details</legend>
+        <div class="field-grid">
+          <label>Legal name<input type="text" name="legalName" required maxlength="120" autocomplete="name"></label>
+          <label>Female name<input type="text" name="femaleName" required maxlength="120" autocomplete="nickname" aria-describedby="female-name-note"><small id="female-name-note">The name you use in pageants.</small></label>
+          <label>Email address<input type="email" name="email" required maxlength="254" autocomplete="email"></label>
+          <label>Mobile number <small class="optional">(optional)</small><input type="tel" name="mobile" maxlength="32" autocomplete="tel"></label>
+          <label class="wide">City or municipality you represent<input type="text" name="locality" required maxlength="120" autocomplete="address-level2"></label>
+        </div>
+      </fieldset>
+      <fieldset class="form-part"><legend id="measurements"><span>02</span> Height and vital stats</legend>
+        <p class="section-help">Enter your height in centimeters and your bust, waist and hip measurements in inches.</p>
+        <div class="field-grid measures">
+          <label>Height (cm)<input name="heightCm" type="number" inputmode="decimal" min="0.1" max="999.9" step="0.1" required></label>
+          <label>Bust (in)<input name="bustIn" type="number" inputmode="decimal" min="0.1" max="999.9" step="0.1" required></label>
+          <label>Waist (in)<input name="waistIn" type="number" inputmode="decimal" min="0.1" max="999.9" step="0.1" required></label>
+          <label>Hips (in)<input name="hipsIn" type="number" inputmode="decimal" min="0.1" max="999.9" step="0.1" required></label>
+        </div>
+      </fieldset>
+      <fieldset class="form-part"><legend id="profile"><span>03</span> Your pageant profile</legend>
+        <p class="section-help">These questions are optional. First-time candidates may leave experience blank.</p>
+        <div class="field-grid">
+          <label>Talent or skill <small class="optional">(optional)</small><input type="text" name="talent" maxlength="160"></label>
+          <label>Pageants or titles <small class="optional">(optional)</small><input type="text" name="experience" maxlength="240"></label>
+          <label class="wide">Why do you want to join Queen of Quiapo? <small class="optional">(optional)</small><textarea name="motivation" rows="3" maxlength="600"></textarea></label>
+        </div>
+      </fieldset>
+      <fieldset class="form-part"><legend id="photos"><span>04</span> Required photographs</legend>
+        <p class="section-help" id="photo-formats">Use a plain white background for both photos. Choose a JPG, PNG or WebP file up to 5 MB each. On iPhone, export HEIC photos as JPEG before uploading.</p>
+        <div class="upload-grid">
+          <div class="photo-field">
+            <label for="portrait">Close-up portrait</label>
+            <p id="portrait-note">Show your face clearly, wearing light makeup.</p>
+            <input type="file" id="portrait" name="portrait" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" aria-describedby="portrait-note photo-formats portrait-error" required>
+            <p id="portrait-error" class="photo-error" aria-live="polite"></p>
+            <img id="portrait-preview" class="photo-preview" alt="Your selected close-up portrait" hidden>
+          </div>
+          <div class="photo-field">
+            <label for="swimsuit">Full-body swimsuit photo</label>
+            <p id="swimsuit-note">Wear a swimsuit and include your entire body, from head to toe.</p>
+            <input type="file" id="swimsuit" name="swimsuit" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" aria-describedby="swimsuit-note photo-formats swimsuit-error" required>
+            <p id="swimsuit-error" class="photo-error" aria-live="polite"></p>
+            <img id="swimsuit-preview" class="photo-preview" alt="Your selected full-body swimsuit photo" hidden>
+          </div>
+        </div>
+      </fieldset>
+      <fieldset class="form-part send"><legend id="submit"><span>05</span> Send your application</legend>
+        <p class="section-help">Your details and photos are for private screening review. Any public use of your profile or photos, including for voting, requires separate permission.</p>
+        <label class="consent"><input type="checkbox" name="consent" value="yes" required><span>I agree that the Queen of Quiapo organizers may review my details and photos for screening and contact me about this application.</span></label>
+        <button class="pearl" type="submit" id="submit-application" disabled><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/ui-icons.svg#apply"/></svg>Submit application</button>
+        <p id="submit-progress" class="submit-message" role="status" aria-live="polite"></p>
+        <p id="submit-error" class="submit-error" role="alert" tabindex="-1" hidden></p>
+      </fieldset>
+    </form>
+    <section class="receipt" id="receipt" aria-labelledby="receipt-title" hidden>
+      <h2 tabindex="-1" id="receipt-title">Application received</h2>
+      <p>The organizers received your candidate details and both photographs for screening.</p>
+      <p class="receipt-id">Your reference number <strong id="receipt-reference"></strong></p>
+      <p>Keep this number with your records. Official candidates will be announced after screening.</p>
+      <a class="pearl" href="/schedule/">View Pageant Schedule</a>
+      <details class="withdrawal" id="withdraw-options">
+        <summary>Withdraw this application</summary>
+        <p>You can withdraw this entry while this receipt is open. Confirm below to remove your application and both photos.</p>
+        <div><button type="button" id="withdraw-confirm">Confirm withdrawal</button><button type="button" id="withdraw-cancel">Keep my application</button></div>
+        <p id="withdraw-error" class="submit-error" role="alert" tabindex="-1" hidden></p>
+      </details>
+    </section>
+    <section class="receipt" id="withdrawn" aria-labelledby="withdrawn-title" hidden>
+      <h2 tabindex="-1" id="withdrawn-title">Application withdrawn</h2>
+      <p>Your application and both photographs have been removed.</p>
+      <a class="pearl" href="/schedule/">View Pageant Schedule</a>
+    </section>
+  </div>
+</main>
+<footer class="site-foot">
+  <div class="foot-inner">
+    <a class="foot-brand" href="/" aria-label="Queen of Quiapo homepage"><img src="/assets/icon.png" width="27" height="27" alt="">Queen of Quiapo</a>
+    <address><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/ui-icons.svg#pin"/></svg><span>Barangay 306, Quiapo, Manila</span></address>
+    <p>This website is managed by <strong>FMB&amp;CO.</strong></p>
+  </div>
+</footer>
+<dialog id="menu-dialog" class="menu-dialog" aria-label="Main navigation">
+  <div class="dialog-top"><span>The Pageant</span><button class="icon-button close" aria-label="Close navigation" type="button" data-close><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19"/></svg></button></div>
+  <nav aria-label="Mobile navigation"><a href="/about/"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/ui-icons.svg#pageant"/></svg><span>About</span></a><a href="/schedule/"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/ui-icons.svg#calendar"/></svg><span>Pageant Schedule</span></a><a href="/apply/" aria-current="page"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/ui-icons.svg#apply"/></svg><span>Apply Now</span></a><a href="/vote/"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/ui-icons.svg#vote"/></svg><span>Vote</span></a></nav>
+</dialog>
+</body></html>
