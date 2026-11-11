@@ -16,13 +16,14 @@
 .pearl-site .quiet-link {font-size:14px;font-weight:500;text-decoration-thickness:1px;text-underline-offset:6px}
 .pearl-site .eyebrow {margin:0;font:600 10px/1.5 var(--sans);letter-spacing:.17em;color:#746580;text-transform:uppercase}
 .pearl-site .section-note {font-size:12px;line-height:1.6;color:var(--soft);margin:13px 0 0}
-.home-cover {width:min(calc(100% - var(--gutter) * 2),var(--shell));margin:34px auto 0;display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(24px,4vw,56px);min-height:530px;border:0;border-radius:0;overflow:visible;box-shadow:none}
-.brand-stage {position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;min-width:0;padding:32px 24px;background:transparent;color:var(--ink)}
-.brand-stage::before {content:"";position:absolute;inset:0 -12px;z-index:-1;pointer-events:none;background:url('/assets/nebula.webp') center 42%/cover no-repeat;opacity:.94;-webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 8%,#000e 35%,transparent 100%);mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 8%,#000e 35%,transparent 100%)}
-.stage-caption {text-align:center;font:500 10px/1.5 var(--sans);letter-spacing:.22em;color:#746580}
-.stage-emblem {display:block;width:88%;max-width:410px;height:auto;object-fit:contain}
-.brand-stage h1 {position:relative;max-width:475px;width:100%;margin:0;line-height:0}
-.brand-stage h1 img {display:block;width:100%;height:auto;filter:drop-shadow(0 3px 7px #674b7315)}
+.home-cover {width:min(calc(100% - var(--gutter) * 2),var(--shell));margin:34px auto 0;display:grid;grid-template-columns:1.05fr 1fr;gap:24px;min-height:530px;border:0;border-radius:0;overflow:visible;box-shadow:none}
+.brand-stage {position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;min-width:0;padding:76px 34px 48px;background:#0a0c22;color:#eee8f5;border:1px solid #2e2c48;border-radius:28px;overflow:hidden;box-shadow:0 12px 40px #15102612}
+.brand-stage::before {content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(165deg,#090b20c4 5%,#0a0c228c 38%,#0a0c22f5 76%),url('/assets/nebula.webp') 64% 20%/cover no-repeat}
+.stage-caption {position:absolute;top:28px;left:32px;right:32px;display:flex;justify-content:space-between;gap:20px;font:500 9px/1.5 var(--sans);letter-spacing:.2em;color:#d3c8e1}
+.stage-caption span:last-child {font-variant-numeric:tabular-nums;letter-spacing:.24em}
+.stage-emblem {display:block;width:76%;max-width:300px;height:auto;object-fit:contain}
+.brand-stage h1 {position:relative;max-width:430px;width:100%;margin:0;line-height:0}
+.brand-stage h1 img {display:block;width:100%;height:auto;filter:drop-shadow(0 5px 16px #05061155)}
 .invitation {position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:52px clamp(28px,4.4vw,66px) 34px;background:radial-gradient(ellipse at 100% 100%,#e3d8ec77,transparent 65%),#f5eff680;border:1px solid #ffffffd9;border-radius:28px;box-shadow:0 12px 40px #2a203508;overflow:hidden}
 .invitation::before {content:"";position:absolute;z-index:-1;pointer-events:none;right:-64%;top:-15%;width:100%;height:140%;border:1px solid #ffffffbd;border-radius:50%;transform:rotate(24deg)}
 .invitation h2 {font:400 clamp(33px,3.55vw,51px)/1.11 var(--serif);letter-spacing:-.055em;margin:25px 0 0;color:#2c233b;text-wrap:balance}
@@ -118,8 +119,9 @@
 @media (max-width:1050px) and (min-width:760px) {
   .invitation-actions {align-items:flex-start;flex-direction:column;gap:7px}
   .home-cover {min-height:530px}
-  .stage-emblem {width:100%;height:auto}
-  .brand-stage {padding:30px 12px;gap:20px}
+  .stage-emblem {width:80%;height:auto}
+  .brand-stage {padding:76px 22px 48px;gap:22px}
+  .stage-caption {left:24px;right:24px}
   .page-home .dates {grid-template-columns:1fr;gap:25px}
   .page-home .dates-heading h2 br {display:none}
   .page-home .dates h2 em {display:inline}
@@ -129,11 +131,11 @@
   .pearl-site .mast {height:66px}
   .pearl-site .desk-nav {display:none}
   .pearl-site .menu-trigger {display:inline-grid}
-  .home-cover {grid-template-columns:1fr;margin-top:20px;gap:24px;min-height:0}
-  .brand-stage {padding:20px 24px 12px;gap:18px}
-  .stage-caption {font-size:8px;letter-spacing:.2em}
-  .stage-emblem {height:auto;width:min(88%,250px)}
-  .brand-stage h1 {max-width:310px}
+  .home-cover {grid-template-columns:1fr;margin-top:20px;gap:16px;min-height:0}
+  .brand-stage {padding:58px 26px 34px;gap:18px;min-height:340px;border-radius:23px}
+  .stage-caption {top:23px;left:24px;right:24px;font-size:8px;letter-spacing:.2em}
+  .stage-emblem {height:auto;width:min(76%,200px)}
+  .brand-stage h1 {max-width:290px}
   .invitation {padding:29px 28px 25px;border-radius:23px}
   .invitation h2 {font-size:36px;margin-top:14px;line-height:1.1;max-width:14ch}
   .invitation h2 br {display:none}
@@ -189,8 +191,8 @@
 }
 @media (max-width:360px) {
   .pearl-site {--gutter:16px}
-  .brand-stage {padding-inline:16px}
-  .stage-emblem {width:min(88%,215px)}
+  .brand-stage {padding-inline:20px;min-height:310px}
+  .stage-emblem {width:min(76%,180px)}
   .invitation {padding:25px 22px}
   .invitation h2 {font-size:32px}
   .invitation-actions {align-items:flex-start;flex-direction:column;gap:4px}
