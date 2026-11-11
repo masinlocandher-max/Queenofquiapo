@@ -8,7 +8,9 @@ Use Node 24 or later. Run `npm run build` to bundle the Worker and public assets
 
 After building, `npm run dev` previews the same Worker locally without production identity or data bindings. Rebuild after source edits. The development-only `/__preview/responsive?width=390` route frames the public pages at 320, 390, or 768 pixels; add `&page=/apply/` to inspect a specific public route.
 
-The public visual layer is `public/refinement.css`: the transparent emblem and original wordmark occupy a midnight-navy column with a subdued galaxy background, alongside the light pageant invitation. Event dates and application preparation follow. The artwork stacks above the invitation on mobile. Public task pages share the same typography and spacing. Organizer and judge presentation and authorization are independent.
+The public pageant identity is `public/pageant.css`: a full-width midnight opening gives the original transparent wordmark its own column, with the pageant theme and application action alongside it. The programme, community story, and candidate preparation follow on light editorial surfaces. The artwork stacks above the invitation on mobile. Public task pages share navigation, footer, typography, and controls; `public/refinement.css` retains their form and reading layouts. Organizer and judge presentation and authorization are independent.
+
+`public/assets/pageant-atmosphere.webp` is a decorative background generated for the website, with the galaxy detail intentionally confined to the edges. It contains no contestants, crown, venue, or other purported event photography.
 
 ## Roles and domains
 

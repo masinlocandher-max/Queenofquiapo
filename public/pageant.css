@@ -1,0 +1,198 @@
+/* Queen of Quiapo: public identity and pageant homepage. */
+.pearl-site {--shell:1240px;--gutter:clamp(22px,5vw,80px);--serif:'Iowan Old Style','Palatino Linotype',Georgia,serif;background:#f7f5f4;color:#242032}
+.pageant-shell {width:min(calc(100% - var(--gutter) * 2),var(--shell));margin-inline:auto}
+.pearl-site .mast {height:86px;background:#090c20f5;border-bottom:1px solid #ddd2f021;box-shadow:none;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.pearl-site .mast-brand {gap:12px;color:#f6eff8;font:400 20px/1.15 var(--serif);letter-spacing:-.02em}
+.pearl-site .mast-brand img {width:32px;height:32px;border-radius:0;box-shadow:none;mix-blend-mode:screen}
+.pearl-site .mast-brand small {display:block;margin-top:5px;font:500 7px/1.4 var(--sans);letter-spacing:.19em;color:#b9afcb}
+.pearl-site .desk-nav {display:flex;align-items:center;gap:30px}
+.pearl-site .desk-nav a {border:0;border-radius:0;min-height:44px;padding:10px 0;font:500 11px/1.3 var(--sans);letter-spacing:.09em;text-transform:uppercase;color:#ded5e8;background:transparent;box-shadow:none}
+.pearl-site .desk-nav a:hover,.pearl-site .desk-nav a[aria-current=page] {color:#fff;background:transparent;box-shadow:none;text-decoration:underline;text-underline-offset:7px;text-decoration-color:#d8c9e7}
+.pearl-site .desk-nav a[href='/apply/'] {background:#f0e8f4;color:#252035;padding:13px 22px;border:1px solid #f6f0fa;border-radius:3px;margin-left:3px}
+.pearl-site .desk-nav a[href='/apply/']:hover {background:#fff9ff;text-decoration:none}
+.pearl-site .mast a:focus-visible,.pearl-site .mast button:focus-visible {outline-color:#e9d9ff}
+.pearl-site .menu-trigger {border-color:#d4c6e74d;background:#ffffff09;color:#f6edff;border-radius:3px}
+.pearl-site .menu-dialog {border-radius:5px}
+.pearl-site .menu-dialog nav a {font:400 24px/1.3 var(--serif);letter-spacing:-.02em;padding-block:17px}
+.pearl-site .menu-dialog nav a[href='/apply/'] {color:#694681}
+.pearl-site .eyebrow {font:550 10px/1.5 var(--sans);letter-spacing:.18em;color:#71627d}
+.pageant-hero {position:relative;isolation:isolate;background:#090c20;color:#f7f0fb;overflow:hidden}
+.pageant-hero::before {content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#090c2026,#090c2026),url('/assets/pageant-atmosphere.webp') center/cover no-repeat;pointer-events:none}
+.pageant-hero-grid {width:min(calc(100% - var(--gutter) * 2),var(--shell));margin-inline:auto;display:grid;grid-template-columns:1.2fr 1fr;align-items:center;gap:clamp(50px,7vw,104px);min-height:580px;padding:76px 0 84px}
+.pageant-identity {min-width:0;align-self:center}
+.edition-line {display:flex;align-items:center;gap:24px;margin:0 0 36px;font:500 9px/1.4 var(--sans);letter-spacing:.2em;color:#d6cade}
+.edition-line::after {content:'';height:1px;width:74px;background:#d7c5e247;order:1}
+.edition-line span:first-child {order:0}
+.edition-line span:last-child {order:2}
+.pageant-identity h1 {margin:0;line-height:0}
+.pageant-identity h1 img {display:block;width:100%;height:auto;filter:drop-shadow(0 8px 28px #0008)}
+.identity-signature {font:italic 19px/1.4 var(--serif);color:#cdbed8;margin:34px 0 0;text-align:center;letter-spacing:.005em}
+.pageant-invitation {padding:0;min-width:0}
+.pageant-hero .eyebrow {color:#bca7d1;font-size:9px}
+.pageant-invitation h2 {font:400 clamp(38px,3.7vw,55px)/1.09 var(--serif);letter-spacing:-.035em;margin:22px 0 0;color:#fbf5ff;text-wrap:balance}
+.pageant-invitation h2 em {font-weight:400;color:#c9b3dc}
+.pageant-intro {font:400 14px/1.8 var(--sans);color:#c8bfd4;max-width:36ch;margin:27px 0 0}
+.pageant-actions {display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:30px}
+.pageant-button {display:inline-flex;align-items:center;justify-content:center;gap:22px;min-height:52px;padding:16px 23px;border:1px solid;border-radius:3px;font:550 11px/1.4 var(--sans);letter-spacing:.045em;transition:background .2s,transform .2s}
+.pageant-button:hover {transform:translateY(-2px)}
+.pageant-button.light {background:#eee4f6;color:#251d32;border-color:#f8eeff}
+.pageant-button.light:hover {background:#fff8ff}
+.pageant-button.dark {background:#261e35;color:#f8f0ff;border-color:#261e35}
+.pageant-button.dark:hover {background:#493352}
+.pageant-button .ui-icon {width:13px;height:13px;flex-basis:13px}
+.pageant-text-link {display:inline-flex;align-items:center;gap:14px;min-height:44px;font:500 12px/1.4 var(--sans);color:#594268;text-decoration:underline;text-decoration-color:#aa95b8;text-underline-offset:6px}
+.pageant-text-link:hover {text-decoration-thickness:2px}
+.pageant-text-link .ui-icon {width:12px;height:12px;flex-basis:12px}
+.pageant-hero .pageant-text-link {color:#e9ddef;text-decoration-color:#ac95be;font-size:11px}
+.pageant-hero a:focus-visible {outline-color:#eddfff}
+.pageant-hero-foot {width:min(calc(100% - var(--gutter) * 2),var(--shell));margin-inline:auto;display:flex;align-items:center;justify-content:space-between;gap:25px;border-top:1px solid #d2bcdf33;padding:25px 0 28px}
+.pageant-hero-foot p {display:flex;align-items:center;gap:25px;margin:0;font:400 17px/1.3 var(--serif);color:#ede1f5}
+.pageant-hero-foot p span {font:500 8px/1.4 var(--sans);letter-spacing:.18em;color:#bba7cb}
+.pageant-hero-foot strong {font-weight:400}
+.pageant-hero-foot a {display:inline-flex;align-items:center;gap:18px;min-height:44px;font:500 10px/1.4 var(--sans);color:#cbbbd7;letter-spacing:.03em}
+.pageant-hero-foot a:hover {color:#fff}
+.pageant-hero-foot .ui-icon {width:12px;height:12px;transform:rotate(90deg)}
+.pageant-program {padding:76px 0 66px}
+.pageant-section-head {display:flex;justify-content:space-between;align-items:flex-end;gap:30px;margin-bottom:38px}
+.pageant-section-head h2,.pageant-story h2,.pageant-apply h2 {font:400 clamp(36px,4.1vw,56px)/1.08 var(--serif);letter-spacing:-.04em;margin:15px 0 0;color:#2d2339}
+.pageant-section-head h2 em,.pageant-story h2 em,.pageant-apply h2 em {color:#7c5f8b;font-weight:400}
+.pageant-events {display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #cfc1d8;border-bottom:1px solid #cfc1d8}
+.pageant-event {display:grid;grid-template-columns:80px 1fr;align-items:start;gap:28px;padding:37px 38px 32px 0;min-width:0}
+.pageant-event+article {border-left:1px solid #d8ccde;padding-left:38px;padding-right:0}
+.event-number {font:400 76px/.9 var(--serif);letter-spacing:-.055em;color:#977ea7;font-variant-numeric:tabular-nums}
+.event-number span {display:block;font:500 8px/1.4 var(--sans);letter-spacing:.13em;margin-top:13px;color:#7b6689;text-align:center}
+.event-kicker {font:500 8px/1.4 var(--sans);letter-spacing:.15em;color:#8a7497;margin:0 0 10px}
+.event-description h3 {font:400 29px/1.15 var(--serif);letter-spacing:-.035em;margin:0 0 12px;color:#34263f}
+.event-description>p:not(.event-kicker):not(.event-logistics) {font:400 12px/1.8 var(--sans);color:#756a7d;max-width:33ch;margin:0}
+.event-logistics {display:grid;gap:4px;margin:21px 0 12px;font:400 11px/1.5 var(--sans);color:#8b7a95}
+.event-logistics strong {font-weight:550;color:#493954}
+.event-description .pageant-text-link {font-size:11px}
+.programme-timezone {font:400 10px/1.5 var(--sans);color:#83748c;margin:17px 0 0}
+.pageant-story {background:#f0eaf3;border-top:1px solid #ebe2ef;border-bottom:1px solid #e2d5e8;padding:80px 0}
+.pageant-story-grid {display:grid;grid-template-columns:.85fr 1.2fr;gap:100px;align-items:center}
+.pageant-mark {display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;border-right:1px solid #d4c4df;padding:30px 50px 30px 0;min-height:270px}
+.pageant-mark img {display:block;width:min(100%,305px);height:auto}
+.pageant-mark span {font:500 8px/1.4 var(--sans);letter-spacing:.18em;color:#836e92}
+.pageant-story-copy>p:not(.eyebrow) {max-width:51ch;font:400 14px/1.85 var(--sans);color:#6d5d77;margin:25px 0 15px}
+.pageant-story-copy>p em {font-family:var(--serif);font-size:17px}
+.pageant-apply {background:#faf8f7;padding:83px 0 90px}
+.pageant-apply-grid {display:grid;grid-template-columns:1fr 1.05fr;gap:110px;align-items:start}
+.pageant-apply-intro>p:not(.eyebrow) {font:400 14px/1.85 var(--sans);color:#77687f;max-width:34ch;margin:25px 0 25px}
+.candidate-essentials {list-style:none;margin:0;padding:0}
+.candidate-essentials li {display:grid;grid-template-columns:30px 1fr;gap:22px;padding:23px 0;border-bottom:1px solid #ded3e4}
+.candidate-essentials li:first-child {padding-top:0}
+.candidate-essentials li:last-child {border-bottom:0;padding-bottom:0}
+.candidate-essentials li>span {font:400 20px/1.4 var(--serif);color:#a18cad}
+.candidate-essentials h3 {font:400 24px/1.25 var(--serif);letter-spacing:-.025em;color:#463151;margin:0 0 8px}
+.candidate-essentials p {font:400 12px/1.8 var(--sans);color:#7a6a85;margin:0;max-width:47ch}
+.candidate-essentials .pageant-text-link {margin-top:9px;font-size:11px}
+.page-home .notices {padding-block:50px}
+.pearl-site .site-foot {background:#0c0e22;border-top:0;color:#dfd4e9}
+.footer-main {display:flex;align-items:center;justify-content:space-between;gap:30px;padding-block:46px 36px;border-bottom:1px solid #c8afd52e}
+.footer-title {font:400 27px/1.3 var(--serif);letter-spacing:-.035em;color:#f1e7f9}
+.pearl-site .site-foot .footer-edition {font:500 8px/1.4 var(--sans);letter-spacing:.18em;color:#ac99bc;margin:9px 0 0}
+.footer-main nav {display:flex;gap:26px;flex-wrap:wrap;align-items:center}
+.footer-main nav a {min-height:44px;display:inline-flex;align-items:center;font:500 11px/1.4 var(--sans);color:#d0bfdc}
+.footer-main nav a:hover {color:#fff;text-decoration:underline;text-underline-offset:5px}
+.pearl-site .foot-inner {padding-block:21px max(25px,env(safe-area-inset-bottom));gap:12px}
+.pearl-site .site-foot address,.pearl-site .site-foot p {font:400 10px/1.7 var(--sans);color:#ab9cb9}
+.pearl-site .site-foot strong {color:#dccbe9;font-weight:500}
+.pearl-site .subpage-hero,.pearl-site .story-hero {background:linear-gradient(115deg,#ebe3f0,#faf7f6 80%);border-bottom:1px solid #e1d5e8}
+.pearl-site .subpage-hero::before,.pearl-site .story-hero::after {display:none}
+.pearl-site .story-image {width:min(100%,310px);aspect-ratio:1683/935;object-fit:contain;border-radius:0;box-shadow:none;margin-inline:auto}
+.pearl-site.subpage h1,.pearl-site .story-intro h1 {letter-spacing:-.035em}
+.pearl-site .subpage-hero {padding-block:62px}
+.pearl-site .pearl {border-radius:3px;font-size:12px;letter-spacing:.025em;padding:16px 24px}
+@media(min-width:1000px) and (prefers-reduced-motion:no-preference) {
+  .pageant-identity {animation:pageant-arrive 1s both}
+  .pageant-invitation {animation:pageant-arrive 1s .15s both}
+  @keyframes pageant-arrive {from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+}
+@media(max-width:1050px) and (min-width:760px) {
+  .pearl-site .desk-nav {gap:22px}
+  .pearl-site .mast-brand {font-size:18px}
+  .pageant-hero-grid {gap:44px;grid-template-columns:1.08fr 1fr;min-height:540px;padding-block:60px}
+  .edition-line {gap:13px;font-size:8px}
+  .edition-line::after {width:24px}
+  .pageant-invitation h2 {font-size:42px}
+  .pageant-intro {font-size:13px}
+  .identity-signature {font-size:16px}
+  .pageant-actions {gap:7px 13px}
+  .pageant-story-grid,.pageant-apply-grid {gap:48px}
+  .pageant-mark {padding-right:30px}
+  .pageant-event {grid-template-columns:55px 1fr;gap:19px;padding-right:25px}
+  .pageant-event+article {padding-left:25px}
+  .event-number {font-size:60px}
+  .event-description h3 {font-size:26px}
+}
+@media(max-width:759px) {
+  .pearl-site .mast {height:72px}
+  .pearl-site .desk-nav {display:none}
+  .pearl-site .menu-trigger {display:inline-grid}
+  .pearl-site .mast-brand {font-size:18px;gap:9px}
+  .pearl-site .mast-brand img {width:28px;height:28px}
+  .pearl-site .mast-brand small {font-size:6px;letter-spacing:.15em}
+  .pageant-hero::before {background-position:65% center}
+  .pageant-hero-grid {grid-template-columns:1fr;gap:37px;min-height:0;padding:39px 0 42px;text-align:center}
+  .edition-line {justify-content:center;margin-bottom:25px;gap:18px;font-size:8px}
+  .edition-line::after {width:38px}
+  .pageant-identity h1 {max-width:440px;margin-inline:auto}
+  .identity-signature {font-size:15px;margin-top:19px}
+  .pageant-hero .eyebrow {font-size:8px;letter-spacing:.17em}
+  .pageant-invitation {padding-top:30px;border-top:1px solid #d8c5e52e}
+  .pageant-invitation h2 {font-size:clamp(35px,7vw,46px);line-height:1.13;margin-top:15px;letter-spacing:-.035em}
+  .pageant-invitation h2 br {display:none}
+  .pageant-invitation h2 em {display:block}
+  .pageant-intro {font-size:12px;line-height:1.85;margin:20px auto 0;max-width:38ch}
+  .pageant-actions {justify-content:center;gap:10px 20px;margin-top:23px}
+  .pageant-button {min-height:48px;padding:14px 20px;font-size:11px;gap:18px}
+  .pageant-hero .pageant-text-link {font-size:10px}
+  .pageant-hero-foot {padding:20px 0 22px;gap:16px;align-items:center}
+  .pageant-hero-foot p {display:block;font-size:17px;line-height:1.5}
+  .pageant-hero-foot p span {display:block;font-size:7px;margin-bottom:5px;letter-spacing:.16em}
+  .pageant-hero-foot a {font-size:9px;gap:10px;flex:0 1 130px;line-height:1.5}
+  .pageant-hero-foot .ui-icon {flex-shrink:0}
+  .pageant-program {padding:48px 0 40px}
+  .pageant-section-head {display:block;margin-bottom:26px}
+  .pageant-section-head h2,.pageant-story h2,.pageant-apply h2 {font-size:37px;line-height:1.12;margin-top:13px}
+  .pageant-section-head>.pageant-text-link {margin-top:12px;font-size:11px}
+  .pageant-events {grid-template-columns:1fr}
+  .pageant-event {grid-template-columns:64px 1fr;gap:23px;padding:29px 0 23px}
+  .pageant-event+article {border-left:0;border-top:1px solid #d8ccde;padding:29px 0 23px}
+  .event-number {font-size:65px}
+  .event-number span {font-size:7px}
+  .event-description h3 {font-size:27px}
+  .event-description>p:not(.event-kicker):not(.event-logistics) {font-size:12px}
+  .event-logistics {margin-top:17px}
+  .programme-timezone {font-size:9px}
+  .pageant-story {padding:45px 0 48px}
+  .pageant-story-grid {grid-template-columns:1fr;gap:31px}
+  .pageant-mark {border-right:0;border-bottom:1px solid #d4c4df;padding:0 0 30px;min-height:0;gap:20px}
+  .pageant-mark img {width:175px}
+  .pageant-mark span {font-size:7px}
+  .pageant-story-copy>p:not(.eyebrow) {font-size:13px;line-height:1.85;margin-top:21px}
+  .pageant-apply {padding:48px 0 52px}
+  .pageant-apply-grid {grid-template-columns:1fr;gap:37px}
+  .pageant-apply-intro>p:not(.eyebrow) {font-size:13px;margin-top:20px;max-width:36ch}
+  .candidate-essentials li {gap:17px;padding-block:21px}
+  .candidate-essentials h3 {font-size:23px}
+  .candidate-essentials p {font-size:12px}
+  .footer-main {display:block;padding-block:34px 20px}
+  .footer-title {font-size:25px}
+  .footer-main nav {gap:10px 23px;margin-top:19px}
+  .footer-main nav a {font-size:11px}
+  .pearl-site .foot-inner {padding-block:19px 25px;gap:5px}
+  .pearl-site .site-foot address,.pearl-site .site-foot p {font-size:10px}
+  .pearl-site .subpage-hero {padding-block:37px}
+  .pearl-site .story-image {width:180px;margin:0}
+}
+@media(max-width:359px) {
+  .pearl-site {--gutter:20px}
+  .pearl-site .mast-brand {font-size:16px}
+  .pageant-hero-grid {gap:28px;padding-top:32px}
+  .pageant-invitation h2 {font-size:33px}
+  .pageant-actions {flex-direction:column;gap:5px}
+  .pageant-event {grid-template-columns:51px 1fr;gap:20px}
+  .event-number {font-size:55px}
+  .event-description h3 {font-size:25px}
+}
