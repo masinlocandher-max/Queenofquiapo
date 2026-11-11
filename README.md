@@ -8,7 +8,7 @@ Use Node 24 or later. Run `npm run build` to bundle the Worker and public assets
 
 After building, `npm run dev` previews the same Worker locally without production identity or data bindings. Rebuild after source edits. The development-only `/__preview/responsive?width=390` route frames the public pages at 320, 390, or 768 pixels; add `&page=/apply/` to inspect a specific public route.
 
-The public visual layer is `public/refinement.css`: the supplied emblem and wordmark anchor the opening artwork, followed by the pageant invitation, event dates, and application preparation. Public task pages share the same typography and spacing. Organizer and judge presentation and authorization are independent.
+The public visual layer is `public/refinement.css`: the transparent emblem and original wordmark occupy their own column alongside the pageant invitation, followed by event dates and application preparation. The artwork stacks above the invitation on mobile. Public task pages share the same typography and spacing. Organizer and judge presentation and authorization are independent.
 
 ## Roles and domains
 

@@ -16,15 +16,13 @@
 .pearl-site .quiet-link {font-size:14px;font-weight:500;text-decoration-thickness:1px;text-underline-offset:6px}
 .pearl-site .eyebrow {margin:0;font:600 10px/1.5 var(--sans);letter-spacing:.17em;color:#746580;text-transform:uppercase}
 .pearl-site .section-note {font-size:12px;line-height:1.6;color:var(--soft);margin:13px 0 0}
-.home-cover {width:min(calc(100% - var(--gutter) * 2),var(--shell));margin:34px auto 0;display:grid;grid-template-columns:1.05fr 1fr;min-height:570px;border:1px solid #eee5ef;border-radius:28px;overflow:hidden;box-shadow:0 16px 54px #2a20350a}
-.brand-stage {position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;overflow:hidden;min-width:0;padding:40px clamp(24px,3vw,48px) 58px;background:#0e0c26 url('/assets/stars.svg') center/cover;color:#eee4ff}
-.brand-stage::after {content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 35% 24%,#66507a30,transparent 66%),linear-gradient(180deg,#110d2b00 55%,#17102d 100%);pointer-events:none}
-.stage-caption {position:absolute;top:30px;left:0;right:0;text-align:center;font:500 10px/1.5 var(--sans);letter-spacing:.22em;color:#d5c8e0}
-.stage-emblem {position:absolute;width:90%;max-width:520px;height:260px;object-fit:contain;top:43px;left:50%;transform:translateX(-50%);mix-blend-mode:lighten;mask-image:radial-gradient(ellipse 57% 48% at 50% 55%,#000 54%,transparent 100%)}
+.home-cover {width:min(calc(100% - var(--gutter) * 2),var(--shell));margin:34px auto 0;display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(24px,4vw,56px);min-height:530px;border:0;border-radius:0;overflow:visible;box-shadow:none}
+.brand-stage {position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;min-width:0;padding:32px 24px;background:transparent;color:var(--ink)}
+.stage-caption {text-align:center;font:500 10px/1.5 var(--sans);letter-spacing:.22em;color:#746580}
+.stage-emblem {display:block;width:88%;max-width:410px;height:auto;object-fit:contain}
 .brand-stage h1 {position:relative;max-width:475px;width:100%;margin:0;line-height:0}
-.brand-stage h1 img {display:block;width:100%;height:auto;filter:drop-shadow(0 6px 18px #06031b)}
-.stage-rule {display:block;width:40px;height:1px;background:#d2bad770;margin-top:28px}
-.invitation {position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:52px clamp(28px,4.4vw,66px) 34px;background:radial-gradient(ellipse at 100% 100%,#e3d8ecaa,transparent 65%),#f5eff6;overflow:hidden}
+.brand-stage h1 img {display:block;width:100%;height:auto;filter:drop-shadow(0 3px 7px #674b7315)}
+.invitation {position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:52px clamp(28px,4.4vw,66px) 34px;background:radial-gradient(ellipse at 100% 100%,#e3d8ec77,transparent 65%),#f5eff680;border:1px solid #ffffffd9;border-radius:28px;box-shadow:0 12px 40px #2a203508;overflow:hidden}
 .invitation::before {content:"";position:absolute;z-index:-1;pointer-events:none;right:-64%;top:-15%;width:100%;height:140%;border:1px solid #ffffffbd;border-radius:50%;transform:rotate(24deg)}
 .invitation h2 {font:400 clamp(33px,3.55vw,51px)/1.11 var(--serif);letter-spacing:-.055em;margin:25px 0 0;color:#2c233b;text-wrap:balance}
 .invitation h2 em {color:#796386;font-weight:400;display:block}
@@ -118,9 +116,9 @@
 }
 @media (max-width:1050px) and (min-width:760px) {
   .invitation-actions {align-items:flex-start;flex-direction:column;gap:7px}
-  .home-cover {min-height:550px}
-  .stage-emblem {top:55px;height:260px}
-  .brand-stage {padding-bottom:80px}
+  .home-cover {min-height:530px}
+  .stage-emblem {width:100%;height:auto}
+  .brand-stage {padding:30px 12px;gap:20px}
   .page-home .dates {grid-template-columns:1fr;gap:25px}
   .page-home .dates-heading h2 br {display:none}
   .page-home .dates h2 em {display:inline}
@@ -130,13 +128,12 @@
   .pearl-site .mast {height:66px}
   .pearl-site .desk-nav {display:none}
   .pearl-site .menu-trigger {display:inline-grid}
-  .home-cover {grid-template-columns:1fr;margin-top:20px;border-radius:23px;min-height:0}
-  .brand-stage {height:292px;padding:0 38px 28px}
-  .stage-caption {top:18px;font-size:8px;letter-spacing:.2em}
-  .stage-emblem {height:150px;width:100%;top:20px}
+  .home-cover {grid-template-columns:1fr;margin-top:20px;gap:24px;min-height:0}
+  .brand-stage {padding:20px 24px 12px;gap:18px}
+  .stage-caption {font-size:8px;letter-spacing:.2em}
+  .stage-emblem {height:auto;width:min(88%,250px)}
   .brand-stage h1 {max-width:310px}
-  .stage-rule {display:none}
-  .invitation {padding:29px 28px 25px}
+  .invitation {padding:29px 28px 25px;border-radius:23px}
   .invitation h2 {font-size:36px;margin-top:14px;line-height:1.1;max-width:14ch}
   .invitation h2 br {display:none}
   .invitation h2 em {display:inline}
@@ -191,8 +188,8 @@
 }
 @media (max-width:360px) {
   .pearl-site {--gutter:16px}
-  .brand-stage {height:270px;padding-inline:24px}
-  .stage-emblem {height:125px;top:20px}
+  .brand-stage {padding-inline:16px}
+  .stage-emblem {width:min(88%,215px)}
   .invitation {padding:25px 22px}
   .invitation h2 {font-size:32px}
   .invitation-actions {align-items:flex-start;flex-direction:column;gap:4px}
