@@ -6,6 +6,10 @@ Mobile-first pageant site managed by FMB&CO, Barangay 306, Quiapo, Manila. The p
 
 Use Node 24 or later. Run `npm run build` to bundle the Worker and public assets, then `node --test tests/worker-access.mjs`. The Sites runtime supplies trusted sign-in identity and environment bindings. The logical bindings for the existing application service are DB (D1) and BUCKET (private R2). Add the deployment-specific project ID to the local hosting manifest before publishing.
 
+After building, `npm run dev` previews the same Worker locally without production identity or data bindings. Rebuild after source edits. The development-only `/__preview/responsive?width=390` route frames the public pages at 320, 390, or 768 pixels; add `&page=/apply/` to inspect a specific public route.
+
+The public visual layer is `public/refinement.css`: the supplied emblem and wordmark anchor the opening artwork, followed by the pageant invitation, event dates, and application preparation. Public task pages share the same typography and spacing. Organizer and judge presentation and authorization are independent.
+
 ## Roles and domains
 
 | Address | Purpose |

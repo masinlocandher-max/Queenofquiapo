@@ -1,5 +1,5 @@
 {
   "private": true,
   "type": "module",
-  "scripts": {"build": "node scripts/build.mjs"}
+  "scripts": {"build": "node scripts/build.mjs", "dev": "node scripts/preview.mjs"}
 }
