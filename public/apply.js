@@ -87,10 +87,14 @@
         if (typeof result?.error === 'string') message = result.error;
         else if (response.status === 413) message = 'The photos are too large. Choose a smaller copy of each photo and try again.';
         else if (response.status === 429) message = 'Please wait a few minutes, then try again.';
+        else if (response.status === 409 && !result?.error) message = 'This form was already submitted. Reload the page to start a new application.';
         else if (response.status === 401 || response.status === 403) message = 'Access was interrupted. Keep this page open while you restore access to the site, then try again.';
         throw new Error(message);
       }
       document.getElementById('receipt-reference').textContent = result.reference;
+      if (typeof result.edition === 'string' && result.edition) document.getElementById('receipt-edition').textContent = result.edition;
+      const received = result.submittedAt ? new Date(result.submittedAt) : new Date();
+      document.getElementById('receipt-time').textContent = new Intl.DateTimeFormat('en-PH', {dateStyle:'long', timeStyle:'short', timeZone:'Asia/Manila'}).format(received) + ' (Philippine time)';
       photos.forEach(clearPreview);
       form.reset();
       form.hidden = true;
@@ -111,6 +115,12 @@
       button.disabled = false;
     }
   });
+
+  document.getElementById('receipt-print').addEventListener('click', () => window.print());
+  // Warn before leaving a form that has been started, so a stray tap does not discard it.
+  let touched = false;
+  form.addEventListener('input', () => { touched = true; });
+  window.addEventListener('beforeunload', event => { if (touched && !form.hidden) { event.preventDefault(); event.returnValue = ''; } });
 
   const withdrawOptions = document.getElementById('withdraw-options');
   const withdrawButton = document.getElementById('withdraw-confirm');

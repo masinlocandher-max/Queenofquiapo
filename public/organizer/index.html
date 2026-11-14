@@ -2,31 +2,110 @@
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="same-origin"><meta name="theme-color" content="#f6f3fa">
 <title>Organizer desk · Queen of Quiapo</title><link rel="icon" href="/assets/icon.png">
-<link rel="stylesheet" href="/organizer/workspace.css"><script defer src="/organizer/operations.js"></script><script defer src="/organizer/review.js"></script>
+<link rel="stylesheet" href="/organizer/workspace.css"><link rel="stylesheet" href="/organizer/desk.css">
+<script defer src="/organizer/desk.js"></script><script defer src="/organizer/operations.js"></script><script defer src="/organizer/voting.js"></script><script defer src="/organizer/review.js"></script>
 </head><body>
 <a class="skip" href="#desk">Skip to organizer desk</a>
 <header class="bar"><div class="bar-inner"><span class="brand"><img alt="" width="31" height="31" src="/assets/icon.png">Queen of Quiapo</span><span class="role"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5.5" y="10" width="13" height="10" rx="2"></rect><path d="M8.5 10V7a3.5 3.5 0 0 1 7 0v3"></path></svg>Organizer</span></div></header>
 <main class="wrap" id="desk">
-<div class="intro"><h1>Organizer desk</h1><p>Manage the official roster, judging, and event announcements.</p></div>
-<nav class="desk-tabs" aria-label="Organizer areas"><a href="#competition" class="active">Event management</a><a href="#applications">Applications</a></nav>
-<section class="desk-section" id="competition" aria-labelledby="competition-heading">
-<h2 id="competition-heading" class="sr-only">Event management</h2>
+<div class="intro"><h1>Organizer desk</h1><p id="edition-line">Queen of Quiapo 2027</p></div>
+<nav class="desk-tabs" aria-label="Organizer areas">
+  <a href="#overview">Overview</a><a href="#applications">Applications</a><a href="#roster">Candidates</a><a href="#judging">Judging</a>
+  <a href="#voting">Voting &amp; revenue</a><a href="#results">Results</a><a href="#news">Announcements</a><a href="#audit">Audit log</a>
+</nav>
 <p class="status" id="ops-message" role="status">Checking organizer access…</p>
 <div class="action-row" id="ops-recovery" hidden><a href="/signin-with-chatgpt?return_to=%2Forganizer%2F" class="btn" target="_top" id="ops-signin" hidden>Sign in to manage the event</a><button class="btn quiet" id="ops-retry" type="button">Try again</button></div>
+
 <div id="dashboard" hidden>
-<div class="summary" aria-label="Event overview"><div><span>Scoring</span><strong id="phase"></strong></div><div><span>Candidates</span><strong id="candidate-count"></strong></div><div><span>Locked ballots</span><strong id="locked-count"></strong></div></div>
+<section class="desk-section" id="overview" aria-labelledby="overview-h"><h2 id="overview-h" class="sr-only">Overview</h2>
+  <div class="summary wide" aria-label="Event overview">
+    <div><span>Applications to review</span><strong id="m-pending"></strong></div><div><span>Official candidates</span><strong id="candidate-count"></strong></div>
+    <div><span>Judging</span><strong id="phase"></strong></div><div><span>Locked ballots</span><strong id="locked-count"></strong></div>
+    <div><span>Voting</span><strong id="m-voting"></strong></div><div><span>Online payment</span><strong id="m-payments"></strong></div>
+    <div><span>Points credited</span><strong id="m-points"></strong></div><div><span>Reconciliation</span><strong id="m-recon"></strong></div>
+  </div>
+  <section class="card board"><div class="card-heading"><h3>Event readiness</h3></div><p class="help">Each line is checked against live records. Nothing here is an estimate.</p><ul class="checklist" id="readiness"></ul></section>
+  <section class="card board"><div class="card-heading"><h3>Edition</h3></div><dl class="facts" id="edition-facts"></dl><p class="small">Dates come from the edition record. Items marked “to be announced” have not been confirmed by the organizers.</p></section>
+</section>
+
+<section class="desk-section" id="roster" aria-labelledby="roster-h" hidden>
+  <section class="card board"><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="10" cy="8" r="3"></circle><path d="M4 20v-2a6 6 0 0 1 12 0v2m3-13v6m-3-3h6"></path></svg><h2 id="roster-h">Official candidates</h2></div>
+  <p class="help">Use each candidate’s approved pageant name and a portrait cleared for publication. A candidate appears on the public site only when she has a number, a recorded publicity clearance, and “Published” is on.</p>
+  <p class="help" id="roster-state"></p>
+  <div id="candidates-list" class="list"></div>
+  <details class="edit-panel" id="candidate-editor"><summary>Add a candidate</summary>
+  <form id="candidate-form">
+    <div class="pair"><label>Pageant name<input name="name" maxlength="120" required></label><label>Candidate number<input name="number" type="number" inputmode="numeric" min="1" max="999" step="1"></label></div>
+    <label>Official portrait <span class="optional">Optional</span><input type="file" name="photo" accept="image/jpeg,image/png,image/webp"><small>JPG, PNG or WebP. Up to 5 MB. Screening photos are never used here.</small></label>
+    <label>Short biography <span class="optional">Optional</span><textarea name="bio" rows="2" maxlength="600"></textarea></label>
+    <label>Publicity clearance reference<input name="consentRef" maxlength="200"><small>For example “Signed release, 4 Jan 2027”. Required before publishing.</small></label>
+    <div class="pair"><label>Participation<select name="status"><option value="active">Active</option><option value="withdrawn">Withdrawn</option></select></label><label class="toggle"><input name="published" type="checkbox">Published on the public site</label></div>
+    <p class="help" data-edit-note hidden></p>
+    <div class="action-row"><button class="btn" type="submit">Save candidate</button><button class="plain" type="button" data-cancel>Cancel</button></div>
+  </form></details>
+  <div class="action-row"><button type="button" class="btn quiet" id="lock-roster" hidden>Lock roster</button><button type="button" class="plain" id="unlock-roster" hidden>Unlock roster</button></div>
+  </section>
+</section>
+
+<section class="desk-section" id="judging" aria-labelledby="judging-h" hidden><h2 id="judging-h" class="sr-only">Judging</h2>
 <div class="grid">
-<section class="card" id="roster"><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="10" cy="8" r="3"></circle><path d="M4 20v-2a6 6 0 0 1 12 0v2m3-13v6m-3-3h6"></path></svg><h3>Official candidates</h3></div><p class="help">Use each candidate’s approved pageant name and a portrait cleared for publication.</p>
-<div id="candidates-list" class="list"></div><details class="edit-panel" data-setup id="candidate-editor"><summary>Add a candidate</summary>
-<form id="candidate-form"><label>Pageant name<input name="name" maxlength="120" required></label><label>Candidate portrait <span class="optional">Optional</span><input type="file" name="photo" accept="image/jpeg,image/png,image/webp"><small>JPG, PNG or WebP. Up to 5 MB.</small></label><p class="help" data-edit-note hidden></p><div class="action-row"><button class="btn" type="submit">Save candidate</button><button class="plain" type="button" data-cancel>Cancel</button></div></form></details></section>
-<section class="card"><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"></circle><path d="M5 19a7 7 0 0 1 14 0M3 8V4h4m10 0h4v4"></path></svg><h3>Judges</h3></div><p class="help">Register the email the judge uses to sign in. Each judge sees their own ballot.</p><div id="judges-list" class="list"></div><details class="edit-panel" data-setup id="judge-editor"><summary>Add a judge</summary><form id="judge-form"><label>Judge name<input name="name" required maxlength="120"></label><label>Sign-in email<input name="email" type="email" required maxlength="254"></label><div class="action-row"><button class="btn" type="submit">Save judge</button><button class="plain" type="button" data-cancel>Cancel</button></div></form></details></section>
-<section class="card"><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"></path><circle cx="8" cy="6" r="2"></circle><circle cx="15" cy="12" r="2"></circle><circle cx="10" cy="18" r="2"></circle></svg><h3>Judging criteria</h3></div><p class="help" id="weight-total"></p><div id="criteria-list" class="list"></div><details class="edit-panel" data-setup id="criterion-editor"><summary>Add a criterion</summary><form id="criterion-form"><label>Criterion<input name="name" required maxlength="100"></label><label>Weight (%)<input name="weight" type="number" required min="0.01" max="100" step="0.01" inputmode="decimal"></label><div class="action-row"><button class="btn" type="submit">Save criterion</button><button class="plain" type="button" data-cancel>Cancel</button></div></form></details></section>
-<section class="card"><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"></rect><path d="M8 9h8m-8 4h6"></path></svg><h3>Announcements</h3></div><p class="help">Draft an update, then publish it when it is ready for visitors.</p><div id="announcements-list" class="list"></div><details class="edit-panel" id="announcement-editor"><summary>Write an announcement</summary><form id="announcement-form"><label>Title<input name="title" required maxlength="120"></label><label>Message<textarea name="body" required rows="4" maxlength="2000"></textarea></label><label class="toggle"><input name="published" type="checkbox">Publish on the website</label><div class="action-row"><button class="btn" type="submit">Save announcement</button><button class="plain" type="button" data-cancel>Cancel</button></div></form></details></section>
+<section class="card"><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"></circle><path d="M5 19a7 7 0 0 1 14 0M3 8V4h4m10 0h4v4"></path></svg><h3>Judges</h3></div><p class="help">Register the email each judge signs in with. A judge sees only their own scorecard.</p><div id="judges-list" class="list"></div><details class="edit-panel" id="judge-editor"><summary>Add a judge</summary><form id="judge-form"><label>Judge name<input name="name" required maxlength="120"></label><label>Sign-in email<input name="email" type="email" required maxlength="254"></label><div class="action-row"><button class="btn" type="submit">Save judge</button><button class="plain" type="button" data-cancel>Cancel</button></div></form></details></section>
+<section class="card"><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"></path><circle cx="8" cy="6" r="2"></circle><circle cx="15" cy="12" r="2"></circle><circle cx="10" cy="18" r="2"></circle></svg><h3>Judging criteria</h3></div><p class="help" id="weight-total"></p><div id="criteria-list" class="list"></div><details class="edit-panel" id="criterion-editor"><summary>Add a criterion</summary><form id="criterion-form"><label>Criterion<input name="name" required maxlength="100"></label><div class="pair"><label>Weight (%)<input name="weight" type="number" required min="0.01" max="100" step="0.01" inputmode="decimal"></label><label>Order on scorecard<input name="displayOrder" type="number" min="0" max="99" step="1" inputmode="numeric" value="0"></label></div><label>Guidance for judges <span class="optional">Optional</span><textarea name="description" rows="2" maxlength="400"></textarea></label><div class="action-row"><button class="btn" type="submit">Save criterion</button><button class="plain" type="button" data-cancel>Cancel</button></div></form></details><p class="small">Scores run from 0 to 100 with up to two decimals.</p></section>
 </div>
-<section class="card board"><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19h16M6 16v-5m6 5V5m6 11V9"></path></svg><h3>Private tabulation</h3></div><p id="tabulation-summary" class="help"></p><div id="tally-results" class="list"></div><div id="ballot-details"></div><div class="action-row"><button type="button" class="btn" id="open-scoring" hidden>Open judging</button><button type="button" class="btn" id="lock-tally" hidden>Lock final tabulation</button><button type="button" class="plain" id="refresh">Refresh scores</button></div><p class="small" id="scoring-hint"></p></section>
-<section class="card board"><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m8 10 3 3 5-6M5 13l-2 6h18l-2-6m-11 0h9"></path></svg><h3>Online voting</h3></div><p class="help" id="voting-status"></p><div class="action-row"><button type="button" class="btn quiet" id="open-voting" hidden>Open public voting</button><button type="button" class="btn quiet" id="close-voting" hidden>Close public voting</button></div></section>
-</div></section>
+<section class="card board"><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19h16M6 16v-5m6 5V5m6 11V9"></path></svg><h3>Ballot progress</h3></div><div id="judge-progress" class="table-scroll"></div>
+<div class="action-row"><button type="button" class="btn" id="open-scoring" hidden>Open judging</button><button type="button" class="plain" id="refresh">Refresh</button></div><p class="small" id="scoring-hint"></p></section>
+</section>
+
+<section class="desk-section" id="results" aria-labelledby="results-h" hidden>
+<section class="card board"><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19h16M6 16v-5m6 5V5m6 11V9"></path></svg><h2 id="results-h">Judges’ tabulation</h2><span class="pill" id="tab-state"></span></div>
+<p id="tabulation-summary" class="help"></p><p class="help">Each candidate’s score is the average, across locked ballots, of that judge’s weighted total. Ranking compares exact totals; ties are shown and never broken automatically. Purchased voting points are not part of this result.</p>
+<div id="tally-results" class="table-scroll"></div><div id="ballot-details"></div>
+<div class="action-row"><button type="button" class="btn" id="lock-tally" hidden>Lock final tabulation</button><button type="button" class="btn" id="certify" hidden>Certify results</button><button type="button" class="btn quiet" id="print-results">Print result sheet</button><button type="button" class="btn quiet" id="print-audit">Print judge audit</button></div>
+<p class="small" id="tab-identity"></p></section>
+<section class="card board"><div class="card-heading"><h3>Public announcement of results</h3><span class="pill" id="publish-state"></span></div><p class="help">Results are never published automatically. Certify first, then choose what the public sees.</p>
+<form id="publish-form" class="inline-form"><label>Placements to show<select name="top"><option value="1">Winner only</option><option value="3" selected>Top 3</option><option value="5">Top 5</option><option value="">Full ranking</option></select></label><label class="toggle"><input type="checkbox" name="showScores">Show scores</label><button class="btn" type="submit" id="publish">Publish results</button><button class="plain danger" type="button" id="unpublish" hidden>Remove from public site</button></form></section>
+</section>
+
+<section class="desk-section" id="voting" aria-labelledby="voting-h" hidden>
+<div class="summary wide" aria-label="Voting and revenue">
+  <div><span>Settled payments (gross)</span><strong id="v-gross"></strong></div><div><span>Refunds</span><strong id="v-refunds"></strong></div><div><span>Reversals</span><strong id="v-reversals"></strong></div><div><span>Net settled</span><strong id="v-net"></strong></div>
+  <div><span>Points credited</span><strong id="v-points"></strong></div><div><span>Settled purchases</span><strong id="v-settled"></strong></div><div><span>Pending orders</span><strong id="v-pending"></strong></div><div><span>Failed or expired</span><strong id="v-failed"></strong></div>
+</div><p class="small">Gross and net are payment amounts confirmed by the provider. They are not profit: provider fees, taxes and costs are not deducted here.</p>
+<section class="card board"><div class="card-heading"><h2 id="voting-h">Voting status</h2><span class="pill" id="voting-pill"></span></div><p class="help" id="voting-status"></p>
+<form id="schedule-form" class="inline-form"><label>Opens (Philippine time)<input type="datetime-local" name="opensAt"></label><label>Closes (Philippine time)<input type="datetime-local" name="closesAt"></label><button class="btn quiet" type="submit">Save schedule</button></form>
+<div class="action-row"><button type="button" class="btn" id="open-voting" hidden>Open voting</button><button type="button" class="btn" id="close-voting" hidden>Close voting</button><button type="button" class="btn" id="finalize-voting" hidden>Finalize points</button><label class="toggle"><input type="checkbox" id="points-public">Show point totals on the public site</label></div>
+<p class="small" id="voting-hint"></p></section>
+<section class="card board"><div class="card-heading"><h3>Online payment</h3><span class="pill" id="pay-pill"></span></div><p class="help" id="pay-status"></p><ul class="checklist" id="pay-gates"></ul>
+<div class="action-row"><button type="button" class="btn quiet" id="pay-toggle" hidden></button></div></section>
+<section class="card board"><div class="card-heading"><h3>Voting packages</h3><span class="pill" id="pkg-pill"></span></div><p class="help">Fixed rate: ₱100 = 1,000 points. Enter the points; the price is calculated and cannot be typed in. Changing the catalog withdraws approval until you approve it again.</p>
+<div id="packages-list" class="table-scroll"></div>
+<details class="edit-panel" id="package-editor"><summary>Add a package</summary><form id="package-form"><div class="pair"><label>Package name<input name="name" required maxlength="60"></label><label>Points<input name="points" type="number" required min="1" max="10000000" step="1" inputmode="numeric"></label></div><p class="help" id="package-price" aria-live="polite"></p><div class="pair"><label>Display order<input name="displayOrder" type="number" min="0" max="99" step="1" value="0"></label><label class="toggle"><input name="active" type="checkbox" checked>Shown to the public</label></div><div class="action-row"><button class="btn" type="submit">Save package</button><button class="plain" type="button" data-cancel>Cancel</button></div></form></details>
+<div class="action-row"><button type="button" class="btn quiet" id="approve-packages">Approve this catalog</button></div></section>
+<section class="card board"><div class="card-heading"><h3>Candidate points</h3></div><p class="help">Totals are the sum of ledger entries from verified settlements, less recorded reversals. This ranking is separate from the judges’ result.</p><div id="points-table" class="table-scroll"></div><div class="action-row"><button type="button" class="btn quiet" id="print-points">Print points report</button></div></section>
+<section class="card board"><div class="card-heading"><h3>Reconciliation</h3><span class="pill" id="recon-pill"></span></div><p class="help">Orders, provider events and the points ledger are cross-checked on every refresh.</p><div id="recon-list" class="list"></div></section>
+<section class="card board"><div class="card-heading"><h3>Transactions</h3></div>
+<form id="order-search" class="inline-form"><label>Search<input name="q" type="search" maxlength="120" placeholder="Order, payment reference or email"></label><label>Status<select name="status"><option value="">All</option><option value="paid">Paid</option><option value="awaiting_payment">Awaiting payment</option><option value="processing">Processing</option><option value="failed">Failed</option><option value="expired">Expired</option><option value="cancelled">Cancelled</option><option value="refunded">Refunded</option><option value="partially_refunded">Partially refunded</option><option value="reversed">Reversed</option><option value="held">Held for decision</option><option value="flagged">Flagged</option></select></label><button class="btn quiet" type="submit">Search</button><a class="plain" href="/api/competition/export/orders.csv" download>Export CSV</a></form>
+<div id="orders-table" class="table-scroll"></div><div id="order-detail" class="order-detail" hidden></div></section>
+</section>
+
+<section class="desk-section" id="news" aria-labelledby="news-h" hidden>
+<section class="card board"><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"></rect><path d="M8 9h8m-8 4h6"></path></svg><h2 id="news-h">Announcements</h2></div><p class="help">Draft an update, then publish it when it is ready for visitors.</p><div id="announcements-list" class="list"></div><details class="edit-panel" id="announcement-editor"><summary>Write an announcement</summary><form id="announcement-form"><label>Title<input name="title" required maxlength="120"></label><label>Message<textarea name="body" required rows="4" maxlength="2000"></textarea></label><label class="toggle"><input name="published" type="checkbox">Publish on the website</label><div class="action-row"><button class="btn" type="submit">Save announcement</button><button class="plain" type="button" data-cancel>Cancel</button></div></form></details></section>
+</section>
+
+<section class="desk-section" id="audit" aria-labelledby="audit-h" hidden>
+<section class="card board"><div class="card-heading"><h2 id="audit-h">Audit log</h2></div><p class="help">Every significant action, who took it, and when (Philippine time). Entries cannot be edited or removed.</p><div id="audit-table" class="table-scroll"></div><button type="button" class="plain" id="audit-more" hidden>Load earlier entries</button></section>
+</section>
+</div>
+
 <section id="applications" class="desk-section card board review" hidden><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m3 15 3-9h12l3 9v4H3zM3 15h5l2 2h4l2-2h5"></path></svg><h2>Application inbox</h2></div><p id="status" role="status">Checking organizer access…</p><a id="signin" class="btn" hidden target="_top" href="/signin-with-chatgpt?return_to=%2Forganizer%2F">Sign in to review</a>
-<div id="inbox" hidden><div id="rows" class="list"></div><button type="button" class="plain" id="more" hidden>Load more applications</button></div>
-<section id="detail" hidden><button type="button" class="plain" id="back">Back to applications</button><h3 id="candidate" tabindex="-1"></h3><dl id="fields"></dl><div class="pictures" id="pictures"></div><details class="remove"><summary>Remove this application</summary><p>This removes the applicant’s information and both photos from the screening inbox.</p><button class="plain danger" id="remove" type="button">Permanently remove application</button></details></section></section>
+<div id="inbox" hidden>
+  <div class="chips" id="status-chips" role="group" aria-label="Filter by status"></div>
+  <form id="inbox-search" class="inline-form"><label>Search<input name="q" type="search" maxlength="120" placeholder="Name, email, locality or reference"></label><label>Order<select name="sort"><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select></label><button class="btn quiet" type="submit">Search</button><a class="plain" href="/api/reviewer/export.csv" download>Export CSV</a></form>
+  <div id="rows" class="list"></div><button type="button" class="plain" id="more" hidden>Load more applications</button></div>
+<section id="detail" hidden><button type="button" class="plain" id="back">Back to applications</button><h3 id="candidate" tabindex="-1"></h3><p><span class="pill" id="app-status"></span> <span class="small" id="app-dup"></span></p>
+<div class="card decision"><h4>Screening decision</h4><div class="action-row" id="app-actions"></div><label>Note for the record <span class="optional">Optional</span><textarea id="app-note" rows="2" maxlength="1000"></textarea></label><div class="action-row"><button type="button" class="plain" id="app-add-note">Save note only</button><button type="button" class="btn" id="app-promote" hidden>Add to official roster</button></div><p class="small">Status changes are private. Nothing is shown to the applicant or the public from this screen.</p></div>
+<dl id="fields"></dl><div class="pictures" id="pictures"></div><h4>History</h4><ol class="history" id="app-history"></ol>
+<details class="remove"><summary>Remove this application</summary><p>This erases the applicant’s information, review history and both photos. Use it for withdrawal or data-erasure requests.</p><button class="plain danger" id="remove" type="button">Permanently remove application</button></details></section></section>
+
+<section id="print-sheet" class="print-sheet" aria-hidden="true"></section>
 </main><footer><div><span>Queen of Quiapo</span><address>Barangay 306, Quiapo, Manila</address></div><p>This website is managed by FMB&amp;CO.</p></footer></body></html>

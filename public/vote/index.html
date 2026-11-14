@@ -4,52 +4,84 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#090c20">
-  <meta name="description" content="Check the voting status for Queen of Quiapo.">
+  <meta name="description" content="Support an official Queen of Quiapo 2027 candidate with voting points. ₱100 = 1,000 points. Online payment is coming soon.">
   <meta property="og:title" content="Vote · Queen of Quiapo">
-  <meta property="og:description" content="Check the voting status for Queen of Quiapo.">
+  <meta property="og:description" content="Support an official Queen of Quiapo 2027 candidate with voting points. ₱100 = 1,000 points. Online payment is coming soon.">
   <title>Vote · Queen of Quiapo</title>
   <link rel="icon" href="/assets/icon.png">
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/subpages.css">
   <link rel="stylesheet" href="/schedule.css">
-  <script defer src="/script.js"></script>
   <link rel="stylesheet" href="/pearl.css">
   <link rel="stylesheet" href="/refinement.css">
   <link rel="stylesheet" href="/pageant.css">
-<script src="/event-updates.js" defer></script>
+  <link rel="stylesheet" href="/voting.css">
+  <script defer src="/script.js"></script>
+  <script defer src="/event-updates.js"></script>
+  <script defer src="/voting.js"></script>
 </head>
-<body class="pearl-site page-vote subpage">
+<body class="pearl-site subpage page-vote">
 <a class="skip" href="#content">Skip to content</a>
 <header class="mast"><div class="mast-inner">
     <a class="mast-brand" href="/" aria-label="Queen of Quiapo homepage"><img src="/assets/icon.png" alt="" width="32" height="32"><span>Queen of Quiapo<small>FAITH · TRADITION · GRACE</small></span></a>
-    <nav class="desk-nav" aria-label="Main navigation"><a href="/about/">The Pageant</a><a href="/schedule/">Schedule</a><a href="/vote/" aria-current="page">Voting</a><a href="/apply/">Apply Now</a></nav>
+    <nav class="desk-nav" aria-label="Main navigation"><a href="/about/">The Pageant</a><a href="/schedule/">Schedule</a><a href="/candidates/">Candidates</a><a href="/vote/" aria-current="page">Voting</a><a href="/apply/">Apply Now</a></nav>
     <button class="menu-trigger icon-button" type="button" aria-haspopup="dialog" aria-controls="menu-dialog" aria-label="Open navigation" data-open="menu-dialog"><svg viewBox="0 0 28 20" aria-hidden="true"><path d="M2 5h24M2 15h24"/></svg></button>
   </div></header>
 <main id="content">
   <header class="subpage-hero"><div class="subpage-wrap">
     <p class="eyebrow">PUBLIC VOTING</p>
-    <span class="vote-symbol"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/ui-icons.svg#vote"/></svg></span><h1>Vote</h1>
-    <p class="subpage-lead" id="vote-status" role="status">Voting is not open. Details will appear here once the organizer announces the official candidates and voting period.</p>
-    <div class="subpage-actions"><a class="pearl" href="/schedule/">Pageant Schedule</a><a class="quiet-link" href="/about/">About the pageant</a></div>
+    <h1>Vote for your <em>queen</em></h1>
+    <p class="subpage-lead" id="vote-status" role="status">Support an official candidate with voting points. Online payment has not opened yet.</p>
   </div></header>
-<section class="public-ballot" id="public-ballot" aria-labelledby="ballot-title" hidden>
-    <h2 id="ballot-title">Choose a candidate</h2>
-    <p id="ballot-help">Select one candidate and confirm your vote. You can vote once in this round with your signed-in account.</p>
-    <form id="ballot" aria-describedby="ballot-help">
-      <fieldset id="choices"><legend class="accessible-label">Official candidates</legend></fieldset>
-      <button class="pearl" id="cast" type="submit" disabled>Review vote</button>
-    </form>
-    <section class="vote-confirmation" id="verify-vote" hidden><h3>Confirm your choice</h3><p id="selection"></p><button type="button" class="pearl" id="confirm-cast">Confirm vote</button><button class="quiet-link" id="change-choice" type="button">Change choice</button></section>
-    <p id="cast-feedback" role="status" aria-live="polite"></p>
-    <a class="pearl" id="voter-signin" href="/signin-with-chatgpt?return_to=%2Fvote%2F" target="_top" hidden>Sign in to vote</a>
-  </section>
+  <div class="subpage-wrap vote-flow">
+    <section class="vote-step" aria-labelledby="step-candidate">
+      <p class="eyebrow">STEP ONE</p><h2 id="step-candidate">Choose your queen</h2>
+      <p class="vote-help" id="candidate-help">Select an official candidate.</p>
+      <div class="queen-grid" id="queen-grid" role="radiogroup" aria-labelledby="step-candidate"></div>
+      <div class="soon-panel" id="roster-empty" hidden><h3>Official candidates to be announced</h3><p>The official candidates will be presented here after Screening Day, January 4, 2027. No candidate is shown until she is confirmed by the organizers.</p><a class="quiet-link" href="/schedule/">View the pageant schedule</a></div>
+    </section>
+    <section class="vote-step" aria-labelledby="step-package">
+      <p class="eyebrow">STEP TWO</p><h2 id="step-package">Choose your voting package</h2>
+      <p class="vote-help"><strong>₱100 = 1,000 voting points.</strong> Every package follows the same rate. There are no bonus points and no discounts.</p>
+      <div class="package-grid" id="package-grid" role="radiogroup" aria-labelledby="step-package"></div>
+    </section>
+    <section class="vote-step" aria-labelledby="step-review">
+      <p class="eyebrow">STEP THREE</p><h2 id="step-review">Review your support</h2>
+      <dl class="purchase-summary" id="purchase-summary">
+        <div><dt>Candidate</dt><dd id="sum-candidate">Not selected</dd></div>
+        <div><dt>Package</dt><dd id="sum-package">Not selected</dd></div>
+        <div><dt>Voting points</dt><dd id="sum-points">—</dd></div>
+        <div><dt>Price</dt><dd id="sum-price">—</dd></div>
+      </dl>
+      <div class="soon-panel midnight" id="payment-soon" role="note">
+        <p class="eyebrow">ONLINE PAYMENT</p><h3>Payment coming soon</h3>
+        <p>Purchased-points voting has not opened. No payment can be made on this page, and no points are being counted yet. The organizers will announce the voting period and accepted payment methods here.</p>
+        <a class="quiet-link" href="/voting-rules/">Read how voting works</a>
+      </div>
+      <form class="checkout" id="checkout" hidden novalidate>
+        <label for="buyer-email">Email address for your receipt</label><input id="buyer-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" required>
+        <label for="buyer-name">Your name <small class="optional">(optional)</small></label><input id="buyer-name" name="name" type="text" autocomplete="name" maxlength="120">
+        <label class="consent"><input type="checkbox" name="agree" required><span>I have read the <a href="/voting-rules/">Voting Rules</a>. My points go to the candidate shown above and cannot be moved to another candidate.</span></label>
+        <button class="pearl" type="submit" id="pay">Continue to secure payment</button>
+        <p id="checkout-feedback" role="alert" aria-live="assertive"></p>
+      </form>
+      <section class="order-receipt" id="order-receipt" aria-labelledby="order-title" hidden>
+        <h3 id="order-title" tabindex="-1">Your order</h3>
+        <dl class="purchase-summary"><div><dt>Order reference</dt><dd id="order-ref"></dd></div><div><dt>Candidate</dt><dd id="order-candidate"></dd></div><div><dt>Package</dt><dd id="order-package"></dd></div><div><dt>Status</dt><dd id="order-state" role="status"></dd></div></dl>
+        <p id="order-note"></p>
+        <a class="pearl" id="order-pay" hidden rel="noopener">Go to secure payment</a>
+        <button class="quiet-link" type="button" id="order-refresh">Check payment status</button>
+        <button class="quiet-link" type="button" id="order-print">Print this receipt</button>
+      </section>
+    </section>
+  </div>
 </main>
-<footer class="site-foot"><div class="footer-main pageant-shell"><div><a class="footer-title" href="/">Queen of Quiapo</a><p class="footer-edition">THE 2027 EDITION</p></div><nav aria-label="Footer navigation"><a href="/about/">The Pageant</a><a href="/schedule/">Schedule</a><a href="/vote/" aria-current="page">Voting</a><a href="/apply/">Apply Now</a></nav></div>
-  <div class="foot-inner"><address>Barangay 306, Quiapo, Manila</address><p>This website is managed by <strong>FMB&amp;CO.</strong></p></div>
+<footer class="site-foot"><div class="footer-main pageant-shell"><div><a class="footer-title" href="/">Queen of Quiapo</a><p class="footer-edition">THE 2027 EDITION</p></div><nav aria-label="Footer navigation"><a href="/about/">The Pageant</a><a href="/schedule/">Schedule</a><a href="/candidates/">Candidates</a><a href="/vote/" aria-current="page">Voting</a><a href="/apply/">Apply Now</a></nav></div>
+  <div class="foot-inner"><address>Barangay 306, Quiapo, Manila</address><nav class="foot-legal" aria-label="Rules and policies"><a href="/voting-rules/">Voting Rules</a><a href="/privacy/">Privacy Notice</a><a href="/terms/">Terms</a></nav><p>This website is managed by <strong>FMB&amp;CO.</strong></p></div>
 </footer>
 <dialog id="menu-dialog" class="menu-dialog" aria-label="Main navigation">
   <div class="dialog-top"><span>The Pageant</span><button class="icon-button close" type="button" aria-label="Close navigation" data-close><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19"/></svg></button></div>
-  <nav aria-label="Mobile navigation"><a href="/about/">The Pageant</a><a href="/schedule/">Schedule</a><a href="/vote/" aria-current="page">Voting</a><a href="/apply/">Apply Now</a></nav>
+  <nav aria-label="Mobile navigation"><a href="/about/">The Pageant</a><a href="/schedule/">Schedule</a><a href="/candidates/">Candidates</a><a href="/vote/" aria-current="page">Voting</a><a href="/apply/">Apply Now</a></nav>
 </dialog>
 </body>
 </html>

@@ -1,0 +1,48 @@
+/* Organizer desk additions: tabs, tables, status pills, checklists and print sheets. */
+.desk-tabs{flex-wrap:wrap;row-gap:.4rem}
+.summary.wide{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.summary strong{overflow-wrap:anywhere}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;align-items:end}
+select{font:inherit;width:100%;min-height:44px;padding:.5rem .6rem;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+select:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.inline-form{display:flex;flex-wrap:wrap;gap:.8rem;align-items:end;margin:.8rem 0}
+.inline-form label{flex:1 1 180px;margin:0}
+.inline-form .toggle{flex:0 0 auto}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tally-table{min-width:100%}
+.tally-table td.num,.tally-table th.num{text-align:right;font-variant-numeric:tabular-nums}
+.tally-table button{white-space:nowrap}
+.pill{display:inline-block;padding:.15rem .6rem;border-radius:999px;font-size:.78rem;font-weight:600;background:#ece7f3;color:#3d2c5e;white-space:nowrap}
+.pill:empty{display:none}
+.pill.good{background:#dff1e4;color:#1d5a32}.pill.warn{background:#fbecc8;color:#6b4a00}.pill.bad{background:#f6dbe0;color:#7a2334}
+.card-heading .pill{margin-left:auto}
+.checklist{list-style:none;margin:.6rem 0;padding:0;display:grid;gap:.45rem}
+.checklist li{display:grid;grid-template-columns:1.6rem 1fr;gap:.4rem;align-items:start}
+.checklist li::before{content:"○";font-weight:700;color:var(--muted)}
+.checklist li.done::before{content:"✓";color:#1d5a32}.checklist li.blocked::before{content:"!";color:var(--danger)}
+.checklist small{display:block;color:var(--muted)}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.6rem 1.2rem;margin:.4rem 0}
+.facts dt{font-size:.78rem;color:var(--muted)}.facts dd{margin:0;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.6rem 0}
+.chips button{min-height:40px;padding:.3rem .8rem;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:.86rem}
+.chips button[aria-pressed=true]{background:var(--violet);color:#fff;border-color:var(--violet)}
+.entry .pill{margin-left:.4rem}
+.decision{margin:1rem 0;padding:1rem}.decision h4{margin:0 0 .5rem}
+.history{padding-left:1.2rem;display:grid;gap:.35rem;font-size:.92rem}.history small{color:var(--muted)}
+.order-detail{margin-top:1rem;padding:1rem;border:1px solid var(--line);border-radius:14px;background:#fff}
+.order-detail h4{margin:.2rem 0 .6rem}
+.rank-tie{color:var(--danger);font-weight:700}
+.print-sheet{display:none}
+@media print{
+  body.printing>*:not(main),body.printing main>*:not(.print-sheet){display:none!important}
+  body.printing{background:#fff}body.printing main{width:100%;margin:0}
+  body.printing .print-sheet{display:block;color:#000;font:12pt/1.4 Georgia,"Times New Roman",serif}
+  .print-sheet h1{font-size:18pt;margin:0}.print-sheet h2{font-size:13pt;margin:.2rem 0 1rem;font-weight:400}
+  .print-sheet .watermark{border:2px solid #000;padding:.3rem .6rem;display:inline-block;font:700 11pt/1 Arial,sans-serif;letter-spacing:.08em;margin:.6rem 0}
+  .print-sheet table{width:100%;border-collapse:collapse;margin:.6rem 0 1.2rem}.print-sheet th,.print-sheet td{border:1px solid #000;padding:.25rem .45rem;text-align:left;font-size:10.5pt}
+  .print-sheet td.num,.print-sheet th.num{text-align:right}
+  .print-sheet .sign{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:3rem}.print-sheet .sign div{border-top:1px solid #000;padding-top:.3rem;font-size:9.5pt}
+  .print-sheet footer{margin-top:1.5rem;font-size:9pt;width:auto}
+}
+.card-heading{flex-wrap:wrap}.card,.board{min-width:0}.action-row{flex-wrap:wrap}.inline-form select,.inline-form input{min-width:0}.grid>*{min-width:0}
+.summary.wide strong{overflow-wrap:normal;word-break:normal;font-size:clamp(1.05rem,1.6vw,1.35rem);line-height:1.25}

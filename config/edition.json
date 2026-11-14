@@ -1,0 +1,11 @@
+{
+  "id": "qoq-2027",
+  "name": "Queen of Quiapo 2027",
+  "theme": "A Tribute to Faith, Tradition, and Grace",
+  "timezone": "Asia/Manila",
+  "organizer": "FMB&CO",
+  "location": "Barangay 306, Quiapo, Manila",
+  "screening": {"date": "2027-01-04", "start": "15:00", "end": "21:00", "venue": null},
+  "coronation": {"date": "2027-01-06", "start": null, "venue": null},
+  "pointsRate": {"pesos": 100, "points": 1000}
+}
