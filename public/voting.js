@@ -3,7 +3,7 @@
 (() => {
   const {post, make, number, peso, valid, candidateCard} = window.QOQPublic;
   const byId = id => document.getElementById(id);
-  const status = byId('vote-status'), candidateGrid = byId('candidate-grid'), packageGrid = byId('package-grid');
+  const status = byId('vote-status'), candidateGrid = byId('queen-grid'), packageGrid = byId('package-grid');
   const checkout = byId('checkout'), soon = byId('payment-soon'), receipt = byId('order-receipt'), feedback = byId('checkout-feedback');
   if (!candidateGrid) return;
   let catalog = null, candidate = null, pack = null, pending = false, order = null;

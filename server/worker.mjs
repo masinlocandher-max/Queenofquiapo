@@ -27,7 +27,7 @@ export default {
     if(path==='/'&&area==='org')route='/organizer/';
     if(path==='/'&&area==='judge')route='/judge/';
     if(path==='/'&&area==='vote')route='/vote/';
-    const sharedJudgeCSS=route==='/organizer/workspace.css'&&area==='judge';
+    const sharedJudgeCSS=route==='/organizer/workspace.css'&&['judge','preview'].includes(area); // a stylesheet, not a record
     const section=route==='/organizer'||route.startsWith('/organizer/')?'org':route==='/judge'||route.startsWith('/judge/')?'judge':null;
     if(section && !sharedJudgeCSS) {
       if(![section,'preview'].includes(area))return hidden();

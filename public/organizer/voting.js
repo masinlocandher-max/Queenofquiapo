@@ -11,7 +11,7 @@
     view = state.voting = await api('voting');
     render(); if (text) announce(text);
   }
-  const reload = async text => { await load(); await state.reload(text); };
+  const reload = text => state.reload(text);
 
   function render() {
     const {state: s, metrics: m, candidates, packages, issues, snapshot} = view;
@@ -164,5 +164,7 @@
   search.addEventListener('submit', event => { event.preventDefault(); perform(orders); });
 
   let first = true;
-  window.QOQ.onChange(() => { if (first) { first = false; perform(async () => { await load(); await orders(); }); } else if (view) render(); });
+  // The voting view reloads with every dashboard refresh so revenue, points and reconciliation are never stale.
+  let loading = false;
+  window.QOQ.onChange(() => { if (loading) return; loading = true; (async () => { try { await load(); if (first || (!el('voting').hidden && el('order-detail').hidden)) { first = false; await orders(); } } catch (error) { announce(error.message, true); } finally { loading = false; } })(); });
 })();

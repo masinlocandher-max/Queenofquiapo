@@ -4,8 +4,8 @@
 .vote-step h2 em,.subpage-hero h1 em{font-style:italic}
 .vote-help{max-width:60ch;color:#5d5068;font:400 15px/1.7 var(--sans);margin:0 0 1.2rem}
 .vote-help strong{color:#2c2140}
-.candidate-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,168px),1fr));gap:clamp(12px,2vw,22px)}
-.candidate-grid.gallery{grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr))}
+.queen-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,168px),1fr));gap:clamp(12px,2vw,22px)}
+.queen-grid.gallery{grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr))}
 .choice{position:relative;display:block;cursor:pointer;border-radius:6px}
 .choice input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;margin:0}
 .choice:has(input:focus-visible){outline:3px solid #62469a;outline-offset:3px}
@@ -77,3 +77,7 @@
   .receipt,.order-receipt{border:1px solid #000!important;background:#fff!important;color:#000!important;box-shadow:none!important}
   .receipt *,.order-receipt *{color:#000!important}
 }
+.consent input[type=checkbox]{width:24px;height:24px;flex:none}
+/* Approved header treatment: the public header scrolls away with the page; it does not stick. */
+.pearl-site .mast{position:relative}
+.choice:has(input:checked) .package-card::after{top:-11px;right:50%;transform:translateX(50%)}

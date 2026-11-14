@@ -44,3 +44,5 @@ select:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
   .print-sheet .sign{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:3rem}.print-sheet .sign div{border-top:1px solid #000;padding-top:.3rem;font-size:9.5pt}
   .print-sheet footer{margin-top:1.5rem;font-size:9pt;width:auto}
 }
+.card-heading{flex-wrap:wrap}.card,.board{min-width:0}.action-row{flex-wrap:wrap}.inline-form select,.inline-form input{min-width:0}.grid>*{min-width:0}
+.summary.wide strong{overflow-wrap:normal;word-break:normal;font-size:clamp(1.05rem,1.6vw,1.35rem);line-height:1.25}

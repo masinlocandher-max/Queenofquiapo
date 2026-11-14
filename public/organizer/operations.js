@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   const {el, make, when, count, announce, api, perform, table, pill, checklist, print, state} = window.QOQ;
-  let data;
+  let data, loadedOnce = false;
   const forms = {candidate: el('candidate-form'), judge: el('judge-form'), criterion: el('criterion-form'), announcement: el('announcement-form')};
   const labels = {candidate:'candidate', judge:'judge', criterion:'criterion', announcement:'announcement'};
   const sections = ['overview','applications','roster','judging','voting','results','news','audit'];
@@ -15,15 +15,22 @@
       link.classList.toggle('active', active);
       if (active) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
     }
-    if (current === 'audit' && data) perform(() => audit(true));
+    if (data) quiet(async () => { await dashboard(); if (current === 'audit') await audit(true); });   // every tab opens on current records
   }
+  // Coming back to the desk (for example from a judge's tablet) refreshes it, unless a form is being filled in.
+  // Background refreshes never take the action lock, so they cannot swallow a button press.
+  const quiet = task => task().catch(error => announce(error.message, true));
+  let lastRefresh = Date.now();
+  const refreshIfIdle = () => { if (!data || document.hidden || Date.now() - lastRefresh < 15000 || document.querySelector('.edit-panel[open]') || document.activeElement?.matches('input,textarea,select')) return; quiet(() => dashboard()); };
+  window.addEventListener('focus', refreshIfIdle); document.addEventListener('visibilitychange', refreshIfIdle); setInterval(refreshIfIdle, 30000);
   async function dashboard(text) {
     const fresh = await api('dashboard');
     if (!fresh.round || !Array.isArray(fresh.candidates) || !fresh.tabulation || !Array.isArray(fresh.criteria) || !Array.isArray(fresh.judges) || !Array.isArray(fresh.announcements)) {
       throw Error('The event desk could not load the current round. Please try again.');
     }
-    data = state.dashboard = fresh; render(); el('dashboard').hidden = false; el('ops-recovery').hidden = true;
-    announce(text || 'Private organizer controls.');
+    data = state.dashboard = fresh; lastRefresh = Date.now(); render(); el('dashboard').hidden = false; el('ops-recovery').hidden = true;
+    if (text || !loadedOnce) announce(text || 'Private organizer controls.');   // a background refresh keeps the last message on screen
+    loadedOnce = true;
     window.QOQ.changed();
   }
   state.reload = dashboard;
