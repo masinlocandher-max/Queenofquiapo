@@ -89,10 +89,13 @@ function field(form, name, max, optional = false) {
   return value;
 }
 
+// Plausibility bounds only: they catch a slipped decimal or the wrong unit, not a judgement about any applicant.
+const MEASURE_RANGE = {heightCm:[100,250], bustIn:[10,80], waistIn:[10,80], hipsIn:[10,80]};
 function measurement(form, name) {
   const value = field(form, name, 8);
-  if (!/^\d{1,3}(\.\d)?$/.test(value) || Number(value) <= 0) {
-    reject(422, 'Use positive numbers for your height and measurements.');
+  const [min, max] = MEASURE_RANGE[name];
+  if (!/^\d{1,3}(\.\d)?$/.test(value) || Number(value) < min || Number(value) > max) {
+    reject(422, name === 'heightCm' ? 'Enter your height in centimeters, for example 168.' : 'Enter your bust, waist and hips in inches, for example 34.');
   }
   return Number(value);
 }
