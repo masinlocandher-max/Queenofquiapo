@@ -63,15 +63,21 @@ test('judge pages require assignment and refusals never expose the score workspa
   }
 });
 
-test('voting invokes rate limits before storage and never reports success after a rejected or closed vote',async t=>{
+test('checkout is refused before any storage while payments are off, and attempts are rate limited',async t=>{
   const db=limitStore(),env={...baseEnv,DB:db,QOQ_RATE_SALT:'rate-test-salt'};t.after(()=>db.close());
-  let calls=0; t.mock.method(Date,'now',()=>1800000000000);
-  t.mock.method(globalThis,'fetch',async()=>{calls++;return Response.json({code:'55000',message:'Voting is not open'},{status:400});});
-  assert.equal((await action(vote,'voter.cast',{})).status,401);
-  assert.equal((await action(org,'voter.cast',member)).status,404);
-  for(let i=0;i<8;i++){const r=await action(vote,'voter.cast',member,{candidateId:'x'},env);assert.equal(r.status,409);assert.equal((await r.json()).error,'Voting is not open');}
-  assert.equal((await action(vote,'voter.cast',member,{candidateId:'x'},env)).status,429);
-  assert.equal(calls,8);
+  const upstream=t.mock.method(globalThis,'fetch',async()=>Response.json({ok:true}));t.mock.method(Date,'now',()=>1800000000000);
+  const visitor={'cf-connecting-ip':'203.0.113.9'};
+  const purchase={candidateId:'9800a230-90d4-4fb0-82b5-83b855757eae',packageId:'9800a230-90d4-4fb0-82b5-83b855757eaf',requestId:'9800a230-90d4-4fb0-82b5-83b855757eb0',email:'fan@example.invalid'};
+  assert.equal((await action(org,'order.create',visitor,purchase,env)).status,404);
+  assert.equal((await action(vote,'voter.cast',member,{candidateId:'x'},env)).status,404);
+  // Each of these alone is not enough to open checkout on a production hostname.
+  for(const extra of [{},{QOQ_PAYMENTS_ENABLED:'yes'},{QOQ_PAYMENTS_ENABLED:'yes',QOQ_PAYMENT_PROVIDER:'sandbox',QOQ_PAYMENT_WEBHOOK_SECRET:'s'.repeat(40),QOQ_ALLOW_SANDBOX_PAYMENTS:'yes'},{QOQ_PAYMENTS_ENABLED:'yes',QOQ_PAYMENT_PROVIDER:'unknown',QOQ_PAYMENT_WEBHOOK_SECRET:'s'.repeat(40)}]){
+    const r=await action(vote,'order.create',visitor,purchase,{...env,...extra});assert.equal(r.status,409);assert.match((await r.json()).error,/coming soon/i);
+  }
+  for(let i=0;i<6;i++)assert.equal((await action(main,'order.create',visitor,purchase,env)).status,409);
+  assert.equal((await action(main,'order.create',visitor,purchase,env)).status,429);
+  assert.equal((await call(vote,'/api/payments/webhook/sandbox',{method:'POST',data:{}},env)).status,404);
+  assert.equal(upstream.mock.callCount(),0);
 });
 
 test('judge final lock conflict stays a conflict; no score data or secret can leak through database errors',async t=>{

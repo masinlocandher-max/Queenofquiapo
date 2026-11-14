@@ -28,8 +28,12 @@ const ops = (request,env,action,data={}) => {
   const {actor,email,organizer}=eventIdentity(request,env);
   return qoqRpc(env,'qoq_operations',{p_actor:actor,p_email:email,p_organizer:organizer,p_action:action,p_data:data});
 };
-const publicActions=new Set(['public.voting','public.announcements']);
-const orgActions=new Set(['organizer.dashboard','organizer.candidate','organizer.judge','organizer.criterion','organizer.announcement','organizer.remove','organizer.openScoring','organizer.lockTabulation','organizer.openVoting','organizer.closeVoting']);
+// Each browser-callable action is listed here with the database function that owns it. Anything else is a 404.
+const publicActions=new Map([['public.announcements','qoq_operations'],['public.event','qoq_operations'],['public.results','qoq_operations'],['public.catalog','qoq_points'],['order.status','qoq_points']]);
+const orgActions=new Map([
+  ...['dashboard','candidate','judge','criterion','announcement','remove','lockRoster','unlockRoster','openScoring','lockTabulation','certifyResults','publishResults','unpublishResults','audit'].map(name=>['organizer.'+name,'qoq_operations']),
+  ...['voting','orders','order','package','archivePackage','approvePackages','scheduleVoting','openVoting','closeVoting','setPayments','setPointsPublic','resolveHeld','adjust','resolveFlag','finalizeVoting'].map(name=>['organizer.'+name,'qoq_points'])
+]);
 const judgeActions=new Set(['judge.ballot','judge.save','judge.lock']);
 async function smallJson(request) {
   if (!/^application\/json(?:;|$)/i.test(request.headers.get('content-type')||''))reject(415,'Use JSON for this request.');
@@ -66,6 +70,7 @@ async function edgeLimit(request,env,group,max,windowSeconds) {
 async function competition(request,env,path) {
   const action=path.slice('/api/competition/'.length),area=domainArea(new URL(request.url).hostname);
   const {actor,email,organizer}=eventIdentity(request,env);
+  const run=(fn,name,data)=>qoqRpc(env,fn,{p_actor:actor,p_email:email,p_organizer:organizer,p_action:name,p_data:data});
   if(action.startsWith('photo/')) {
     if(request.method!=='GET')reject(405,'Method not allowed.');
     const key=action.slice(6);if(!UUID.test(key))reject(404,'Photograph unavailable.');
@@ -78,6 +83,17 @@ async function competition(request,env,path) {
     if(!file)reject(404,'Photograph unavailable.');
     return new Response(file.body,{headers:{...SAFE_RESPONSE,'Content-Type':file.contentType||'application/octet-stream','Content-Security-Policy':"default-src 'none'; sandbox"}});
   }
+  if(action==='export/orders.csv') {
+    if(request.method!=='GET')reject(405,'Method not allowed.');
+    if(!['org','preview'].includes(area))reject(404,'Not found.');
+    requireReviewer(request,env);
+    const peso=c=>(Number(c)/100).toFixed(2);
+    const {rows}=await run('qoq_points','organizer.exportOrders',{});
+    return csvResponse('qoq-orders.csv',csv(rows,[['Order',r=>r.orderRef],['Created',r=>r.createdAt],['Status',r=>r.status],['Points status',r=>r.creditStatus],
+      ['Candidate no.',r=>r.candidate?.number],['Candidate',r=>r.candidate?.name],['Package',r=>r.package],['Points purchased',r=>r.points],['Points held now',r=>r.netPoints],
+      ['Amount PHP',r=>peso(r.amountCentavos)],['Refunded PHP',r=>peso(r.refundedCentavos)],['Paid at',r=>r.paidAt],['Provider',r=>r.provider],['Provider reference',r=>r.providerRef],
+      ['Purchaser email',r=>r.email],['Flag',r=>r.flag]]));
+  }
   if(request.method!=='POST')reject(405,'Method not allowed.');
   requireSameOrigin(request);
   if(action==='candidate-photo'||orgActions.has(action)){
@@ -88,20 +104,33 @@ async function competition(request,env,path) {
       await mediaStore(env).put('candidate-publicity/'+key,file.bytes,{httpMetadata:{contentType:file.type}});
       return json({photoKey:key},201);
     }
-  } else if(judgeActions.has(action)){
+    return json(await run(orgActions.get(action),action,await smallJson(request)));
+  }
+  if(judgeActions.has(action)){
     if(!['judge','preview'].includes(area))reject(404,'Not found.');
     if(!actor||!email)reject(401,'Sign in to your assigned judging account.');
     if(action==='judge.save'||action==='judge.lock')await edgeLimit(request,env,'ballot',120,60);
-  } else if(action==='voter.cast') {
+    return json(await run('qoq_operations',action,await smallJson(request)));
+  }
+  if(action==='order.create'){
     if(!['preview','public','vote'].includes(area))reject(404,'Not found.');
-    if(!actor||!email)reject(401,'Sign in to vote.');
-    await edgeLimit(request,env,'vote',8,60);
-  } else if(!publicActions.has(action))reject(404,'Not found.');
+    await edgeLimit(request,env,'order',10,600);
+    return createOrder(request,env,area);
+  }
+  if(!publicActions.has(action))reject(404,'Not found.');
   const data=await smallJson(request);
   if(env.QOQ_INTAKE_BACKEND==='legacy'&&!env.QOQ_SUPABASE_URL){
-    if(action==='public.voting')return json({voting:'closed',candidates:[]});
+    if(action==='public.catalog')return json({voting:'not_configured',paymentsEnabled:false,packages:[],candidates:[],rate:{pesos:100,points:1000}});
     if(action==='public.announcements')return json({announcements:[]});
-    if(action==='voter.cast')reject(409,'Voting is not open.');
+    if(action==='public.results')return json({published:false});
   }
-  return json(await ops(request,env,action,data));
+  if(action==='order.status'){
+    if(!ORDER_REF.test(data.orderRef||''))reject(404,'Order not found.');
+    await edgeLimit(request,env,'lookup',60,60);
+    return json(await run('qoq_points',action,{orderRef:data.orderRef}));
+  }
+  const result=await run(publicActions.get(action),action,{});
+  // Checkout is offered only when the database and this deployment both say so.
+  if(action==='public.catalog')result.paymentsEnabled=result.paymentsEnabled===true&&paymentsLive(env,area);
+  return json(result);
 }
