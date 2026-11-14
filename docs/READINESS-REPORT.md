@@ -1,5 +1,7 @@
 # Queen of Quiapo 2027 — engineering readiness report
 
+**Follow-up:** See [RELEASE-VERIFICATION.md](RELEASE-VERIFICATION.md) for the independently rerun 43-test suite, payment-guard fixes, restored approved design and verified production blockers.
+
 14 November 2026 · branch `claude/queen-of-quiapo-2027-so8cs2` · nothing in this report has been deployed.
 
 ## A. Executive status

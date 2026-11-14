@@ -1,5 +1,7 @@
 # Deployment and activation
 
+Read [RELEASE-VERIFICATION.md](RELEASE-VERIFICATION.md) first. Production currently uses D1/R2 intake, not the Supabase backend assumed by the sequence below. Preserve access to existing application records and photos before any backend switch.
+
 ## What I could and could not verify (14 November 2026)
 
 | Item | Status |
@@ -36,8 +38,8 @@ Order matters: the new Worker calls database functions that exist only after ste
 - [ ] Signed in as any other account on `org.`: "does not have access"
 - [ ] `https://judge.queenofquiapo.com/` signed out: sign-in prompt; signed in as a non-judge: no access
 - [ ] `POST /api/competition/order.create` returns 409 "coming soon"
-- [ ] Submit one real test application from a phone, find it in the inbox, open both photos, then remove it
-- [ ] Organizer desk → Audit log shows the removal
+- [ ] Verify application availability without submitting synthetic production records; perform submission/review/removal in an explicitly isolated rehearsal
+- [ ] In the isolated rehearsal, Organizer desk → Audit log shows the authorized removal
 
 ## Running the tests
 

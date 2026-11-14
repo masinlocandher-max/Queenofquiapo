@@ -131,6 +131,6 @@ async function competition(request,env,path) {
   }
   const result=await run(publicActions.get(action),action,{});
   // Checkout is offered only when the database and this deployment both say so.
-  if(action==='public.catalog')result.paymentsEnabled=result.paymentsEnabled===true&&paymentsLive(env,area);
+  if(action==='public.catalog')result.paymentsEnabled=result.paymentsEnabled===true&&paymentsLive(env,area,new URL(request.url).hostname);
   return json(result);
 }

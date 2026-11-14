@@ -25,7 +25,7 @@ async function hmacValid(secret, message, hexSignature) {
 const paymentAdapters = {
   // Rehearsal adapter. It moves no money and is refused on every production hostname.
   sandbox: {
-    allowed: (env, area) => env.QOQ_ALLOW_SANDBOX_PAYMENTS === 'yes' && area === 'preview',
+    allowed: (env, area, hostname) => ['localhost','127.0.0.1'].includes(hostname) && env.QOQ_ALLOW_SANDBOX_PAYMENTS === 'yes' && area === 'preview',
     async createCheckout(order) { return {providerRef: 'sbx_' + order.orderRef.slice(3).toLowerCase(), checkoutUrl: null}; },
     async verify(request, raw, env) {
       const header = request.headers.get('x-qoq-signature') || '';
@@ -39,15 +39,15 @@ const paymentAdapters = {
   }
 };
 
-function paymentProvider(env, area) {
+function paymentProvider(env, area, hostname) {
   const name = env.QOQ_PAYMENT_PROVIDER;
   if (typeof name !== 'string' || !Object.hasOwn(paymentAdapters, name)) return null;
   if (typeof env.QOQ_PAYMENT_WEBHOOK_SECRET !== 'string' || env.QOQ_PAYMENT_WEBHOOK_SECRET.length < 32) return null;
   const adapter = paymentAdapters[name];
-  if (adapter.allowed && !adapter.allowed(env, area)) return null;
+  if (adapter.allowed && !adapter.allowed(env, area, hostname)) return null;
   return {name, ...adapter};
 }
-const paymentsLive = (env, area) => env.QOQ_PAYMENTS_ENABLED === 'yes' && Boolean(paymentProvider(env, area));
+const paymentsLive = (env, area, hostname) => env.QOQ_PAYMENTS_ENABLED === 'yes' && Boolean(paymentProvider(env, area, hostname));
 
 function normalizedEvent(event) {
   if (!event || typeof event.eventId !== 'string' || !event.eventId || event.eventId.length > 200) return null;
@@ -55,18 +55,27 @@ function normalizedEvent(event) {
   const amount = event.amountCentavos;
   if (amount != null && (!Number.isSafeInteger(amount) || amount < 0)) return null;
   if (event.providerRef != null && (typeof event.providerRef !== 'string' || event.providerRef.length > 200)) return null;
+  if (event.currency != null && (typeof event.currency !== 'string' || !/^[A-Z]{3}$/.test(event.currency))) return null;
   return {eventId: event.eventId, type: event.type, orderRef: event.orderRef, amountCentavos: amount ?? null,
-    currency: typeof event.currency === 'string' ? event.currency.toUpperCase().slice(0, 3) : null, providerRef: event.providerRef || null};
+    currency: typeof event.currency === 'string' ? event.currency : null, providerRef: event.providerRef || null};
 }
 
 // POST /api/payments/webhook/<provider>. Cross-origin by nature, so authenticity rests on the signature alone.
 async function paymentWebhook(request, env, path, area) {
   if (request.method !== 'POST') reject(405, 'Method not allowed.');
-  const provider = paymentProvider(env, area);
+  const provider = paymentProvider(env, area, new URL(request.url).hostname);
   if (!provider || path !== '/api/payments/webhook/' + provider.name) reject(404, 'Not found.');
   if (Number(request.headers.get('content-length')) > 65536) reject(413, 'Request is too large.');
-  const raw = await request.text();
-  if (raw.length > 65536) reject(413, 'Request is too large.');
+  const reader = request.body?.getReader();
+  if (!reader) reject(400, 'Missing payment event.');
+  let size = 0; const chunks = [];
+  for (;;) {
+    const {done,value} = await reader.read(); if (done) break;
+    size += value.byteLength;
+    if (size > 65536) { await reader.cancel(); reject(413, 'Request is too large.'); }
+    chunks.push(value);
+  }
+  const raw = await new Blob(chunks).text();
   const event = normalizedEvent(await provider.verify(request, raw, env));
   if (!event) reject(401, 'Signature verification failed.');
   // A database failure surfaces as 503 so the provider retries; the event id makes the retry safe.
@@ -76,13 +85,13 @@ async function paymentWebhook(request, env, path, area) {
 
 async function createOrder(request, env, area) {
   // Refused here before anything is stored. The database enforces the same gate again.
-  if (!paymentsLive(env, area)) reject(409, 'Online payment is coming soon. No purchase was created.');
+  if (!paymentsLive(env, area, new URL(request.url).hostname)) reject(409, 'Online payment is coming soon. No purchase was created.');
   const input = await smallJson(request);
   const text = (value, max) => typeof value === 'string' && value.length <= max ? value.trim() : '';
   if (!UUID.test(input.candidateId || '') || !UUID.test(input.packageId || '') || !UUID.test(input.requestId || '')) reject(422, 'Choose a candidate and a voting package.');
   const email = text(input.email, 254).toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) reject(422, 'Enter a valid email address for your receipt.');
-  const provider = paymentProvider(env, area);
+  const provider = paymentProvider(env, area, new URL(request.url).hostname);
   const call = (action, data) => qoqRpc(env, 'qoq_points', {p_actor: '', p_email: '', p_organizer: false, p_action: action, p_data: data});
   let order = await call('order.create', {candidateId: input.candidateId, packageId: input.packageId, email, name: text(input.name, 120),
     idempotencyKey: await digest(encode.encode('order:' + input.requestId)), gate: 'open'});

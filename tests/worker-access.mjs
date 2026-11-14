@@ -116,3 +116,20 @@ test('secrets only go directly to the configured HTTPS Supabase origin for RPC a
   assert.equal(calls.length,2);
   for(const {url,init} of calls){assert.equal(new URL(url).origin,baseEnv.QOQ_SUPABASE_URL);assert.equal(init.redirect,'error');}
 });
+
+ test('rehearsal payments are rejected on the live Sites hostname even with every deployment switch enabled', async t=>{
+  const upstream=t.mock.method(globalThis,'fetch',async()=>Response.json({paymentsEnabled:true}));
+  const env={...baseEnv,QOQ_PAYMENTS_ENABLED:'yes',QOQ_PAYMENT_PROVIDER:'sandbox',QOQ_ALLOW_SANDBOX_PAYMENTS:'yes',QOQ_PAYMENT_WEBHOOK_SECRET:'s'.repeat(40)};
+  assert.equal((await action(preview,'order.create',{}, {},env)).status,409);
+  assert.equal((await call(preview,'/api/payments/webhook/sandbox',{method:'POST',data:{}},env)).status,404);
+  assert.equal(upstream.mock.callCount(),0);
+  assert.equal((await (await action(preview,'public.catalog',{}, {},env)).json()).paymentsEnabled,false);
+});
+
+test('webhook streams are bounded without trusting Content-Length', async t=>{
+  const upstream=t.mock.method(globalThis,'fetch',async()=>Response.json({}));
+  const env={...baseEnv,QOQ_PAYMENT_PROVIDER:'sandbox',QOQ_ALLOW_SANDBOX_PAYMENTS:'yes',QOQ_PAYMENT_WEBHOOK_SECRET:'s'.repeat(40)};
+  const request=new Request('http://127.0.0.1/api/payments/webhook/sandbox',{method:'POST',body:'x'.repeat(65537)});
+  assert.equal((await worker.fetch(request,env)).status,413);
+  assert.equal(upstream.mock.callCount(),0);
+});

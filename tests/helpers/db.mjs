@@ -7,12 +7,13 @@ import {promisify} from 'node:util';
 
 const run = promisify(execFile);
 const base = new URL(process.env.QOQ_TEST_PG || 'postgres://postgres@127.0.0.1:54329');
+if (!['127.0.0.1','localhost','[::1]'].includes(base.hostname)) throw new Error('QOQ_TEST_PG must point to a disposable local database');
 const migrations = new URL('../../supabase/migrations/', import.meta.url);
 const args = db => ['-h', base.hostname, '-p', base.port || '5432', '-U', base.username || 'postgres', '-d', db, '-X', '-q', '-At', '-v', 'ON_ERROR_STOP=1', '-v', 'VERBOSITY=verbose'];
 export const secret = 'test-only-' + 'x'.repeat(40);
 
 export function available() {
-  try { execFileSync('psql', [...args('postgres'), '-c', 'select 1'], {stdio: 'pipe'}); return true; } catch { return false; }
+  try { execFileSync('psql', [...args('postgres'), '-c', 'select 1'], {stdio: 'pipe'}); return true; } catch (error) { if (process.env.QOQ_REQUIRE_TEST_DB === '1') throw new Error('Required PostgreSQL test server is unavailable', {cause:error}); return false; }
 }
 export function exec(db, sql) { return execFileSync('psql', [...args(db), '-c', sql], {stdio: 'pipe'}).toString().trim(); }
 export const migrationFiles = () => readdirSync(migrations).filter(name => name.endsWith('.sql')).sort();
@@ -21,7 +22,7 @@ export const migrationFiles = () => readdirSync(migrations).filter(name => name.
 export function createDb(label, {count, settings = true} = {}) {
   const db = 'qoq_' + label + '_' + randomBytes(4).toString('hex');
   exec('postgres', 'create database ' + db);
-  for (const role of ['anon', 'authenticated', 'service_role']) exec('postgres', `do $$ begin create role ${role}; exception when duplicate_object then null; end $$`);
+  for (const role of ['anon', 'authenticated', 'service_role']) exec('postgres', `do $$ begin create role ${role}; exception when duplicate_object or unique_violation then null; end $$`);
   exec(db, 'create schema storage; create table storage.objects(id uuid, bucket_id text); create table storage.buckets(id text); alter table storage.objects enable row level security; alter table storage.buckets enable row level security');
   migrate(db, migrationFiles().slice(0, count));
   if (settings) exec(db, `insert into qoq_private.settings(secret_hash) values ('${createHash('sha256').update(secret).digest('hex')}')`);

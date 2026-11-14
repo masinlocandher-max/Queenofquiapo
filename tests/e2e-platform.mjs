@@ -10,7 +10,7 @@ import {available, createDb, dropDb, exec, fakeSupabase, secret} from './helpers
 
 const skip = !available() && 'PostgreSQL test server is not available';
 const main = 'https://queenofquiapo.com', org = 'https://org.queenofquiapo.com', judgeHost = 'https://judge.queenofquiapo.com', vote = 'https://vote.queenofquiapo.com';
-const preview = 'https://queen-of-quiapo.fbautisat23.chatgpt.site';
+const preview = 'http://127.0.0.1';
 const owner = {'oai-authenticated-user-id': 'owner-id', 'oai-authenticated-user-email': 'owner@example.invalid'};
 const stranger = {'oai-authenticated-user-id': 'someone', 'oai-authenticated-user-email': 'someone@example.invalid'};
 const jpeg = seed => Uint8Array.from([255, 216, 255, 224, ...Array.from({length: 40}, (_, i) => (seed * 31 + i) % 251), 255, 217]);
@@ -227,6 +227,7 @@ test('paid voting stays closed in production; in a rehearsal only a correctly si
   const answers = await Promise.all(Array.from({length: 8}, () => deliver(paid)));
   assert.ok(answers.every(r => r.status === 200));
   assert.equal(total(), '5000');
+  assert.equal((await deliver({...paid, currency:'PHPinvalid'})).status,401);
   const receipt = (await act(preview, 'order.status', {}, {orderRef: order.orderRef})).body;
   assert.equal(receipt.status, 'paid'); assert.equal(receipt.creditStatus, 'credited'); assert.ok(!('email' in receipt));
   assert.equal((await act(preview, 'order.status', {}, {orderRef: 'QV-' + 'A'.repeat(32)})).status, 422);
