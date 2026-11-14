@@ -32,7 +32,7 @@
     const records=new Map(scores.map(s=>[s.candidateId+'/'+s.criterionId,s.score]));
     if(phase!=='setup')for(const c of candidates){
       const card=make('section');card.className='card';const title=make('div');title.className='candidate-title';
-      if(c.photoKey){const image=make('img');image.alt='';image.src='/api/competition/photo/'+encodeURIComponent(c.photoKey);image.loading='lazy';title.append(image);}
+      if(c.photoKey){const image=make('img');image.alt='';image.src='/api/competition/photo/'+encodeURIComponent(c.photoKey);image.loading='lazy';image.addEventListener('error',()=>image.remove(),{once:true});title.append(image);}
       title.append(make('h2',(c.number!=null?'No. '+c.number+' · ':'')+c.name));card.append(title);
       const grid=make('div');grid.className='scoresheet';card.append(grid);
       for(const criterion of criteria){

@@ -66,7 +66,7 @@
     if (!records.length) { host.append(make('p', kind === 'announcement' ? 'No announcements yet.' : 'No entries yet.', 'empty')); return; }
     for (const record of records) {
       const row = make('div', undefined, 'list-row');
-      if (kind === 'candidate' && record.photoKey) { const img = make('img'); img.alt = ''; img.loading = 'lazy'; img.src = '/api/competition/photo/' + encodeURIComponent(record.photoKey); row.append(img); }
+      if (kind === 'candidate' && record.photoKey) { const img = make('img'); img.alt = ''; img.loading = 'lazy'; img.src = '/api/competition/photo/' + encodeURIComponent(record.photoKey); img.addEventListener('error', () => img.remove(), {once:true}); row.append(img); }
       const info = make('div', undefined, 'row-info');
       info.append(make('strong', (kind === 'candidate' && record.number ? 'No. ' + record.number + ' · ' : '') + (record.name || record.title)), make('small', subtitle(record)));
       row.append(info);
