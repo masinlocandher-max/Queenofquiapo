@@ -12,12 +12,13 @@ function supabaseOrigin(env) {
 }
 async function qoqRpc(env,name,parameters) {
   if(!env.QOQ_SUPABASE_URL||!env.QOQ_PUBLISHABLE_KEY||!env.QOQ_SERVER_SECRET) reject(503,'Pageant operations are temporarily unavailable.');
-  const result=await fetch(supabaseOrigin(env)+'/rest/v1/rpc/'+name,{redirect:'error',
+  let result; try { result=await fetch(supabaseOrigin(env)+'/rest/v1/rpc/'+name,{redirect:'manual',
     method:'POST',headers:{'Content-Type':'application/json',apikey:env.QOQ_PUBLISHABLE_KEY},
     body:JSON.stringify({...parameters,p_secret:env.QOQ_SERVER_SECRET})
-  });
+  }); } catch(error) { console.error('qoq_rpc_transport',error.name,String(error.message).slice(0,180)); throw error; }
   if(!result.ok) {
     const error=await result.json().catch(()=>({}));
+    console.error('qoq_rpc_response',result.status,typeof error.code==='string'?error.code:'unknown');
     const status=({42501:403,22023:422,23505:409,55000:409,'22P02':422,23514:422})[error.code]||503;
     const allowed=['22023','23505','55000','42501'].includes(error.code);
     reject(status,allowed && typeof error.message==='string' && error.message.length<165 && !/\b(?:relation|constraint|schema|function|sql|query|duplicate key)\b/i.test(error.message) ? error.message : status===503?'The service is temporarily unavailable. Please try again.':'The request could not be completed.');
