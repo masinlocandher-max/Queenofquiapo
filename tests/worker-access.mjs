@@ -114,7 +114,7 @@ test('secrets only go directly to the configured HTTPS Supabase origin for RPC a
   assert.equal((await action(org,'organizer.dashboard',owner)).status,200);
   assert.equal((await call(org,'/api/competition/photo/'+photoKey,{headers:owner})).status,200);
   assert.equal(calls.length,2);
-  for(const {url,init} of calls){assert.equal(new URL(url).origin,baseEnv.QOQ_SUPABASE_URL);assert.equal(init.redirect,'error');}
+  for(const {url,init} of calls){assert.equal(new URL(url).origin,baseEnv.QOQ_SUPABASE_URL);assert.equal(init.redirect,'manual');}
 });
 
  test('rehearsal payments are rejected on the live Sites hostname even with every deployment switch enabled', async t=>{
