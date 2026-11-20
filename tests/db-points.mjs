@@ -18,13 +18,13 @@ async function setup(t, {live = true} = {}) {
   const catalog = ok(await points(db, null, 'public.catalog'));
   const pkg = Object.fromEntries(catalog.packages.map(p => [p.name, p]));
   if (live) {
-    exec(db, "update qoq_private.settings set payment_provider='sandbox'");   // administrator step: there is no RPC for this
+    exec(db, "update qoq_private.settings set environment='staging', payment_provider='sandbox'");   // administrator step: there is no RPC for this
     ok(await points(db, owner, 'organizer.approvePackages'));
     ok(await points(db, owner, 'organizer.setPayments', {enabled: true}));
     ok(await points(db, owner, 'organizer.openVoting'));
   }
   const order = async (candidate, name, email = 'fan@example.invalid', extra = {}) => ok(await points(db, null, 'order.create',
-    {candidateId: candidates[candidate], packageId: pkg[name].id, email, idempotencyKey: key(), gate: 'open', ...extra}));
+    {candidateId: candidates[candidate], packageId: pkg[name].id, email, idempotencyKey: key(), gate: 'open', provider: 'sandbox', ...extra}));
   let n = 0;
   const event = (o, type = 'paid', extra = {}) => points(db, null, 'payment.event',
     {provider: 'sandbox', eventId: 'evt_' + (++n) + '_' + randomUUID(), type, orderRef: o.orderRef, amountCentavos: o.amountCentavos, currency: 'PHP', providerRef: 'pay_' + o.orderRef, ...extra});
@@ -51,7 +51,7 @@ test('PHP 100 buys exactly 1,000 points in every package, and the rate is a data
 
 test('payments are off by default and cannot be switched on without a provider and an approved catalog', {skip}, async t => {
   const {db, candidates, pkg} = await setup(t, {live: false});
-  const attempt = extra => points(db, null, 'order.create', {candidateId: candidates[0], packageId: pkg.Starter.id, email: 'fan@example.invalid', idempotencyKey: key(), gate: 'open', ...extra});
+  const attempt = extra => points(db, null, 'order.create', {candidateId: candidates[0], packageId: pkg.Starter.id, email: 'fan@example.invalid', idempotencyKey: key(), gate: 'open', provider: 'sandbox', ...extra});
   const catalog = ok(await points(db, null, 'public.catalog'));
   assert.equal(catalog.paymentsEnabled, false); assert.equal(catalog.voting, 'not_configured'); assert.equal(catalog.candidates.length, 2);
   assert.match((await attempt()).error.message, /coming soon/i);
@@ -59,7 +59,7 @@ test('payments are off by default and cannot be switched on without a provider a
   ok(await points(db, owner, 'organizer.approvePackages'));
   assert.equal((await points(db, owner, 'organizer.setPayments', {enabled: true})).error.code, '55000');          // still no provider
   assert.throws(() => exec(db, 'update qoq_private.settings set payments_enabled=true'), /55000/);                 // not even by direct SQL
-  exec(db, "update qoq_private.settings set payment_provider='sandbox'");
+  exec(db, "update qoq_private.settings set environment='staging', payment_provider='sandbox'");
   ok(await points(db, owner, 'organizer.setPayments', {enabled: true}));
   assert.match((await attempt()).error.message, /Voting is not open/);                                             // payments on, voting not open
   ok(await points(db, owner, 'organizer.openVoting'));
@@ -119,7 +119,7 @@ test('replayed, duplicated and concurrent notifications cannot credit twice', {s
   assert.equal(one(db, "select count(*) from qoq_private.ledger where kind='credit'"), '1');
   assert.throws(() => exec(db, `insert into qoq_private.ledger(candidate_id,order_id,kind,points,actor) select candidate_id,id,'credit',points,'attacker' from qoq_private.orders`), /55000|qoq_ledger_one_credit/);
   // Repeating order creation with the same request id returns the same order.
-  const again = {candidateId: one(db, 'select candidate_id from qoq_private.orders limit 1'), packageId: one(db, 'select package_id from qoq_private.orders limit 1'), email: 'fan@example.invalid', idempotencyKey: key(), gate: 'open'};
+  const again = {candidateId: one(db, 'select candidate_id from qoq_private.orders limit 1'), packageId: one(db, 'select package_id from qoq_private.orders limit 1'), email: 'fan@example.invalid', idempotencyKey: key(), gate: 'open', provider: 'sandbox'};
   const twins = await Promise.all(Array.from({length: 10}, () => points(db, null, 'order.create', again)));
   assert.equal(new Set(twins.map(r => r.orderRef)).size, 1);
   assert.equal((await points(db, null, 'order.create', {...again, email: 'someone-else@example.invalid'})).error.code, '23505');
@@ -190,7 +190,7 @@ test('package history is reproducible after the catalog changes', {skip}, async 
   assert.equal(detail.order.package, 'Starter'); assert.equal(detail.order.points, 1000); assert.equal(detail.order.amountCentavos, 10000);
   assert.equal(detail.ledger.length, 1); assert.equal(detail.events[0].outcome, 'credited');
   assert.equal(ok(await points(db, null, 'public.catalog')).packages.some(p => p.name === 'Starter'), false);
-  assert.match((await points(db, null, 'order.create', {candidateId: one(db, 'select candidate_id from qoq_private.orders'), packageId: pkg.Starter.id, email: 'fan@example.invalid', idempotencyKey: key(), gate: 'open'})).error.message, /available voting package/);
+  assert.match((await points(db, null, 'order.create', {candidateId: one(db, 'select candidate_id from qoq_private.orders'), packageId: pkg.Starter.id, email: 'fan@example.invalid', idempotencyKey: key(), gate: 'open', provider: 'sandbox'})).error.message, /available voting package/);
   // The public order view carries no purchaser or provider detail.
   const pub = ok(await points(db, null, 'order.status', {orderRef: o.orderRef}));
   for (const field of ['email', 'name', 'providerRef', 'provider', 'flag']) assert.ok(!(field in pub), field);
@@ -202,7 +202,7 @@ test('closing, late settlements and finalization follow recorded decisions, not 
   ok(await event(early));
   assert.equal((await points(db, owner, 'organizer.finalizeVoting')).error.code, '55000');           // still open
   ok(await points(db, owner, 'organizer.closeVoting'));
-  assert.match((await points(db, null, 'order.create', {candidateId: one(db, 'select id from qoq_private.candidates limit 1'), packageId: one(db, 'select id from qoq_private.packages limit 1'), email: 'f@example.invalid', idempotencyKey: key(), gate: 'open'})).error.message, /Voting is not open/);
+  assert.match((await points(db, null, 'order.create', {candidateId: one(db, 'select id from qoq_private.candidates limit 1'), packageId: one(db, 'select id from qoq_private.packages limit 1'), email: 'f@example.invalid', idempotencyKey: key(), gate: 'open', provider: 'sandbox'})).error.message, /Voting is not open/);
   // Paid before the close, settled after it: held, never credited automatically.
   assert.equal(ok(await event(late)).outcome, 'held'); assert.equal(ok(await event(late2)).outcome, 'held');
   assert.deepEqual(await totals(), {'Candidate A': 1000, 'Candidate B': 0});

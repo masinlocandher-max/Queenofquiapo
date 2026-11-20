@@ -23,9 +23,10 @@ async function hmacValid(secret, message, hexSignature) {
 }
 
 const paymentAdapters = {
-  // Rehearsal adapter. It moves no money and is refused on every production hostname.
+  // Rehearsal adapter. It moves no money. It needs a deployment marked staging (which must use its own database:
+  // the database also refuses this provider unless it is marked staging), and it is refused on every production hostname.
   sandbox: {
-    allowed: (env, area) => env.QOQ_ALLOW_SANDBOX_PAYMENTS === 'yes' && area === 'preview',
+    allowed: (env, area) => env.QOQ_DEPLOYMENT === 'staging' && env.QOQ_ALLOW_SANDBOX_PAYMENTS === 'yes' && area === 'preview',
     async createCheckout(order) { return {providerRef: 'sbx_' + order.orderRef.slice(3).toLowerCase(), checkoutUrl: null}; },
     async verify(request, raw, env) {
       const header = request.headers.get('x-qoq-signature') || '';
@@ -85,14 +86,13 @@ async function createOrder(request, env, area) {
   const provider = paymentProvider(env, area);
   const call = (action, data) => qoqRpc(env, 'qoq_points', {p_actor: '', p_email: '', p_organizer: false, p_action: action, p_data: data});
   let order = await call('order.create', {candidateId: input.candidateId, packageId: input.packageId, email, name: text(input.name, 120),
-    idempotencyKey: await digest(encode.encode('order:' + input.requestId)), gate: 'open'});
-  let checkoutUrl = null;
+    idempotencyKey: await digest(encode.encode('order:' + input.requestId)), gate: 'open', provider: provider.name});
   if (order.status === 'created') {
     const checkout = await provider.createCheckout(order, env);
-    checkoutUrl = checkout.checkoutUrl || null;
-    order = await call('order.attach', {orderRef: order.orderRef, providerRef: checkout.providerRef});
+    order = await call('order.attach', {orderRef: order.orderRef, providerRef: checkout.providerRef, checkoutUrl: checkout.checkoutUrl || null});
   }
-  return json({order, checkoutUrl}, 201);
+  // The checkout address is stored on the order, so a retry or a refreshed page can still reach payment.
+  return json({order, checkoutUrl: order.checkoutUrl || null}, 201);
 }
 
 function csv(rows, columns) {

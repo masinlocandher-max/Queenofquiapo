@@ -32,7 +32,8 @@ const ops = (request,env,action,data={}) => {
 const publicActions=new Map([['public.announcements','qoq_operations'],['public.event','qoq_operations'],['public.results','qoq_operations'],['public.catalog','qoq_points'],['order.status','qoq_points']]);
 const orgActions=new Map([
   ...['dashboard','candidate','judge','criterion','announcement','remove','lockRoster','unlockRoster','openScoring','lockTabulation','certifyResults','publishResults','unpublishResults','audit'].map(name=>['organizer.'+name,'qoq_operations']),
-  ...['voting','orders','order','package','archivePackage','approvePackages','scheduleVoting','openVoting','closeVoting','setPayments','setPointsPublic','resolveHeld','adjust','resolveFlag','finalizeVoting'].map(name=>['organizer.'+name,'qoq_points'])
+  ...['voting','orders','order','package','archivePackage','approvePackages','scheduleVoting','openVoting','closeVoting','setPayments','setPointsPublic','resolveHeld','adjust','resolveFlag','abandonOrder','finalizeVoting'].map(name=>['organizer.'+name,'qoq_points']),
+  ['organizer.edition','qoq_edition']
 ]);
 const judgeActions=new Set(['judge.ballot','judge.save','judge.lock']);
 async function smallJson(request) {
@@ -114,7 +115,7 @@ async function competition(request,env,path) {
   }
   if(action==='order.create'){
     if(!['preview','public','vote'].includes(area))reject(404,'Not found.');
-    await edgeLimit(request,env,'order',10,600);
+    await edgeLimit(request,env,'order',120,600);   // shared mobile and venue addresses: many real supporters per IP
     return createOrder(request,env,area);
   }
   if(!publicActions.has(action))reject(404,'Not found.');
@@ -126,7 +127,7 @@ async function competition(request,env,path) {
   }
   if(action==='order.status'){
     if(!ORDER_REF.test(data.orderRef||''))reject(404,'Order not found.');
-    await edgeLimit(request,env,'lookup',60,60);
+    await edgeLimit(request,env,'lookup',300,60);
     return json(await run('qoq_points',action,{orderRef:data.orderRef}));
   }
   const result=await run(publicActions.get(action),action,{});

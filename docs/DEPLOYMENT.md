@@ -16,7 +16,7 @@ Nothing in this branch has been deployed. Production is exactly as it was.
 ## Release sequence
 
 1. **Back up** the production database (Supabase dashboard → Database → Backups, or `pg_dump`).
-2. **Rehearse the migration** on a Supabase branch or a restored copy: apply `supabase/migrations` in filename order. The three files dated `20261114…` are additive; they delete nothing and keep legacy votes read-only.
+2. **Rehearse the migration** on a Supabase branch or a restored copy: apply `supabase/migrations` in filename order. The files dated `20261114…` and `20261120…` are additive; they delete nothing and keep legacy votes read-only. A new database is marked `environment='production'` by default; mark a rehearsal database `staging` before anything else.
 3. **Apply to production** in a quiet period. They run in seconds.
 4. **Deploy the Worker** from this branch (`npm run build`, then publish `dist/` through Sites).
 5. **Do not set any payment variable.** Leave `QOQ_PAYMENTS_ENABLED` unset.
@@ -45,7 +45,7 @@ Order matters: the new Worker calls database functions that exist only after ste
 npm test          # builds, then runs every suite
 ```
 
-Database suites need a local PostgreSQL (`QOQ_TEST_PG`, default `postgres://postgres@127.0.0.1:54329`) and skip when it is absent. Each suite builds its own database from the migrations and drops it. Never point `QOQ_TEST_PG` at production.
+There are 48 tests. Database suites need a local PostgreSQL (`QOQ_TEST_PG`, default `postgres://postgres@127.0.0.1:54329`) and skip when it is absent. Each suite builds its own database from the migrations and drops it. Never point `QOQ_TEST_PG` at production.
 
 | Suite | Covers |
 | --- | --- |
@@ -54,4 +54,5 @@ Database suites need a local PostgreSQL (`QOQ_TEST_PG`, default `postgres://post
 | `db-points.mjs` | Fixed rate, payment gates, crediting, duplicates, 60 concurrent payments, refunds, reversals, late settlement, finalization |
 | `db-intake.mjs` | Status lifecycle, inbox, promotion, roster lock, upgrade over live data, privileges |
 | `e2e-platform.mjs` | Real HTTP through the Worker into PostgreSQL: application reliability, private review, a judging night, a signed rehearsal payment, security headers |
+| `db-review.mjs` | Regression tests for the 20 November design review: staging-only rehearsal provider, provider agreement, checkout link kept, scheduled close, set-aside payments, one edition per database |
 | `edition-consistency.mjs` | Every page, calendar file and the database seed agree with `config/edition.json` |

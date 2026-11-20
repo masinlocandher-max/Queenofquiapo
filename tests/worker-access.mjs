@@ -74,7 +74,8 @@ test('checkout is refused before any storage while payments are off, and attempt
   for(const extra of [{},{QOQ_PAYMENTS_ENABLED:'yes'},{QOQ_PAYMENTS_ENABLED:'yes',QOQ_PAYMENT_PROVIDER:'sandbox',QOQ_PAYMENT_WEBHOOK_SECRET:'s'.repeat(40),QOQ_ALLOW_SANDBOX_PAYMENTS:'yes'},{QOQ_PAYMENTS_ENABLED:'yes',QOQ_PAYMENT_PROVIDER:'unknown',QOQ_PAYMENT_WEBHOOK_SECRET:'s'.repeat(40)}]){
     const r=await action(vote,'order.create',visitor,purchase,{...env,...extra});assert.equal(r.status,409);assert.match((await r.json()).error,/coming soon/i);
   }
-  for(let i=0;i<6;i++)assert.equal((await action(main,'order.create',visitor,purchase,env)).status,409);
+  // 120 per 10 minutes per address: Philippine mobile carriers and venue Wi-Fi put many supporters behind one address.
+  for(let i=0;i<116;i++)assert.equal((await action(main,'order.create',visitor,purchase,env)).status,409);
   assert.equal((await action(main,'order.create',visitor,purchase,env)).status,429);
   assert.equal((await call(vote,'/api/payments/webhook/sandbox',{method:'POST',data:{}},env)).status,404);
   assert.equal(upstream.mock.callCount(),0);

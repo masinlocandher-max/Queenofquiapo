@@ -1,6 +1,6 @@
 # Queen of Quiapo 2027 — engineering readiness report
 
-14 November 2026 · branch `claude/queen-of-quiapo-2027-so8cs2` · nothing in this report has been deployed.
+14 November 2026, revised 20 November after an adversarial design review · branch `claude/queen-of-quiapo-2027-so8cs2` · nothing in this report has been deployed.
 
 ## A. Executive status
 
@@ -118,7 +118,7 @@ See the table at the top of `docs/DEPLOYMENT.md`. In short: build and tests veri
 7. Refund policy.
 8. Payment provider and the legal entity that receives the funds.
 9. Final package names and denominations.
-10. An official contact channel and a data protection contact for the Privacy Notice.
+10. An official contact channel and a data protection contact for the Privacy Notice, and how long applications are kept.
 11. Legal review of paid voting (permit, tax, consumer and privacy questions listed in `docs/PAYMENTS.md`).
 12. Who else, besides the single organizer account, needs access, and to what.
 
@@ -131,3 +131,27 @@ See `docs/OPERATIONS.md`. The five that matter most:
 - [ ] Criteria total 100% and the tie rule is written down before judging opens
 - [ ] Paper ballots printed
 - [ ] A second person hand-checks the top three from the printed judge audit before certification
+
+## N. Design review, 20 November 2026
+
+The platform was reviewed as if by an outside team, from security, money, scoring, privacy, event-night and public-perception angles. Every finding below was reproduced, fixed, covered by a test or a browser check, and the full suite (48 tests) and browser pass at 320–1280 px were re-run.
+
+| # | Finding | Impact | Fix |
+| --- | --- | --- | --- |
+| 1 | The voting page said “Vote for your queen” although points do not decide the crown | Supporters could believe they were paying to choose the winner: consumer-protection and reputation risk | Headline is now “Support your queen”, and the page states that points are counted separately from the judges and that what they decide will be published first |
+| 2 | After one purchase the page reopened the old receipt on every visit and hid checkout | Repeat purchases, the core of the model, were blocked in that browser | “Support again” button; each purchase gets a fresh request id |
+| 3 | A refresh after starting a purchase lost the payment link | Buyer stranded on “Waiting for your payment” | The checkout address is stored on the order and returned on refresh or retry |
+| 4 | The rehearsal payment adapter ran on the public preview hostname, which shares the production database; the docs told you to rehearse there | Simulated payments and points could enter the real ledger | Database marked production or staging; production refuses the rehearsal provider; Worker also requires `QOQ_DEPLOYMENT=staging`; docs corrected |
+| 5 | Judges waiting for judging to open saw nothing change until they reloaded | Confusion and delay on stage night | Scorecard checks every 20 s and opens itself |
+| 6 | Judges lost typed scores if they forgot to press Save | Data loss on a dead phone | Each score autosaves when the judge moves on, without disturbing what is being typed; Lock waits for any save in flight |
+| 7 | The “edition model” was cosmetic: nothing stopped a second edition mixing with this one, and there was no way to record the coronation venue or time | Future data mixing; the readiness item could never be completed | One edition per database is enforced; organizer form for venues, coronation time and application window, with validation and audit |
+| 8 | That new form overwrote what was typed if the organizer typed quickly after opening it (found in browser testing) | Wrong venue saved silently | Form is filled only while closed |
+| 9 | Per-address limits (10 orders, 20 applications per 10 min) | Philippine carriers and venue Wi-Fi share one address across many people: real supporters and applicants would be turned away | 120 orders, 60 applications per 10 min, 300 status checks per minute; the per-email pending cap and payment itself remain |
+| 10 | The public page still showed “open” after the scheduled closing time | Visitors tried to pay and were refused | Effective state used publicly; the desk shows “Past closing time” |
+| 11 | After voting closed the page kept asking visitors to choose a queen and a package | Confusing, reads as still open | Becomes a gallery with a closed notice |
+| 12 | Candidate cards filled a whole phone screen each | With many candidates, packages are thousands of pixels down | Two per row on phones |
+| 13 | A mismatch between the Worker's and the database's provider was found only at the first webhook | Paid orders whose notifications are refused | Checked before any order is created |
+| 14 | One payment stuck in “processing” blocked finalization forever | Points could never be finalized | Set-aside action: closed voting only, after one hour, with a reason; a late capture is held, not lost |
+| 15 | The Privacy Notice promised a retention period, and the Terms declared decisions “final” — neither was decided by the organizers | Invented policy | Replaced with accurate, non-committal text; retention period listed as an open decision |
+
+Still open after the review (not fixable in code): the single organizer account; ChatGPT accounts for judges and the organizer; no confirmation email; the legal questions on paid voting; and everything about production infrastructure, which remains UNVERIFIED.

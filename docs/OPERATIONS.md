@@ -20,14 +20,15 @@ For the organizer and tabulation staff. Everything happens in the organizer desk
 ## Before Coronation Night (January 6)
 
 1. **Judging tab.** Add each judge with the exact email they will sign in with. Add the criteria; weights must total 100%.
-2. **Rehearse.** Ask every judge to open `judge.queenofquiapo.com` on the device they will use and sign in. Their row should change to "Signed in" after judging opens. Do this on the venue's internet.
+2. **Rehearse.** Ask every judge to open `judge.queenofquiapo.com` on the device they will use and sign in. Judges can open the page early: it checks every 20 seconds and shows the scorecard by itself when you open judging. Do this on the venue's internet.
+3. **Overview → Edition → Record confirmed details** for the coronation venue and start time once confirmed, then publish an Announcement so visitors see them.
 3. Check **Overview → Event readiness**. Every line is read from live records.
 4. Print the paper ballots below as a fallback.
 
 ## During judging
 
 1. Press **Open judging**. This freezes the roster, judges and criteria.
-2. Judges enter scores (0–100, up to two decimals), press **Save draft** as they go, and **Lock my ballot** when complete. A locked ballot cannot be changed by anyone, including you.
+2. Judges enter scores (0–100, up to two decimals). Each score saves automatically when they move to the next field; **Save draft** is there as well. They press **Lock my ballot** when complete. A locked ballot cannot be changed by anyone, including you.
 3. Watch **Ballot progress**: scores entered, last active, locked time. The desk refreshes when you switch tabs or return to the window.
 4. **Results tab** shows *PROVISIONAL* figures while ballots are outstanding. Do not announce from a provisional screen.
 5. When all ballots are locked: **Lock final tabulation**. The system stores the full record with a report ID and re-verifies it against the ballots every time the page loads.
@@ -43,7 +44,7 @@ Payment is not active. Until it is: the voting page shows candidates and package
 
 | Problem | What to do |
 | --- | --- |
-| A judge's device dies or logs out | Sign in on any other device with the same account. Saved drafts are on the server. Unsaved typing on the dead device is lost — judges should save after each candidate. |
+| A judge's device dies or logs out | Sign in on any other device with the same account. Every score already moved past was saved automatically; only the field being typed at that moment is lost. |
 | A judge entered a wrong score **before locking** | The judge corrects it and saves. |
 | A judge entered a wrong score **after locking** | It cannot be changed in the system. Record the correction on paper, signed by the judge and the chair, tabulate that placement by hand, and note it on the result sheet. Do not certify online results that you know are wrong. |
 | A judge cannot attend after judging has opened | The system requires every assigned ballot. Switch to paper for the whole panel, or have the judge score remotely. |

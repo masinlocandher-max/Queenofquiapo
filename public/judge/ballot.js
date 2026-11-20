@@ -3,7 +3,8 @@
   const el=id=>document.getElementById(id);
   const status=(message,error=false)=>{el('judge-status').textContent=message;el('judge-status').classList.toggle('error',error);};
   const make=(tag,text)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;return n;};
-  let current=null,busy=false,dirty=false,inputs=[];
+  let current=null,busy=false,dirty=false,inputs=[],inflight=Promise.resolve();
+  const clock=()=>new Intl.DateTimeFormat('en-PH',{timeStyle:'medium',timeZone:'Asia/Manila'}).format(new Date());
   async function api(action,body={}) {
     const response=await fetch('/api/competition/judge.'+action,{method:'POST',cache:'no-store',credentials:'same-origin',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(body)});
     const answer=await response.json().catch(()=>null);
@@ -40,7 +41,7 @@
         const field=make('input');field.type='number';field.inputMode='decimal';field.min='0';field.max='100';field.step='0.01';field.readOnly=!editable;field.setAttribute('aria-label',c.name+', '+criterion.name+' score out of 100');
         const original=records.get(c.id+'/'+criterion.id);
         if(original!==undefined&&original!==null)field.value=String(original);
-        field.addEventListener('input',()=>{dirty=true;updateProgress();});
+        field.addEventListener('input',()=>{dirty=true;updateProgress();});field.addEventListener('change',autosave);
         label.append(field);grid.append(label);inputs.push({candidateId:c.id,criterionId:criterion.id,field,original});
       }
       host.append(card);
@@ -65,7 +66,29 @@
     }
     return out;
   }
+  // Autosave: each finished entry is saved in the background without redrawing the card, so nothing being typed is lost.
+  // A value that is not yet valid is simply left for the judge to correct; Save draft and Lock still check everything.
+  function autosave() {
+    if(busy||!current||current.locked||current.phase!=='scoring')return;
+    const rows=[];
+    for(const item of inputs){
+      const f=item.field;
+      if(f.value===''||!f.validity.valid)continue;
+      if(item.original===undefined||item.original===null||Number(f.value)!==Number(item.original))rows.push({item,score:Number(f.value)});
+    }
+    if(!rows.length)return;
+    inflight=inflight.then(async()=>{
+      try{
+        await api('save',{scores:rows.map(r=>({candidateId:r.item.candidateId,criterionId:r.item.criterionId,score:r.score}))});
+        for(const r of rows)r.item.original=r.score;
+        dirty=inputs.some(i=>i.field.value!==''&&Number(i.field.value)!==Number(i.original)||i.field.value===''&&i.original!=null);
+        status('Saved automatically at '+clock()+'. Lock your ballot when every score is entered.');
+      }catch(e){status(e instanceof TypeError?'Not saved: the connection dropped. Your scores are still on this screen; press Save draft when you are back online.':e.message,true);}
+      updateProgress();
+    });
+  }
   async function act(locking) {
+    await inflight;   // a background save in progress finishes first; the button press is never lost
     if(busy||!current||current.locked||current.phase!=='scoring')return;
     let rows;try{rows=values(locking);}catch(e){status(e.message,true);return;}
     if(locking&&!window.confirm('Lock your complete ballot now? Your scores will become final and can no longer be edited.'))return;
@@ -74,7 +97,7 @@
       if(rows.length)await api('save',{scores:rows});
       if(locking)await api('lock');
       dirty=false;await load();
-      status(locking?'Your ballot has been locked and received. Thank you.':'Draft saved at '+new Intl.DateTimeFormat('en-PH',{timeStyle:'medium',timeZone:'Asia/Manila'}).format(new Date())+'. You can keep editing until you lock your ballot.');
+      status(locking?'Your ballot has been locked and received. Thank you.':'Draft saved at '+clock()+'. You can keep editing until you lock your ballot.');
     } catch(e) {
       status(e instanceof TypeError?'The connection was interrupted. Your typed scores are still on this screen. Do not close the page: press Save draft again when you are back online.':e.message,true);
       if(!el('ballot').hidden)inputs.forEach(i=>i.field.readOnly=current.locked||current.phase!=='scoring');
@@ -93,5 +116,10 @@
   el('save').addEventListener('click',()=>act(false));el('lock').addEventListener('click',()=>act(true));
   el('retry').addEventListener('click',refresh);
   window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue='';}});
+  // While judging has not opened, check every 20 seconds so the scorecard appears on its own when the organizer opens it.
+  setInterval(async()=>{
+    if(busy||!current||current.phase!=='setup'||document.hidden)return;
+    try{const next=await api('ballot');if(next.phase!=='setup'){current=next;render();status('Judging is open. Your scorecard is ready.');}}catch{}
+  },20000);
   refresh();
 })();

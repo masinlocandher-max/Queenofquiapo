@@ -25,7 +25,14 @@
     <div><span>Points credited</span><strong id="m-points"></strong></div><div><span>Reconciliation</span><strong id="m-recon"></strong></div>
   </div>
   <section class="card board"><div class="card-heading"><h3>Event readiness</h3></div><p class="help">Each line is checked against live records. Nothing here is an estimate.</p><ul class="checklist" id="readiness"></ul></section>
-  <section class="card board"><div class="card-heading"><h3>Edition</h3></div><dl class="facts" id="edition-facts"></dl><p class="small">Dates come from the edition record. Items marked “to be announced” have not been confirmed by the organizers.</p></section>
+  <section class="card board"><div class="card-heading"><h3>Edition</h3></div><dl class="facts" id="edition-facts"></dl><p class="small">Dates come from the edition record. Items marked “to be announced” have not been confirmed by the organizers.</p>
+  <details class="edit-panel" id="edition-editor"><summary>Record confirmed details</summary><form id="edition-form">
+    <p class="help">Fill in only what is confirmed. Leave a field empty to keep it “to be announced”. Times are Philippine time.</p>
+    <div class="pair"><label>Screening venue<input name="screeningVenue" maxlength="200"></label><label>Coronation venue<input name="coronationVenue" maxlength="200"></label></div>
+    <div class="pair"><label>Coronation start (January 6)<input name="coronationStartsAt" type="datetime-local" min="2027-01-06T00:00" max="2027-01-06T23:59"></label></div>
+    <div class="pair"><label>Applications open<input name="applicationsOpenAt" type="datetime-local"></label><label>Applications close<input name="applicationsCloseAt" type="datetime-local"></label></div>
+    <div class="action-row"><button class="btn" type="submit">Save edition details</button><button class="plain" type="button" data-cancel>Cancel</button></div>
+  </form></details></section>
 </section>
 
 <section class="desk-section" id="roster" aria-labelledby="roster-h" hidden>

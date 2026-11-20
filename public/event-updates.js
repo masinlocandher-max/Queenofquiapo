@@ -68,7 +68,6 @@ window.QOQPublic = (() => {
   if (placements) {
     post('public.results').then(data => {
       if (data.published !== true || !Array.isArray(data.placements) || !data.placements.length) return;
-      const title = rank => rank === 1 ? 'Queen of Quiapo 2027' : rank === 2 ? '1st Runner-up' : rank === 3 ? '2nd Runner-up' : (rank - 1) + 'th Runner-up';
       for (const entry of data.placements) {
         const item = make('li', undefined, entry.rank === 1 ? 'winner' : '');
         item.append(make('p', (entry.tied ? 'TIED · ' : '') + 'PLACE ' + entry.rank, 'eyebrow'), make('h2', entry.name));

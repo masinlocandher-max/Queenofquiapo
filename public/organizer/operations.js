@@ -173,6 +173,31 @@
       table(['Candidate', 'Criterion', {text:'Score'}], b.scores.map(s => [cMap.get(s.candidateId), kMap.get(s.criterionId), {text:s.score, num:true}]), b.judgeName + ' · locked ' + when(b.lockedAt)))});
   });
 
+  // Edition details the organizers confirm later. Times are entered and shown in Philippine time.
+  const toLocal = value => value ? new Date(new Date(value).getTime() + 8 * 3600000).toISOString().slice(0, 16) : '';
+  const fromLocal = text => text ? text + ':00+08:00' : null;
+  const editionForm = el('edition-form');
+  // Filled while the panel is closed, never after it opens, so nothing the organizer types can be overwritten.
+  function fillEdition() {
+    if (el('edition-editor').open || !data) return;
+    const e = data.edition || {};
+    editionForm.screeningVenue.value = e.screeningVenue || ''; editionForm.coronationVenue.value = e.coronationVenue || '';
+    editionForm.coronationStartsAt.value = toLocal(e.coronationStartsAt);
+    editionForm.applicationsOpenAt.value = toLocal(e.applicationsOpenAt); editionForm.applicationsCloseAt.value = toLocal(e.applicationsCloseAt);
+  }
+  window.QOQ.onChange(fillEdition);
+  editionForm.querySelector('[data-cancel]').addEventListener('click', () => { el('edition-editor').open = false; fillEdition(); });
+  editionForm.addEventListener('submit', event => {
+    event.preventDefault(); if (!editionForm.reportValidity()) return;
+    const f = editionForm;
+    if (!window.confirm('Save these edition details? Venues and times appear in the organizer desk and are used for the application window.')) return;
+    perform(async () => {
+      await api('edition', {screeningVenue: f.screeningVenue.value.trim(), coronationVenue: f.coronationVenue.value.trim(), coronationStartsAt: fromLocal(f.coronationStartsAt.value),
+        applicationsOpenAt: fromLocal(f.applicationsOpenAt.value), applicationsCloseAt: fromLocal(f.applicationsCloseAt.value)});
+      el('edition-editor').open = false; await dashboard('Edition details saved. Publish an announcement so visitors see them.');
+    });
+  });
+
   async function upload(file) {
     if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) throw Error('Choose a JPG, PNG or WebP portrait up to 5 MB.');
     const body = new FormData(); body.set('photo', file);

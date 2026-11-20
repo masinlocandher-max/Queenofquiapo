@@ -41,8 +41,13 @@
     soon.hidden = live; checkout.hidden = !live;
     status.textContent = live ? 'Voting is open. Choose a candidate and a package below.'
       : catalog.voting === 'closed' || catalog.voting === 'finalized' ? 'Voting has closed for this edition. Thank you for supporting the queens of Quiapo.'
-      : 'Support an official candidate with voting points. Online payment has not opened yet.';
-    if (catalog.voting === 'closed' || catalog.voting === 'finalized') { soon.querySelector('h3').textContent = 'Voting has closed'; soon.querySelector('p:not(.eyebrow)').textContent = 'No further purchases are accepted for this edition.'; }
+      : 'Add voting points to an official candidate. Online payment has not opened yet.';
+    const ended = catalog.voting === 'closed' || catalog.voting === 'finalized';
+    if (ended) { soon.querySelector('h3').textContent = 'Voting has closed'; soon.querySelector('p:not(.eyebrow)').textContent = 'No further purchases are accepted for this edition.'; }
+    // Once voting ends the page stops asking for choices: the roster stays as a gallery, packages and the review step go away.
+    document.body.classList.toggle('voting-ended', ended);
+    byId('step-candidate').textContent = ended ? 'The official candidates' : 'Choose your queen';
+    for (const input of candidateGrid.querySelectorAll('input')) input.disabled = ended;
     summary();
   }
   const stateText = {created:'Order created. Payment has not been received.', awaiting_payment:'Waiting for your payment.', processing:'The payment provider is processing your payment.',
@@ -58,8 +63,8 @@
     byId('order-note').textContent = order.creditStatus === 'credited' ? number(order.points) + ' points have been added to your candidate. Keep your order reference as your receipt.'
       : order.status === 'paid' ? 'Your payment is confirmed. The organizers will review when these points are counted, because it was confirmed outside the voting period.'
       : ['created','awaiting_payment','processing'].includes(order.status) ? 'Points are added only after the payment provider confirms your payment to us. If you have already paid, this can take a few minutes: check the status again.' : '';
-    const pay = byId('order-pay');
-    pay.hidden = !(checkoutUrl && ['created','awaiting_payment'].includes(order.status)); if (!pay.hidden) pay.href = checkoutUrl;
+    const pay = byId('order-pay'), link = checkoutUrl || order.checkoutUrl;
+    pay.hidden = !(typeof link === 'string' && link.startsWith('https://') && ['created','awaiting_payment'].includes(order.status)); if (!pay.hidden) pay.href = link;
     checkout.hidden = true; receipt.hidden = false; byId('order-title').focus();
   }
   async function refreshOrder(ref) {
@@ -82,6 +87,15 @@
   });
   byId('order-refresh').addEventListener('click', () => { if (order) refreshOrder(order.orderRef); });
   byId('order-print').addEventListener('click', () => window.print());
+  // Supporters may buy as often as they like. A finished order never blocks the next one.
+  byId('order-again').addEventListener('click', () => {
+    order = null; requestId = newRequestId();
+    try { sessionStorage.removeItem('qoq-order'); } catch {}
+    receipt.hidden = true; feedback.textContent = '';
+    if (catalog) render();
+    byId('step-candidate').scrollIntoView({block:'start'});
+    (candidateGrid.querySelector('input:checked') || candidateGrid.querySelector('input'))?.focus({preventScroll:true});
+  });
 
   post('public.catalog').then(data => {
     catalog = data; render();

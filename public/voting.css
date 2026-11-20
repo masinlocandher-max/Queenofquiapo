@@ -81,3 +81,10 @@
 /* Approved header treatment: the public header scrolls away with the page; it does not stick. */
 .pearl-site .mast{position:relative}
 .choice:has(input:checked) .package-card::after{top:-11px;right:50%;transform:translateX(50%)}
+/* Review fixes: two candidates per row on phones, and no selection prompts after voting ends. */
+.queen-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,142px),1fr))}
+.queen-grid.gallery{grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr))}
+@media (min-width:700px){.queen-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}.queen-grid.gallery{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}}
+@media (max-width:420px){.candidate-body{padding:.7rem .75rem .85rem}.candidate-body h3{font-size:17px}.candidate-number{font-size:18px}}
+.voting-ended #package-step,.voting-ended [data-hide-when-ended],.voting-ended #step-review{display:none}
+.voting-ended .choice{cursor:default}.voting-ended .choice input{cursor:default}

@@ -27,18 +27,20 @@
       scheduled:'Voting is scheduled' + (s.opensAt ? ' to open ' + when(s.opensAt) : '') + (s.closesAt ? ' and close ' + when(s.closesAt) : '') + '. It still needs to be opened here.',
       open:'Voting opened ' + when(s.openedAt) + (s.closesAt ? '. Purchases stop at ' + when(s.closesAt) + '.' : '.'),
       closed:'Voting closed ' + when(s.closedAt) + '. Review held or pending payments, then finalize the points.', finalized:'Points were finalized ' + when(s.finalizedAt) + '. The record is closed.'})[s.voting];
+    if (s.effectiveVoting && s.effectiveVoting !== s.voting) { pill(el('voting-pill'), 'Past closing time', 'warn'); el('voting-status').textContent = 'The scheduled closing time (' + when(s.closesAt) + ') has passed. New purchases are already refused. Press Close voting to record the close.'; }
     const editable = ['not_configured','scheduled'].includes(s.voting);
     el('schedule-form').hidden = !editable; el('schedule-form').opensAt.value = manila(s.opensAt); el('schedule-form').closesAt.value = manila(s.closesAt);
     el('open-voting').hidden = !editable; el('close-voting').hidden = s.voting !== 'open'; el('finalize-voting').hidden = s.voting !== 'closed';
     el('finalize-voting').disabled = issues.length > 0 || Number(m.pendingOrders) > 0;
     el('points-public').checked = s.pointsPublic;
-    el('voting-hint').textContent = s.voting === 'closed' && (issues.length || Number(m.pendingOrders)) ? 'Finalizing needs zero pending payments and a clear reconciliation list.'
+    el('voting-hint').textContent = s.voting === 'closed' && (issues.length || Number(m.pendingOrders)) ? 'Finalizing needs zero pending payments and a clear reconciliation list. A payment the provider never resolves can be set aside from its order, with a reason, an hour after it was created.'
       : editable ? 'Opening voting needs at least one published, numbered candidate and locks the roster. The policy for payments that settle after the deadline must be published before opening.' : '';
 
     pill(el('pay-pill'), s.paymentsEnabled ? 'Enabled' : 'Coming soon', s.paymentsEnabled ? 'good' : 'warn');
     el('pay-status').textContent = s.paymentsEnabled ? 'Checkout is switched on in the database. It is live only if the website deployment is also authorized.' : 'Online payment is off. Visitors see “Payment coming soon” and no order can be created.';
     checklist(el('pay-gates'), [
       [s.providerConfigured, 'Payment provider configured', s.providerConfigured ? 'A provider is registered for this edition.' : 'No provider is registered. This is set by the technical administrator once a merchant account is approved.'],
+      [s.environment === 'production' ? true : 'blocked', 'Production database', s.environment === 'production' ? 'Marked production: the rehearsal payment provider is refused.' : 'This database is marked STAGING. Never use it for the real event.'],
       [Boolean(s.packagesApprovedAt), 'Package catalog approved', s.packagesApprovedAt ? 'Approved ' + when(s.packagesApprovedAt) : 'Review the packages below and approve them.'],
       [s.voting === 'open', 'Voting open', votingLabel[s.voting]],
       [s.paymentsEnabled, 'Checkout switched on here', 'The website deployment has its own separate switch (QOQ_PAYMENTS_ENABLED), off by default.'],
@@ -159,6 +161,7 @@
       const reason = window.prompt('Reason for adjusting by ' + pts + ' points (at least 10 characters):'); if (reason === null) return;
       perform(async () => { await api('adjust', {orderRef: ref, points: pts, reason: reason.trim()}); await reload('Adjustment recorded.'); await orders(); await openOrder(ref); }); }); actions.append(b); }
     if (o.flag) actions.append(reasoned('Mark flag resolved', reason => api('resolveFlag', {orderRef: ref, reason})));
+    if (view.state.voting === 'closed' && ['created','awaiting_payment','processing'].includes(o.status)) actions.append(reasoned('Set aside unresolved payment', reason => api('abandonOrder', {orderRef: ref, reason})));
     box.append(actions); box.hidden = false; box.scrollIntoView({block:'nearest'});
   }
   search.addEventListener('submit', event => { event.preventDefault(); perform(orders); });

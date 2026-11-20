@@ -37,13 +37,15 @@ Supporters may buy as many packages as they like. Nothing limits purchases per p
 | Second payment for one order | Not credited; flagged for refund | Organizer |
 | Tie in points | Shown as a tie | Organizer rule |
 
-Finalizing is refused while any payment is pending, held or flagged.
+Finalizing is refused while any payment is pending, held or flagged. A payment the provider never resolves can be **set aside** from its order, with a reason, once voting is closed and the order is over an hour old. If the provider later confirms it, the money is recorded and held for a decision, never silently counted.
+
+The public page treats voting as closed as soon as the scheduled closing time passes, even before the organizer presses Close.
 
 ## Switches (all must be on)
 
 1. `QOQ_PAYMENTS_ENABLED=yes` on the Worker — deployment authorization.
 2. `QOQ_PAYMENT_PROVIDER` naming an adapter in `server/payments.mjs`, plus `QOQ_PAYMENT_WEBHOOK_SECRET`.
-3. `settings.payment_provider` in the database — set by SQL by an administrator; there is deliberately no button for it.
+3. `settings.payment_provider` in the database — set by SQL by an administrator; there is deliberately no button for it. It must name the **same** provider as step 2, or no order is created (checked before anything is stored).
 4. Package catalog approved by the organizer.
 5. "Switch checkout on" in the organizer desk.
 6. Voting open.
@@ -59,13 +61,16 @@ Implement one adapter in `server/payments.mjs`:
 
 Put the order reference (`QV-…`) in the provider's metadata so the webhook can return it. Map the provider's event names to: `processing`, `paid`, `failed`, `expired`, `cancelled`, `refunded`, `reversed`. Register the webhook URL `https://queenofquiapo.com/api/payments/webhook/<adapter-name>`.
 
-The included `sandbox` adapter moves no money, is refused on every production hostname, and exists for rehearsals and tests.
+The included `sandbox` adapter moves no money and exists for rehearsals and tests. It runs only when **all** of these hold: the Worker has `QOQ_DEPLOYMENT=staging`, the request is on a preview hostname, and the database is marked `environment='staging'`. A production database refuses it outright (`settings_sandbox_staging_only`), so a rehearsal can never put simulated payments into the real ledger.
+
+**Rehearse on a separate staging Supabase project and a separate staging Worker.** The public preview hostname of the production Worker shares the production database: do not rehearse payments there.
 
 ## Activation gate — do not switch on until every line is true
 
 - [ ] Payment provider selected and merchant account approved in the organizer's legal name
 - [ ] Provider adapter written and reviewed
-- [ ] Sandbox payments pass end to end on the preview site: paid, failed, expired, duplicate webhook, refund
+- [ ] Sandbox payments pass end to end on a **staging** deployment with its own database: paid, failed, expired, duplicate webhook, refund
+- [ ] Production database confirmed `environment='production'` (Organizer desk → Voting → Online payment shows “Production database”)
 - [ ] Settlement report from the provider reconciles to the organizer desk for a test day
 - [ ] Refund and cancellation policy approved and published
 - [ ] Late-settlement policy approved and published

@@ -181,8 +181,8 @@ test('a full judging night over HTTP: assignment, drafts, locks, tabulation, cer
 
 test('paid voting stays closed in production; in a rehearsal only a correctly signed webhook credits points', {skip}, async t => {
   const hook = 'w'.repeat(48);
-  const rehearsal = {QOQ_PAYMENTS_ENABLED: 'yes', QOQ_PAYMENT_PROVIDER: 'sandbox', QOQ_PAYMENT_WEBHOOK_SECRET: hook, QOQ_ALLOW_SANDBOX_PAYMENTS: 'yes'};
-  const {db, act, send} = platform(t, rehearsal);
+  const rehearsal = {QOQ_PAYMENTS_ENABLED: 'yes', QOQ_PAYMENT_PROVIDER: 'sandbox', QOQ_PAYMENT_WEBHOOK_SECRET: hook, QOQ_ALLOW_SANDBOX_PAYMENTS: 'yes', QOQ_DEPLOYMENT: 'staging'};
+  const {db, act, send, env} = platform(t, rehearsal);
   const candidate = (await act(org, 'organizer.candidate', owner, {name: 'Alma', number: 1, published: true, consentRef: 'On file'})).body.id;
   let catalog = (await act(vote, 'public.catalog')).body;
   const pack = catalog.packages.find(p => p.name === 'Supporter');
@@ -190,10 +190,13 @@ test('paid voting stays closed in production; in a rehearsal only a correctly si
   const purchase = () => ({candidateId: candidate, packageId: pack.id, requestId: randomUUID(), email: 'Fan@Example.invalid'});
   assert.equal((await act(preview, 'order.create', {}, purchase())).status, 409);            // database gate still closed
 
-  exec(db, "update qoq_private.settings set payment_provider='sandbox'");
+  exec(db, "update qoq_private.settings set environment='staging', payment_provider='sandbox'");
   await act(org, 'organizer.approvePackages', owner); await act(org, 'organizer.setPayments', owner, {enabled: true}); await act(org, 'organizer.openVoting', owner);
   // Even fully configured, the rehearsal provider is refused on every production hostname.
   for (const host of [main, vote]) { assert.equal((await act(host, 'order.create', {}, purchase())).status, 409); assert.equal((await act(host, 'public.catalog')).body.paymentsEnabled, false); }
+  // On the preview hostname too, unless this deployment is explicitly marked staging.
+  const {QOQ_DEPLOYMENT, ...notStaging} = env;
+  assert.equal((await worker.fetch(new Request(preview + '/api/competition/order.create', {method: 'POST', headers: {origin: preview, 'content-type': 'application/json'}, body: JSON.stringify(purchase())}), notStaging)).status, 409);
   assert.equal(exec(db, 'select count(*) from qoq_private.orders'), '0');
   assert.equal((await act(preview, 'public.catalog')).body.paymentsEnabled, true);
 

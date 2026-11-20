@@ -30,24 +30,25 @@
 <main id="content">
   <header class="subpage-hero"><div class="subpage-wrap">
     <p class="eyebrow">PUBLIC VOTING</p>
-    <h1>Vote for your <em>queen</em></h1>
-    <p class="subpage-lead" id="vote-status" role="status">Support an official candidate with voting points. Online payment has not opened yet.</p>
+    <h1>Support your <em>queen</em></h1>
+    <p class="subpage-lead" id="vote-status" role="status">Add voting points to an official candidate. Online payment has not opened yet.</p>
   </div></header>
   <div class="subpage-wrap vote-flow">
     <section class="vote-step" aria-labelledby="step-candidate">
-      <p class="eyebrow">STEP ONE</p><h2 id="step-candidate">Choose your queen</h2>
-      <p class="vote-help" id="candidate-help">Select an official candidate.</p>
+      <p class="eyebrow" data-hide-when-ended>STEP ONE</p><h2 id="step-candidate">Choose your queen</h2>
+      <p class="vote-help" id="candidate-help" data-hide-when-ended>Select an official candidate.</p>
       <div class="queen-grid" id="queen-grid" role="radiogroup" aria-labelledby="step-candidate"></div>
       <div class="soon-panel" id="roster-empty" hidden><h3>Official candidates to be announced</h3><p>The official candidates will be presented here after Screening Day, January 4, 2027. No candidate is shown until she is confirmed by the organizers.</p><a class="quiet-link" href="/schedule/">View the pageant schedule</a></div>
     </section>
-    <section class="vote-step" aria-labelledby="step-package">
+    <section class="vote-step" id="package-step" aria-labelledby="step-package">
       <p class="eyebrow">STEP TWO</p><h2 id="step-package">Choose your voting package</h2>
       <p class="vote-help"><strong>₱100 = 1,000 voting points.</strong> Every package follows the same rate. There are no bonus points and no discounts.</p>
       <div class="package-grid" id="package-grid" role="radiogroup" aria-labelledby="step-package"></div>
     </section>
     <section class="vote-step" aria-labelledby="step-review">
-      <p class="eyebrow">STEP THREE</p><h2 id="step-review">Review your support</h2>
-      <dl class="purchase-summary" id="purchase-summary">
+      <p class="eyebrow" data-hide-when-ended>STEP THREE</p><h2 id="step-review">Review your support</h2>
+      <p class="vote-help" id="points-meaning" data-hide-when-ended>Voting points are counted separately from the judges’ scores, and buying points does not change any judge’s score. What the points decide will be stated in the <a href="/voting-rules/">Voting Rules</a> before voting opens.</p>
+      <dl class="purchase-summary" id="purchase-summary" data-hide-when-ended>
         <div><dt>Candidate</dt><dd id="sum-candidate">Not selected</dd></div>
         <div><dt>Package</dt><dd id="sum-package">Not selected</dd></div>
         <div><dt>Voting points</dt><dd id="sum-points">—</dd></div>
@@ -72,6 +73,7 @@
         <a class="pearl" id="order-pay" hidden rel="noopener">Go to secure payment</a>
         <button class="quiet-link" type="button" id="order-refresh">Check payment status</button>
         <button class="quiet-link" type="button" id="order-print">Print this receipt</button>
+        <button class="quiet-link" type="button" id="order-again">Support again</button>
       </section>
     </section>
   </div>
