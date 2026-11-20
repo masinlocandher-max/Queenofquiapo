@@ -4,9 +4,9 @@
 
 ## Source baseline and changes
 
-The published application is Sites version 16, source `d8eb93ee31548f14bbaee36ca7a2ed00b3f1fdbc`. GitHub PR #1 started at `f10c67aff4ff9eea606714976d292a0c843ca51a`, tree `1697b1b2ee97cb391c1c2196952e8fedb8926dd3`. The inspected GitHub snapshot reproduces that complete tree exactly.
+The production baseline inspected for this reconciliation was Sites version 16, source `d8eb93ee31548f14bbaee36ca7a2ed00b3f1fdbc`. GitHub PR #1 started at `f10c67aff4ff9eea606714976d292a0c843ca51a`, tree `1697b1b2ee97cb391c1c2196952e8fedb8926dd3`. The inspected GitHub snapshot reproduces that complete tree exactly.
 
-The reconciliation imports the already-deployed gemstone storefront, Home navigation, package rendering and minimum-price checks into the GitHub branch. The resulting `public`, `server`, `config` and `scripts` directories match the deployed source byte for byte. No redesign or new runtime behavior is included.
+The reconciliation imports the already-deployed gemstone storefront, Home navigation, package rendering and minimum-price checks into the GitHub branch. The imported `public`, `server`, `config` and `scripts` directories first matched that deployed source byte for byte. Final review found a stale public rules table still using the old package names; the six labels are now corrected to match the gemstone storefront. This table correction is the only runtime-file change relative to the production baseline. No voting, scoring or payment behavior changes.
 
 Both source trees now include the seven already-applied SQL files with filenames matching production migration versions and names. Fresh read-only hashes of all seven stored SQL bodies match [the migration map](PRODUCTION-MIGRATION-MAP-2026-11-16.json). No production migration was replayed, repaired or reset. The Sites-only legacy SQL test files remain intact. Each repository retains its own hosting manifest; Sites retains its project ID, DB and BUCKET bindings.
 
@@ -22,7 +22,7 @@ Tests now use the gemstone names and account for the six additional rename audit
 - Production read-only state: phase `setup`, voting `not_configured`, payments disabled, provider unset, package approval unset, public point totals off, and no configured judging criteria. Application close and voting times remain unset. Counts for applications, candidates, judges, orders and ledger rows are zero; no contents of private records were retrieved.
 - Current catalog: Quartz PHP100/1,000 points; Amethyst PHP500/5,000; Sapphire PHP1,000/10,000; Emerald PHP2,500/25,000; Ruby PHP5,000/50,000; Diamond PHP10,000/100,000. The fixed rate and minimum remain enforced.
 
-No synthetic production applicants, purchases, votes or ballots were created. No merchant, provider, commercial approval, judging criterion or schedule was invented or activated. Source synchronization does not require a replacement deployment because the runtime files already match the published application. The PR remains a draft for review.
+No synthetic production applicants, purchases, votes or ballots were created. No merchant, provider, commercial approval, judging criterion or schedule was invented or activated. The corrected public rules table requires publication from the synchronized source; confirm its saved version and deployment status before claiming it is live. The PR remains a draft for review.
 
 ## Domains and launch decisions
 
