@@ -2,6 +2,10 @@
 
 **Status: payment collection is OFF.** No provider is configured, no merchant account exists in this system, and no order can be created in production. The public site says "Payment coming soon".
 
+## What the points decide
+
+The **People’s Choice Award**: the candidate with the most valid points in the final, immutable snapshot. It does not affect the judges’ scores, placements or the Queen of Quiapo title.
+
 ## The rule
 
 ₱100 = 1,000 voting points (10 centavos per point). It is enforced three times: a table constraint on packages (`price_centavos = points × 10`), the same constraint on every order, and the server deriving the price from the points — a price sent by a browser is ignored. Money is stored as integer centavos, points as integers.
@@ -35,7 +39,8 @@ Supporters may buy as many packages as they like. Nothing limits purchases per p
 | Full refund or chargeback | All points for that order are reversed automatically (new ledger row) | — |
 | Wrong amount or currency | Not credited; flagged | Organizer, after checking the provider |
 | Second payment for one order | Not credited; flagged for refund | Organizer |
-| Tie in points | Shown as a tie | Organizer rule |
+| Tie for the People’s Choice Award | Shown as a tie; announcing needs an explicit acknowledgement | Organizer tie rule (to be published) |
+| Winner’s payment refunded **after** the award is announced | Ledger records the reversal; the announced award stands on the final snapshot | Organizer policy (to be decided) |
 
 Finalizing is refused while any payment is pending, held or flagged. A payment the provider never resolves can be **set aside** from its order, with a reason, once voting is closed and the order is over an hour old. If the provider later confirms it, the money is recorded and held for a decision, never silently counted.
 

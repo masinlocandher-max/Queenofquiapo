@@ -36,12 +36,9 @@ function requireSameOrigin(request) {
 }
 
 function requireReviewer(request, env) {
-  const id = request.headers.get('oai-authenticated-user-id');
-  const email = request.headers.get('oai-authenticated-user-email')?.trim().toLowerCase();
-  if (!id || !email) reject(401, 'Sign in to review applications.');
-  if (!env.REVIEWER_EMAIL || email !== env.REVIEWER_EMAIL.trim().toLowerCase()) {
-    reject(403, 'This area is reserved for the pageant organizer.');
-  }
+  const {actor, email, organizer} = eventIdentity(request, env);
+  if (!actor || !email) reject(401, 'Sign in to review applications.');
+  if (!organizer) reject(403, 'This area is reserved for the pageant organizer.');
 }
 
 const encode = new TextEncoder();
@@ -245,7 +242,7 @@ async function withdraw(request,env,reference) {
 const APPLICATION_STATUSES = ['submitted','under_review','correction_requested','qualified','screened','approved','not_selected','withdrawn'];
 async function review(request, env, pathname) {
   requireReviewer(request,env);
-  const reviewer = request.headers.get('oai-authenticated-user-email').trim().toLowerCase();
+  const reviewer = eventIdentity(request, env).email;
   if (pathname === '/api/reviewer/export.csv') {
     if (request.method !== 'GET') reject(405, 'Method not allowed.');
     const {rows} = await intakeRpc(env,'export',{actor:reviewer});

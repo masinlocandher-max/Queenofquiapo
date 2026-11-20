@@ -3,7 +3,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="same-origin"><meta name="theme-color" content="#f6f3fa">
 <title>Organizer desk · Queen of Quiapo</title><link rel="icon" href="/assets/icon.png">
 <link rel="stylesheet" href="/organizer/workspace.css"><link rel="stylesheet" href="/organizer/desk.css">
-<script defer src="/organizer/desk.js"></script><script defer src="/organizer/operations.js"></script><script defer src="/organizer/voting.js"></script><script defer src="/organizer/review.js"></script>
+<script defer src="/access/session.js"></script><script defer src="/organizer/desk.js"></script><script defer src="/organizer/operations.js"></script><script defer src="/organizer/voting.js"></script><script defer src="/organizer/access-desk.js"></script><script defer src="/organizer/review.js"></script>
 </head><body>
 <a class="skip" href="#desk">Skip to organizer desk</a>
 <header class="bar"><div class="bar-inner"><span class="brand"><img alt="" width="31" height="31" src="/assets/icon.png">Queen of Quiapo</span><span class="role"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5.5" y="10" width="13" height="10" rx="2"></rect><path d="M8.5 10V7a3.5 3.5 0 0 1 7 0v3"></path></svg>Organizer</span></div></header>
@@ -14,7 +14,7 @@
   <a href="#voting">Voting &amp; revenue</a><a href="#results">Results</a><a href="#news">Announcements</a><a href="#audit">Audit log</a>
 </nav>
 <p class="status" id="ops-message" role="status">Checking organizer access…</p>
-<div class="action-row" id="ops-recovery" hidden><a href="/signin-with-chatgpt?return_to=%2Forganizer%2F" class="btn" target="_top" id="ops-signin" hidden>Sign in to manage the event</a><button class="btn quiet" id="ops-retry" type="button">Try again</button></div>
+<div class="action-row" id="ops-recovery" hidden><a href="/access/?return_to=%2Forganizer%2F" class="btn" target="_top" id="ops-signin" hidden>Sign in to manage the event</a><button class="btn quiet" id="ops-retry" type="button">Try again</button></div>
 
 <div id="dashboard" hidden>
 <section class="desk-section" id="overview" aria-labelledby="overview-h"><h2 id="overview-h" class="sr-only">Overview</h2>
@@ -25,6 +25,14 @@
     <div><span>Points credited</span><strong id="m-points"></strong></div><div><span>Reconciliation</span><strong id="m-recon"></strong></div>
   </div>
   <section class="card board"><div class="card-heading"><h3>Event readiness</h3></div><p class="help">Each line is checked against live records. Nothing here is an estimate.</p><ul class="checklist" id="readiness"></ul></section>
+  <section class="card board" id="my-access"><div class="card-heading"><h3>Your sign-in</h3><span class="pill" id="pw-pill"></span></div>
+  <p class="help" id="pw-status">A password lets you sign in from any phone or computer without a ChatGPT account.</p>
+  <details class="edit-panel" id="pw-editor"><summary id="pw-summary">Set a password</summary><form id="pw-form">
+    <label id="pw-current-label" hidden>Current password<input name="current" type="password" autocomplete="current-password" maxlength="200"></label>
+    <label>New password<input name="password" type="password" autocomplete="new-password" required minlength="12" maxlength="200"><small>At least 12 characters. A short sentence is easier to remember than a jumble.</small></label>
+    <label>Type it again<input name="again" type="password" autocomplete="new-password" required minlength="12" maxlength="200"></label>
+    <div class="action-row"><button class="btn" type="submit">Save password</button><button class="plain" type="button" data-cancel>Cancel</button></div>
+  </form></details></section>
   <section class="card board"><div class="card-heading"><h3>Edition</h3></div><dl class="facts" id="edition-facts"></dl><p class="small">Dates come from the edition record. Items marked “to be announced” have not been confirmed by the organizers.</p>
   <details class="edit-panel" id="edition-editor"><summary>Record confirmed details</summary><form id="edition-form">
     <p class="help">Fill in only what is confirmed. Leave a field empty to keep it “to be announced”. Times are Philippine time.</p>
@@ -59,6 +67,11 @@
 <section class="card"><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"></circle><path d="M5 19a7 7 0 0 1 14 0M3 8V4h4m10 0h4v4"></path></svg><h3>Judges</h3></div><p class="help">Register the email each judge signs in with. A judge sees only their own scorecard.</p><div id="judges-list" class="list"></div><details class="edit-panel" id="judge-editor"><summary>Add a judge</summary><form id="judge-form"><label>Judge name<input name="name" required maxlength="120"></label><label>Sign-in email<input name="email" type="email" required maxlength="254"></label><div class="action-row"><button class="btn" type="submit">Save judge</button><button class="plain" type="button" data-cancel>Cancel</button></div></form></details></section>
 <section class="card"><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"></path><circle cx="8" cy="6" r="2"></circle><circle cx="15" cy="12" r="2"></circle><circle cx="10" cy="18" r="2"></circle></svg><h3>Judging criteria</h3></div><p class="help" id="weight-total"></p><div id="criteria-list" class="list"></div><details class="edit-panel" id="criterion-editor"><summary>Add a criterion</summary><form id="criterion-form"><label>Criterion<input name="name" required maxlength="100"></label><div class="pair"><label>Weight (%)<input name="weight" type="number" required min="0.01" max="100" step="0.01" inputmode="decimal"></label><label>Order on scorecard<input name="displayOrder" type="number" min="0" max="99" step="1" inputmode="numeric" value="0"></label></div><label>Guidance for judges <span class="optional">Optional</span><textarea name="description" rows="2" maxlength="400"></textarea></label><div class="action-row"><button class="btn" type="submit">Save criterion</button><button class="plain" type="button" data-cancel>Cancel</button></div></form></details><p class="small">Scores run from 0 to 100 with up to two decimals.</p></section>
 </div>
+<section class="card board" id="judge-access"><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="5.5" y="10" width="13" height="10" rx="2"></rect><path d="M8.5 10V7a3.5 3.5 0 0 1 7 0v3"></path></svg><h3>Judge sign-in</h3></div>
+<p class="help">Judges do not need a ChatGPT account. Issue each judge an access code and give it to them privately, in person or by a direct message. They sign in at <strong id="judge-signin-address">judge.queenofquiapo.com</strong> with their email and the code. A code is shown only once; resetting it replaces the old code and signs the judge out.</p>
+<div id="access-table" class="table-scroll"></div>
+<div class="code-reveal" id="code-reveal" hidden role="status"><p><strong id="code-for"></strong></p><p class="access-code" id="code-value"></p><p class="small">Write it down or send it now. It will not be shown again. Judges sign in with their email and this code.</p><button type="button" class="btn quiet" id="code-done">I have given the code</button></div>
+</section>
 <section class="card board"><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19h16M6 16v-5m6 5V5m6 11V9"></path></svg><h3>Ballot progress</h3></div><div id="judge-progress" class="table-scroll"></div>
 <div class="action-row"><button type="button" class="btn" id="open-scoring" hidden>Open judging</button><button type="button" class="plain" id="refresh">Refresh</button></div><p class="small" id="scoring-hint"></p></section>
 </section>
@@ -88,7 +101,10 @@
 <div id="packages-list" class="table-scroll"></div>
 <details class="edit-panel" id="package-editor"><summary>Add a package</summary><form id="package-form"><div class="pair"><label>Package name<input name="name" required maxlength="60"></label><label>Points<input name="points" type="number" required min="1" max="10000000" step="1" inputmode="numeric"></label></div><p class="help" id="package-price" aria-live="polite"></p><div class="pair"><label>Display order<input name="displayOrder" type="number" min="0" max="99" step="1" value="0"></label><label class="toggle"><input name="active" type="checkbox" checked>Shown to the public</label></div><div class="action-row"><button class="btn" type="submit">Save package</button><button class="plain" type="button" data-cancel>Cancel</button></div></form></details>
 <div class="action-row"><button type="button" class="btn quiet" id="approve-packages">Approve this catalog</button></div></section>
-<section class="card board"><div class="card-heading"><h3>Candidate points</h3></div><p class="help">Totals are the sum of ledger entries from verified settlements, less recorded reversals. This ranking is separate from the judges’ result.</p><div id="points-table" class="table-scroll"></div><div class="action-row"><button type="button" class="btn quiet" id="print-points">Print points report</button></div></section>
+<section class="card board"><div class="card-heading"><h3>People’s Choice Award · candidate points</h3></div><p class="help">The candidate with the most valid points when voting is finalized receives the People’s Choice Award. Totals are the sum of ledger entries from verified settlements, less recorded reversals. Points do not affect the judges’ scores or the Queen of Quiapo title.</p><div id="points-table" class="table-scroll"></div><div class="action-row"><button type="button" class="btn quiet" id="print-points">Print points report</button></div></section>
+<section class="card board" id="award-card"><div class="card-heading"><h3>Announce the People’s Choice Award</h3><span class="pill" id="award-pill"></span></div>
+<p class="help" id="award-status">Available after voting points are finalized.</p>
+<form id="award-form" class="inline-form"><label class="toggle"><input type="checkbox" name="showPoints">Show the winning point total</label><button class="btn" type="submit" id="award-publish">Publish on the Results page</button><button class="plain danger" type="button" id="award-unpublish" hidden>Remove from public site</button></form></section>
 <section class="card board"><div class="card-heading"><h3>Reconciliation</h3><span class="pill" id="recon-pill"></span></div><p class="help">Orders, provider events and the points ledger are cross-checked on every refresh.</p><div id="recon-list" class="list"></div></section>
 <section class="card board"><div class="card-heading"><h3>Transactions</h3></div>
 <form id="order-search" class="inline-form"><label>Search<input name="q" type="search" maxlength="120" placeholder="Order, payment reference or email"></label><label>Status<select name="status"><option value="">All</option><option value="paid">Paid</option><option value="awaiting_payment">Awaiting payment</option><option value="processing">Processing</option><option value="failed">Failed</option><option value="expired">Expired</option><option value="cancelled">Cancelled</option><option value="refunded">Refunded</option><option value="partially_refunded">Partially refunded</option><option value="reversed">Reversed</option><option value="held">Held for decision</option><option value="flagged">Flagged</option></select></label><button class="btn quiet" type="submit">Search</button><a class="plain" href="/api/competition/export/orders.csv" download>Export CSV</a></form>
@@ -104,7 +120,7 @@
 </section>
 </div>
 
-<section id="applications" class="desk-section card board review" hidden><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m3 15 3-9h12l3 9v4H3zM3 15h5l2 2h4l2-2h5"></path></svg><h2>Application inbox</h2></div><p id="status" role="status">Checking organizer access…</p><a id="signin" class="btn" hidden target="_top" href="/signin-with-chatgpt?return_to=%2Forganizer%2F">Sign in to review</a>
+<section id="applications" class="desk-section card board review" hidden><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m3 15 3-9h12l3 9v4H3zM3 15h5l2 2h4l2-2h5"></path></svg><h2>Application inbox</h2></div><p id="status" role="status">Checking organizer access…</p><a id="signin" class="btn" hidden target="_top" href="/access/?return_to=%2Forganizer%2F">Sign in to review</a>
 <div id="inbox" hidden>
   <div class="chips" id="status-chips" role="group" aria-label="Filter by status"></div>
   <form id="inbox-search" class="inline-form"><label>Search<input name="q" type="search" maxlength="120" placeholder="Name, email, locality or reference"></label><label>Order<select name="sort"><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select></label><button class="btn quiet" type="submit">Search</button><a class="plain" href="/api/reviewer/export.csv" download>Export CSV</a></form>

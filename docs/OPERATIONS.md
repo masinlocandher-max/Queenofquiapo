@@ -19,7 +19,8 @@ For the organizer and tabulation staff. Everything happens in the organizer desk
 
 ## Before Coronation Night (January 6)
 
-1. **Judging tab.** Add each judge with the exact email they will sign in with. Add the criteria; weights must total 100%.
+1. **Judging tab.** Add each judge with their email. Add the criteria; weights must total 100%.
+   Under **Judge sign-in**, press *Issue code* for each judge and give them the code privately (in person, or a direct message — never a group chat). Judges sign in at `judge.queenofquiapo.com` with their email and the code; no ChatGPT account is needed. A code is shown once. *Reset code* if one is lost or shared; the old code and any session using it stop working immediately. Each judge should use one sign-in method throughout: the first account a judge scores with is bound to their ballot.
 2. **Rehearse.** Ask every judge to open `judge.queenofquiapo.com` on the device they will use and sign in. Judges can open the page early: it checks every 20 seconds and shows the scorecard by itself when you open judging. Do this on the venue's internet.
 3. **Overview → Edition → Record confirmed details** for the coronation venue and start time once confirmed, then publish an Announcement so visitors see them.
 3. Check **Overview → Event readiness**. Every line is read from live records.
@@ -36,7 +37,9 @@ For the organizer and tabulation staff. Everything happens in the organizer desk
 7. **Certify results.** If there is a tie, the system will not break it. Apply the official tie rule, or certify the shared placement.
 8. Announce on stage from the certified sheet. Afterwards choose what the public sees and press **Publish results**.
 
-## Voting points
+## Voting points and the People’s Choice Award
+
+Voting points decide the **People’s Choice Award**, which is separate from the Queen of Quiapo title and the judges’ placements. After voting is closed and finalized, the Voting tab shows the winner from the final snapshot. Press *Publish on the Results page* (optionally with the point total). A tie at the top is never broken by the system: apply the published tie rule, or announce a shared award explicitly.
 
 Payment is not active. Until it is: the voting page shows candidates and packages with "Payment coming soon"; nothing needs daily attention. When it is activated, follow `docs/PAYMENTS.md`, and each day check **Voting & revenue → Reconciliation** shows "Reconciled".
 
@@ -44,6 +47,8 @@ Payment is not active. Until it is: the voting page shows candidates and package
 
 | Problem | What to do |
 | --- | --- |
+| A judge forgets or loses the access code | Judging tab → Judge sign-in → *Reset code*, give the new code. Their saved scores are kept. Not possible once that judge has locked their ballot (and not needed). |
+| Ten wrong attempts | The account locks for 15 minutes. Wait, or reset the judge’s code (that also clears the lock). |
 | A judge's device dies or logs out | Sign in on any other device with the same account. Every score already moved past was saved automatically; only the field being typed at that moment is lost. |
 | A judge entered a wrong score **before locking** | The judge corrects it and saves. |
 | A judge entered a wrong score **after locking** | It cannot be changed in the system. Record the correction on paper, signed by the judge and the chair, tabulate that placement by hand, and note it on the result sheet. Do not certify online results that you know are wrong. |

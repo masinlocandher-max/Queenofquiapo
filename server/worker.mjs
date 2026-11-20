@@ -1,9 +1,13 @@
-function accessGate(request,area,status) {
+function accessGate(request,area,status,env={}) {
   const headers={'Content-Type':'text/html; charset=utf-8','Cache-Control':'private, no-store','X-Robots-Tag':'noindex, nofollow','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff'};
   const where=new URL(request.url).pathname;
   const label=area==='org'?'organizer':'judge';
-  const link=status===401?'<p><a target="_top" href="/signin-with-chatgpt?return_to='+encodeURIComponent(where)+'">Sign in to continue</a></p>':'';
-  return new Response('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Private access · Queen of Quiapo</title><main style="max-width:32rem;margin:16vh auto;padding:1rem;font:17px/1.55 system-ui;color:#282537"><h1>Private access</h1><p>'+(status===401?'Sign in using your assigned '+label+' account.':status===503?'This area is temporarily unavailable.':'This account does not have access.')+'</p>'+link+'</main>',{status,headers});
+  const back=encodeURIComponent(where);
+  // The site's own sign-in comes first; ChatGPT is an optional alternative where the hosting offers it.
+  const signin=status===401||status===403?'<p><a href="/access/?return_to='+back+'" style="display:inline-block;padding:.8rem 1.2rem;border-radius:999px;background:#3c2a5c;color:#fff;text-decoration:none">Sign in with your '+(area==='org'?'email and password':'email and access code')+'</a></p>'+
+    (env.QOQ_CHATGPT_SIGNIN==='off'?'':'<p style="font-size:15px">or <a target="_top" href="/signin-with-chatgpt?return_to='+back+'">sign in with ChatGPT</a> (optional)</p>'):'';
+  const message=status===401?'Sign in with your assigned '+label+' account.':status===503?'This area is temporarily unavailable. Please try again in a minute.':'This account does not have '+label+' access. Sign in with a different account.';
+  return new Response('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Private access · Queen of Quiapo</title><main style="max-width:32rem;margin:16vh auto;padding:1rem;font:17px/1.55 system-ui;color:#282537"><h1>Private access</h1><p>'+message+'</p>'+signin+'</main>',{status,headers});
 }
 export default {
   async fetch(request,env) {
@@ -14,6 +18,10 @@ export default {
     if(area==='unknown')return hidden();
     if(path.startsWith('/api/')){
       try{
+        const who=await resolveIdentity(request,env);
+        // A sign-in that cannot be checked during an outage is reported as an outage, not as "please sign in".
+        if(who.unavailable&&!path.startsWith('/api/applications'))return json({error:'The service is temporarily unavailable. Please try again.'},503);
+        if(path.startsWith('/api/access/'))return ['org','judge','preview'].includes(area)?await access(request,env,path,area):hidden();
         if(path.startsWith('/api/competition/'))return await competition(request,env,path);
         if(path.startsWith('/api/payments/'))return ['preview','public','vote'].includes(area)?await paymentWebhook(request,env,path,area):hidden();
         if(path.startsWith('/api/reviewer/')&&!['preview','org'].includes(area))return hidden();
@@ -27,20 +35,24 @@ export default {
     if(path==='/'&&area==='org')route='/organizer/';
     if(path==='/'&&area==='judge')route='/judge/';
     if(path==='/'&&area==='vote')route='/vote/';
-    const sharedJudgeCSS=route==='/organizer/workspace.css'&&['judge','preview'].includes(area); // a stylesheet, not a record
+    const sharedJudgeCSS=route==='/organizer/workspace.css'; // a stylesheet, not a record: the sign-in page needs it before sign-in
     const section=route==='/organizer'||route.startsWith('/organizer/')?'org':route==='/judge'||route.startsWith('/judge/')?'judge':null;
     if(section && !sharedJudgeCSS) {
       if(![section,'preview'].includes(area))return hidden();
-      const {actor,email,organizer}=eventIdentity(request,env);
-      if(!actor||!email)return accessGate(request,section,401);
-      if(section==='org'&&!organizer)return accessGate(request,section,403);
+      const who=await resolveIdentity(request,env);
+      if(who.unavailable)return accessGate(request,section,503,env);
+      if(!who.actor||!who.email)return accessGate(request,section,401,env);
+      if(section==='org'&&!who.organizer)return accessGate(request,section,403,env);
       if(section==='judge') {
+        if(who.via==='session'&&who.role!=='judge')return accessGate(request,section,403,env);
         try { await ops(request,env,'judge.ballot'); }
-        catch(e){return accessGate(request,section,e.status===403?403:503);}
+        catch(e){return accessGate(request,section,e.status===403?403:503,env);}
       }
     }
     // Private hostnames never serve the general site or each other's private shell.
-    if((area==='org'||area==='judge')&&!section&&!/^\/(assets\/|style\.css$|pearl\.css$|subpages\.css$|script\.js$)/.test(route))return hidden();
+    // The staff sign-in page exists only on the private hostnames (and the preview host).
+    if(route.startsWith('/access/')&&!['org','judge','preview'].includes(area))return hidden();
+    if((area==='org'||area==='judge')&&!section&&!sharedJudgeCSS&&!/^\/(assets\/|access\/|style\.css$|pearl\.css$|subpages\.css$|script\.js$)/.test(route))return hidden();
     const key=route.endsWith('/')?route+'index.html':route;
     if(!Object.hasOwn(pageAssets,key)){
       if(Object.hasOwn(pageAssets,route+'/index.html')){url.pathname+='/';return Response.redirect(url,308);}

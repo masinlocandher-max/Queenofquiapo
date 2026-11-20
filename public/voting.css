@@ -88,3 +88,6 @@
 @media (max-width:420px){.candidate-body{padding:.7rem .75rem .85rem}.candidate-body h3{font-size:17px}.candidate-number{font-size:18px}}
 .voting-ended #package-step,.voting-ended [data-hide-when-ended],.voting-ended #step-review{display:none}
 .voting-ended .choice{cursor:default}.voting-ended .choice input{cursor:default}
+.peoples-choice{margin-top:clamp(18px,3vw,30px);padding:clamp(20px,3.4vw,34px);border:1px solid #d9c9e6;border-radius:6px;background:linear-gradient(160deg,#fff,#f4ecfa)}
+.peoples-choice h2{font:400 clamp(24px,3.6vw,36px)/1.1 var(--serif);margin:.2rem 0 1rem;color:#241d33}
+.pc-winner{padding:.8rem 0;border-top:1px solid #e3d9ec}.pc-winner h3{font:400 clamp(22px,3.4vw,32px)/1.15 var(--serif);margin:.1rem 0;color:#241d33}.pc-winner .eyebrow{margin:0}

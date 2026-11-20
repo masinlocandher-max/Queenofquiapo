@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="same-origin"><meta name="theme-color" content="#f6f3fa">
+<title>Staff sign-in · Queen of Quiapo</title><link rel="icon" href="/assets/icon.png">
+<link rel="stylesheet" href="/organizer/workspace.css"><script defer src="/access/access.js"></script>
+</head><body>
+<a class="skip" href="#signin-form">Skip to sign-in</a>
+<header class="bar"><div class="bar-inner"><span class="brand"><img alt="" width="31" height="31" src="/assets/icon.png">Queen of Quiapo</span><span class="role"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5.5" y="10" width="13" height="10" rx="2"></rect><path d="M8.5 10V7a3.5 3.5 0 0 1 7 0v3"></path></svg>Staff</span></div></header>
+<main class="wrap narrow" id="content">
+<div class="intro"><h1 id="signin-title">Staff sign-in</h1><p id="signin-lead">For the pageant organizer and assigned judges. No ChatGPT account is needed.</p></div>
+<section class="card board">
+<form id="signin-form" novalidate>
+  <fieldset id="role-choice" class="role-choice" hidden><legend>I am signing in as</legend>
+    <label class="toggle"><input type="radio" name="role" value="judge" checked>A judge</label>
+    <label class="toggle"><input type="radio" name="role" value="organizer">The organizer</label>
+  </fieldset>
+  <label>Email address<input id="email" name="email" type="email" autocomplete="username" inputmode="email" required maxlength="254"></label>
+  <label><span id="secret-label">Access code</span><input id="secret" name="secret" type="password" required maxlength="200" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false"><small id="secret-help">The code the organizer gave you, for example ABCD-EFGH-JKMN. Dashes and spaces are optional.</small></label>
+  <label class="toggle"><input type="checkbox" id="show-secret">Show what I typed</label>
+  <div class="action-row"><button class="btn" type="submit" id="signin-submit">Sign in</button></div>
+  <p class="status" id="signin-status" role="alert" aria-live="assertive"></p>
+</form>
+<p class="small" id="signin-help">Forgot your access code? Ask the organizer to reset it. Resetting gives you a new code and ends any earlier sign-in.</p>
+<p class="small" id="chatgpt-alt">Prefer ChatGPT? <a target="_top" id="chatgpt-link" href="/signin-with-chatgpt">Sign in with ChatGPT</a> instead. It is optional.</p>
+</section>
+</main><footer><div><span>Queen of Quiapo</span><address>Barangay 306, Quiapo, Manila</address></div><p>This website is managed by FMB&amp;CO.</p></footer></body></html>

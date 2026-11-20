@@ -82,5 +82,21 @@ window.QOQPublic = (() => {
       meta.hidden = false;
     }).catch(() => {});
   }
+  const award = document.getElementById('peoples-choice');
+  if (award) {
+    post('public.peoplesChoice').then(data => {
+      if (data.published !== true || !Array.isArray(data.winners) || !data.winners.length) return;
+      const host = document.getElementById('pc-winners');
+      for (const w of data.winners) {
+        const block = make('div', undefined, 'pc-winner');
+        block.append(make('p', (w.number != null ? 'CANDIDATE NO. ' + w.number : 'CANDIDATE') + (data.tied ? ' · SHARED AWARD' : ''), 'eyebrow'), make('h3', w.name));
+        if (w.points != null) block.append(make('p', number(w.points) + ' voting points', 'placement-detail'));
+        host.append(block);
+      }
+      document.getElementById('pc-meta').textContent = 'Final points recorded ' + when(data.finalizedAt) + '. Announced ' + when(data.publishedAt) + ' (Philippine time). Separate from the judges’ placements.';
+      award.hidden = false;
+      document.getElementById('results-empty').hidden = true;
+    }).catch(() => {});
+  }
   return {post, make, number, peso, when, valid, candidateCard};
 })();

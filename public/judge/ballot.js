@@ -19,6 +19,7 @@
     return answer;
   }
   function updateProgress() {
+    document.body.dataset.unsaved=dirty?'yes':'no';
     const count=inputs.filter(item=>item.field.value!==''&&item.field.validity.valid).length;
     el('score-count').textContent=count+' / '+inputs.length;
     el('lock').disabled=busy||count!==inputs.length||!inputs.length;

@@ -88,6 +88,8 @@
       [t.final ? (t.verified === false ? 'blocked' : true) : false, 'Tabulation locked and verified', t.final ? (t.verified === false ? 'MISMATCH — do not announce' : 'Report ' + t.digest.slice(0, 16)) : 'Pending'],
       [Boolean(t.certifiedAt), 'Results certified', t.certifiedAt ? when(t.certifiedAt) + ' by ' + t.certifiedBy : 'Pending'],
       [Boolean(t.publishedAt), 'Results published', t.publishedAt ? when(t.publishedAt) : 'Not published'],
+      [state.access ? Boolean(state.access.organizer?.hasPassword) : false, 'Organizer password set', state.access?.organizer?.hasPassword ? 'You can sign in without ChatGPT' : 'Set one under Your sign-in, so access does not depend on ChatGPT'],
+      [state.access ? (state.access.judges.length > 0 && state.access.judges.every(j => j.hasCode)) : false, 'Every judge has an access code', state.access ? state.access.judges.filter(j => j.hasCode).length + ' of ' + state.access.judges.length + ' issued' : 'Loading…'],
       [Boolean(s.packagesApprovedAt), 'Voting packages approved', s.packagesApprovedAt ? when(s.packagesApprovedAt) : 'Six proposed packages await approval'],
       [s.paymentsEnabled ? true : false, 'Online payment', s.paymentsEnabled ? 'Switched on' : 'Coming soon — no provider is live and no payment can be taken'],
       [v.issues.length ? 'blocked' : true, 'Points reconciliation', v.issues.length ? v.issues.length + ' issue(s) open' : 'Clear'],
@@ -127,7 +129,7 @@
     perform(async () => { await api('setPayments', {enabled}); await reload(enabled ? 'Checkout switched on in the database.' : 'Checkout switched off.'); }); });
   el('print-points').addEventListener('click', () => {
     const s = view.state, snap = view.snapshot, rows = snap ? snap.report.totals : view.candidates;
-    print({title:'Purchased-points voting report', subtitle:'Separate from the judges’ result', reportId: snap ? snap.digest.slice(0, 16) : 'DRAFT-' + Date.now().toString(36).toUpperCase(),
+    print({title:'People’s Choice Award · voting points report', subtitle:'Separate from the judges’ result and the Queen of Quiapo title', reportId: snap ? snap.digest.slice(0, 16) : 'DRAFT-' + Date.now().toString(36).toUpperCase(),
       status: snap ? 'FINAL POINTS · FINALIZED ' + when(snap.finalizedAt) : 'PROVISIONAL · VOTING ' + votingLabel[s.voting].toUpperCase() + ' · NOT OFFICIAL', signatures:['Voting and finance officer', 'Pageant organizer'], tables:[
       table([{text:'Rank'}, {text:'No.'}, 'Candidate', {text:'Valid points'}, {text:'Share'}, {text:'Settled purchases'}], rows.map(c => [{text:c.points > 0 ? c.rank : '—', num:true}, {text:c.number ?? '—', num:true}, c.name + (c.tied ? ' (tied)' : ''), {text:count(c.points), num:true}, {text:c.share + '%', num:true}, {text:count(c.purchases), num:true}])),
       table(['Reconciliation', {text:'Value'}], [['Settled payments (gross)', {text:peso(view.metrics.grossCentavos), num:true}], ['Refunds', {text:peso(view.metrics.refundedCentavos), num:true}], ['Reversals', {text:peso(view.metrics.reversedCentavos), num:true}],

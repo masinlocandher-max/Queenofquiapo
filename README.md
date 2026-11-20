@@ -26,6 +26,7 @@ The public pageant identity is `public/pageant.css`; `public/voting.css` adds th
 | Address | Purpose |
 | --- | --- |
 | queenofquiapo.com | Public information, candidate application and official notices. The root hostname rejects private backstage URLs. |
+| (staff sign-in) | Organizer: email + password. Judges: email + an access code issued from the desk. No ChatGPT account is needed; ChatGPT sign-in remains an optional alternative. See `docs/OPERATIONS.md`. |
 | org.queenofquiapo.com | Organizer-only application review, official candidate/photo roster, judge and criteria setup, announcements, voting controls and tabulation. |
 | judge.queenofquiapo.com | Assigned judges authenticate and submit their individual scorecards. |
 | vote.queenofquiapo.com | Official candidates and voting packages. Payment is off: the page states “Payment coming soon” and no order can be created. |
@@ -47,7 +48,7 @@ The full procedures are in `docs/OPERATIONS.md`. In outline:
 1. Applications move through Submitted → Under review → Qualified → Screening completed → Approved (or Correction requested, Not selected, Withdrawn). Every change records who and when. An approved applicant is added to the roster by name only; she is public only after a number, a recorded publicity clearance and an explicit Publish.
 2. The organizer assigns judges by email and defines weighted criteria totaling 100%, then opens judging, which freezes roster, judges and criteria. Judges save drafts and lock their ballot; a locked ballot cannot be changed by anyone.
 3. A candidate's score is the average across locked ballots of each judge's weighted total. Ranking compares exact sums; ties are flagged and never broken by the system. Final lock stores an immutable snapshot with a digest that is re-verified on every read. Results are certified, then published, as separate organizer actions.
-4. Voting uses purchased points at a fixed ₱100 = 1,000 points, kept in an append-only ledger and credited only from signature-verified provider events. It is a separate result from judging. Payment collection is off; see `docs/PAYMENTS.md`. The earlier one-vote-per-account ballot is retired and its records are read-only.
+4. Voting points decide the **People’s Choice Award**, separate from the Queen of Quiapo title. Points are purchased at a fixed ₱100 = 1,000 points, kept in an append-only ledger and credited only from signature-verified provider events. It is a separate result from judging. Payment collection is off; see `docs/PAYMENTS.md`. The earlier one-vote-per-account ballot is retired and its records are read-only.
 5. Only published announcements, published candidates and published results are returned to the public site.
 
 No candidate contact, private photograph, roster, judge score, secret or payment record belongs in this repository. Functional tests are not a capacity benchmark.

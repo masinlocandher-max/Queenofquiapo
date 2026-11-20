@@ -1,9 +1,7 @@
-// Platform identity headers are supplied by Sites dispatch, never by the JSON form.
+// Who is calling: the identity resolved once per request in server/access.mjs (a ChatGPT sign-in supplied by the
+// hosting platform, or the site's own staff session). Never taken from a request body.
 function eventIdentity(request,env) {
-  const actor=request.headers.get('oai-authenticated-user-id')||'';
-  const email=(request.headers.get('oai-authenticated-user-email')||'').trim().toLowerCase();
-  const organizer=Boolean(actor && email && env.REVIEWER_EMAIL && email===env.REVIEWER_EMAIL.trim().toLowerCase());
-  return {actor,email,organizer};
+  return identities.get(request) || headerIdentity(request,env);
 }
 function supabaseOrigin(env) {
   const url=new URL(env.QOQ_SUPABASE_URL);
@@ -29,11 +27,13 @@ const ops = (request,env,action,data={}) => {
   return qoqRpc(env,'qoq_operations',{p_actor:actor,p_email:email,p_organizer:organizer,p_action:action,p_data:data});
 };
 // Each browser-callable action is listed here with the database function that owns it. Anything else is a 404.
-const publicActions=new Map([['public.announcements','qoq_operations'],['public.event','qoq_operations'],['public.results','qoq_operations'],['public.catalog','qoq_points'],['order.status','qoq_points']]);
+const publicActions=new Map([['public.announcements','qoq_operations'],['public.event','qoq_operations'],['public.results','qoq_operations'],['public.catalog','qoq_points'],['order.status','qoq_points'],['public.peoplesChoice','qoq_award']]);
 const orgActions=new Map([
   ...['dashboard','candidate','judge','criterion','announcement','remove','lockRoster','unlockRoster','openScoring','lockTabulation','certifyResults','publishResults','unpublishResults','audit'].map(name=>['organizer.'+name,'qoq_operations']),
   ...['voting','orders','order','package','archivePackage','approvePackages','scheduleVoting','openVoting','closeVoting','setPayments','setPointsPublic','resolveHeld','adjust','resolveFlag','abandonOrder','finalizeVoting'].map(name=>['organizer.'+name,'qoq_points']),
-  ['organizer.edition','qoq_edition']
+  ['organizer.edition','qoq_edition'],
+  ['organizer.accessStatus','qoq_access'],['organizer.revokeJudgeCode','qoq_access'],
+  ...['awardStatus','publishPeoplesChoice','unpublishPeoplesChoice'].map(name=>['organizer.'+name,'qoq_award'])
 ]);
 const judgeActions=new Set(['judge.ballot','judge.save','judge.lock']);
 async function smallJson(request) {
@@ -110,6 +110,8 @@ async function competition(request,env,path) {
   if(judgeActions.has(action)){
     if(!['judge','preview'].includes(area))reject(404,'Not found.');
     if(!actor||!email)reject(401,'Sign in to your assigned judging account.');
+    const who=eventIdentity(request,env);
+    if(who.via==='session'&&who.role!=='judge')reject(403,'Sign in with your judge access code to score.');
     if(action==='judge.save'||action==='judge.lock')await edgeLimit(request,env,'ballot',120,60);
     return json(await run('qoq_operations',action,await smallJson(request)));
   }
@@ -123,7 +125,7 @@ async function competition(request,env,path) {
   if(env.QOQ_INTAKE_BACKEND==='legacy'&&!env.QOQ_SUPABASE_URL){
     if(action==='public.catalog')return json({voting:'not_configured',paymentsEnabled:false,packages:[],candidates:[],rate:{pesos:100,points:1000}});
     if(action==='public.announcements')return json({announcements:[]});
-    if(action==='public.results')return json({published:false});
+    if(action==='public.results'||action==='public.peoplesChoice')return json({published:false});
   }
   if(action==='order.status'){
     if(!ORDER_REF.test(data.orderRef||''))reject(404,'Order not found.');

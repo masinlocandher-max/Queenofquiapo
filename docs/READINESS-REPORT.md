@@ -97,7 +97,7 @@ Finding fixed: the original rounded to two decimals before ordering, so a near t
 
 Residual, not resolved:
 - **Single organizer account.** All organizer power sits with one email (`REVIEWER_EMAIL`). Separate reviewer, finance and tabulation roles are not built. Compensating control: every action is in the audit log.
-- **Sign-in depends on ChatGPT accounts** for the organizer and judges. Acceptable for a small named group; confirm each judge has one before the event. Supporters do not need an account: checkout is by email and the provider's verified payment.
+- ~~Sign-in depends on ChatGPT accounts~~ Resolved 21 Nov: staff sign in with email + password or access code; ChatGPT is optional.
 - **The database trusts the Worker's shared secret.** Anyone holding `QOQ_SERVER_SECRET` can act as the organizer. Rotate it if exposure is suspected.
 - **Rate limiting** depends on the D1 binding and on the platform supplying the visitor's address; unverified in production.
 - **Capacity** is untested. No concurrency figure is claimed.
@@ -112,7 +112,7 @@ See the table at the top of `docs/DEPLOYMENT.md`. In short: build and tests veri
 1. Coronation Night time and venue; Screening Day venue.
 2. Application closing date (none is set; the form stays open).
 3. Official judging criteria and weights, the number of judges, and the tie-breaking rule.
-4. What voting points decide and the award's name. The system keeps points and judges' scores separate until told otherwise.
+4. ~~What voting points decide~~ **Decided 21 Nov: the People’s Choice Award, separate from the title.** Still open: its tie rule, and whether an announced award stands if the winner’s payment is later refunded (the system currently keeps the announcement on the final snapshot).
 5. Whether point totals are shown publicly during voting.
 6. Voting open and close times, and the rule for payments confirmed after the deadline.
 7. Refund policy.
@@ -121,6 +121,7 @@ See the table at the top of `docs/DEPLOYMENT.md`. In short: build and tests veri
 10. An official contact channel and a data protection contact for the Privacy Notice, and how long applications are kept.
 11. Legal review of paid voting (permit, tax, consumer and privacy questions listed in `docs/PAYMENTS.md`).
 12. Who else, besides the single organizer account, needs access, and to what.
+13. Who holds the organizer password, and who can reset it (it is reset with `scripts/organizer-password.mjs` and the Supabase SQL editor).
 
 ## M. Event-day checklist
 
@@ -155,3 +156,13 @@ The platform was reviewed as if by an outside team, from security, money, scorin
 | 15 | The Privacy Notice promised a retention period, and the Terms declared decisions “final” — neither was decided by the organizers | Invented policy | Replaced with accurate, non-committal text; retention period listed as an open decision |
 
 Still open after the review (not fixable in code): the single organizer account; ChatGPT accounts for judges and the organizer; no confirmation email; the legal questions on paid voting; and everything about production infrastructure, which remains UNVERIFIED.
+
+## O. Changes on 21 November 2026
+
+**People’s Choice Award.** Voting points now decide the People’s Choice Award, named on the voting page, Voting Rules, Terms, desk and printed points report. It is announced on the Results page by a separate organizer action, only from the final points snapshot; a tie is shown as a tie and needs explicit acknowledgement; the winning total is shown only if the organizer chooses. Verified by `tests/db-award.mjs` and in the browser.
+
+**No ChatGPT account required.** Applicants and supporters never needed one. Staff now sign in with the site’s own accounts: the organizer with email + password, judges with email + an access code issued, reset or revoked from the desk. Passwords and codes are hashed (PBKDF2-SHA256, 100,000 iterations) before storage; sessions are host-only, HttpOnly, Secure, SameSite=Strict cookies signed with a key derived from the server secret and re-checked against the database on every request, so a reset or revocation takes effect at once. Ten wrong attempts lock an account for 15 minutes. ChatGPT sign-in still works as an option and can be hidden with `QOQ_CHATGPT_SIGNIN=off`. Verified by `tests/access.mjs` (7 tests) and by a full browser run in which the organizer and a judge never use ChatGPT.
+
+A bug found while testing — every site session was being rejected because of an ambiguous column name in the session check — was fixed before commit.
+
+Remaining limits: a judge should keep to one sign-in method (the first account used is bound to the ballot); there is still one organizer account; there is no self-service “forgot password” email because no email provider exists.
