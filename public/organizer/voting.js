@@ -75,7 +75,7 @@
     const active = d.candidates.filter(c => c.status === 'active'), weight = d.criteria.reduce((sum, c) => sum + Number(c.weight), 0);
     const t = d.tabulation, s = v.state;
     return [
-      [Number(d.applications.pending) === 0, 'Applications reviewed', d.applications.total + ' received · ' + d.applications.pending + ' awaiting a decision · ' + d.applications.approved + ' approved'],
+      [Number(d.applications.total) > 0 && Number(d.applications.pending) === 0, Number(d.applications.total) ? 'Applications reviewed' : 'Awaiting applications', d.applications.total + ' received · ' + d.applications.pending + ' awaiting a decision · ' + d.applications.approved + ' approved'],
       [active.length > 0 && active.every(c => c.number), 'Official roster numbered', active.length + ' active candidate' + (active.length === 1 ? '' : 's') + (active.some(c => !c.number) ? ' · some have no number' : '')],
       [active.length > 0 && active.every(c => c.published), 'Roster published with clearance', active.filter(c => c.published).length + ' of ' + active.length + ' on the public site'],
       [Boolean(d.round.rosterLockedAt), 'Roster locked', d.round.rosterLockedAt ? when(d.round.rosterLockedAt) : 'Lock once names, numbers and portraits are final'],

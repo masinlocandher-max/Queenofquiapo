@@ -6,18 +6,20 @@
 <script defer src="/organizer/desk.js"></script><script defer src="/organizer/operations.js"></script><script defer src="/organizer/voting.js"></script><script defer src="/organizer/review.js"></script>
 </head><body>
 <a class="skip" href="#desk">Skip to organizer desk</a>
-<header class="bar"><div class="bar-inner"><span class="brand"><img alt="" width="31" height="31" src="/assets/icon.png">Queen of Quiapo</span><span class="role"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5.5" y="10" width="13" height="10" rx="2"></rect><path d="M8.5 10V7a3.5 3.5 0 0 1 7 0v3"></path></svg>Organizer</span></div></header>
+<header class="bar"><div class="bar-inner"><span class="brand"><img alt="" width="31" height="31" src="/assets/icon.png">Queen of Quiapo</span><span class="role"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5.5" y="10" width="13" height="10" rx="2"></rect><path d="M8.5 10V7a3.5 3.5 0 0 1 7 0v3"></path></svg>Organizer</span></div><div class="session-bar"><!-- organizer-session --><nav aria-label="Account"><a href="https://queenofquiapo.com/" target="_blank" rel="noopener">View public site</a><a href="/signout-with-chatgpt?return_to=%2F" target="_top">Sign out</a></nav></div></header>
 <main class="wrap" id="desk">
-<div class="intro"><h1>Organizer desk</h1><p id="edition-line">Queen of Quiapo 2027</p></div>
+<div class="intro"><h1>Organizer desk</h1><p id="edition-line">Queen of Quiapo 2027</p><p class="help">Review applicants, prepare the official roster, and manage the event from one desk.</p></div>
 <nav class="desk-tabs" aria-label="Organizer areas">
   <a href="#overview">Overview</a><a href="#applications">Applications</a><a href="#roster">Candidates</a><a href="#judging">Judging</a>
   <a href="#voting">Voting &amp; revenue</a><a href="#results">Results</a><a href="#news">Announcements</a><a href="#audit">Audit log</a>
 </nav>
-<p class="status" id="ops-message" role="status">Checking organizer access…</p>
-<div class="action-row" id="ops-recovery" hidden><a href="/signin-with-chatgpt?return_to=%2Forganizer%2F" class="btn" target="_top" id="ops-signin" hidden>Sign in to manage the event</a><button class="btn quiet" id="ops-retry" type="button">Try again</button></div>
+<p class="status" id="ops-message" role="status" tabindex="-1">Checking organizer access…</p>
+<div class="action-row" id="ops-recovery" hidden><a href="/signin-with-chatgpt?return_to=%2Forganizer%2F" class="btn" target="_top" id="ops-signin" hidden>Sign in to manage the event</a><a class="btn" id="ops-switch" href="/signout-with-chatgpt?return_to=%2F" target="_top" hidden>Sign out and switch account</a><button class="btn quiet" id="ops-retry" type="button">Try again</button></div>
 
 <div id="dashboard" hidden>
 <section class="desk-section" id="overview" aria-labelledby="overview-h"><h2 id="overview-h" class="sr-only">Overview</h2>
+  <div class="desk-start"><a href="#applications"><strong>Review applications</strong><span>Screen submissions and record decisions</span></a><a href="#roster"><strong>Prepare the roster</strong><span>Assign numbers and publication clearance</span></a><a href="#judging"><strong>Set up judging</strong><span>Manage judges and scoring criteria</span></a></div>
+  <p class="small" id="desk-updated"></p>
   <div class="summary wide" aria-label="Event overview">
     <div><span>Applications to review</span><strong id="m-pending"></strong></div><div><span>Official candidates</span><strong id="candidate-count"></strong></div>
     <div><span>Judging</span><strong id="phase"></strong></div><div><span>Locked ballots</span><strong id="locked-count"></strong></div>
@@ -97,14 +99,14 @@
 </section>
 </div>
 
-<section id="applications" class="desk-section card board review" hidden><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m3 15 3-9h12l3 9v4H3zM3 15h5l2 2h4l2-2h5"></path></svg><h2>Application inbox</h2></div><p id="status" role="status">Checking organizer access…</p><a id="signin" class="btn" hidden target="_top" href="/signin-with-chatgpt?return_to=%2Forganizer%2F">Sign in to review</a>
+<section id="applications" class="desk-section card board review" hidden><div class="card-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m3 15 3-9h12l3 9v4H3zM3 15h5l2 2h4l2-2h5"></path></svg><h2>Application inbox</h2></div><p class="help">Review privately, record the screening decision, then add approved applicants to the official roster. Status changes do not send an email.</p><p id="status" role="status">Checking organizer access…</p><div class="action-row"><button class="btn quiet" id="inbox-retry" type="button" hidden>Retry loading applications</button></div>
 <div id="inbox" hidden>
   <div class="chips" id="status-chips" role="group" aria-label="Filter by status"></div>
-  <form id="inbox-search" class="inline-form"><label>Search<input name="q" type="search" maxlength="120" placeholder="Name, email, locality or reference"></label><label>Order<select name="sort"><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select></label><button class="btn quiet" type="submit">Search</button><a class="plain" href="/api/reviewer/export.csv" download>Export CSV</a></form>
-  <div id="rows" class="list"></div><button type="button" class="plain" id="more" hidden>Load more applications</button></div>
-<section id="detail" hidden><button type="button" class="plain" id="back">Back to applications</button><h3 id="candidate" tabindex="-1"></h3><p><span class="pill" id="app-status"></span> <span class="small" id="app-dup"></span></p>
-<div class="card decision"><h4>Screening decision</h4><div class="action-row" id="app-actions"></div><label>Note for the record <span class="optional">Optional</span><textarea id="app-note" rows="2" maxlength="1000"></textarea></label><div class="action-row"><button type="button" class="plain" id="app-add-note">Save note only</button><button type="button" class="btn" id="app-promote" hidden>Add to official roster</button></div><p class="small">Status changes are private. Nothing is shown to the applicant or the public from this screen.</p></div>
-<dl id="fields"></dl><div class="pictures" id="pictures"></div><h4>History</h4><ol class="history" id="app-history"></ol>
+  <form id="inbox-search" class="inline-form"><label>Search<input name="q" type="search" maxlength="120" placeholder="Name, email, locality or reference"></label><label>Order<select name="sort"><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select></label><button class="btn quiet" type="submit">Search</button><button class="plain" type="button" id="inbox-clear">Clear filters</button><a class="plain" href="/api/reviewer/export.csv" download>Export CSV</a></form>
+  <div id="rows" class="list" aria-busy="false"></div><button type="button" class="plain" id="more" hidden>Load more applications</button></div>
+<section id="detail" hidden><p class="help" id="detail-context"></p><button type="button" class="plain" id="back">Back to applications</button><h3 id="candidate" tabindex="-1"></h3><p><span class="pill" id="app-status"></span> <span class="small" id="app-dup"></span></p>
+<dl id="fields"></dl><div class="pictures" id="pictures"></div><div class="card decision"><h4>Screening decision</h4><div class="action-row" id="app-actions"></div><label>Note for the record <span class="optional">Optional</span><textarea id="app-note" rows="2" maxlength="1000"></textarea></label><div class="action-row"><button type="button" class="plain" id="app-add-note">Save note only</button><button type="button" class="btn" id="app-promote" hidden>Add to official roster</button></div><p class="small">Status changes are private. Nothing is shown to the applicant or the public from this screen.</p></div>
+<h4>History</h4><ol class="history" id="app-history"></ol>
 <details class="remove"><summary>Remove this application</summary><p>This erases the applicant’s information, review history and both photos. Use it for withdrawal or data-erasure requests.</p><button class="plain danger" id="remove" type="button">Permanently remove application</button></details></section></section>
 
 <section id="print-sheet" class="print-sheet" aria-hidden="true"></section>

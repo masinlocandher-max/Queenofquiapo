@@ -8,6 +8,7 @@
   const sections = ['overview','applications','roster','judging','voting','results','news','audit'];
 
   function tab() {
+    if (state.accessDenied) { for (const id of sections) el(id).hidden = true; return; }
     const current = sections.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'overview';
     for (const id of sections) el(id).hidden = id !== current;
     for (const link of document.querySelectorAll('.desk-tabs a')) {
@@ -21,15 +22,17 @@
   // Background refreshes never take the action lock, so they cannot swallow a button press.
   const quiet = task => task().catch(error => announce(error.message, true));
   let lastRefresh = Date.now();
-  const refreshIfIdle = () => { if (!data || document.hidden || Date.now() - lastRefresh < 15000 || document.querySelector('.edit-panel[open]') || document.activeElement?.matches('input,textarea,select')) return; quiet(() => dashboard()); };
+  const refreshIfIdle = () => { if (state.accessDenied || !data || document.hidden || Date.now() - lastRefresh < 15000 || document.querySelector('.edit-panel[open]') || document.activeElement?.matches('input,textarea,select')) return; quiet(() => dashboard()); };
   window.addEventListener('focus', refreshIfIdle); document.addEventListener('visibilitychange', refreshIfIdle); setInterval(refreshIfIdle, 30000);
   async function dashboard(text) {
     const fresh = await api('dashboard');
     if (!fresh.round || !Array.isArray(fresh.candidates) || !fresh.tabulation || !Array.isArray(fresh.criteria) || !Array.isArray(fresh.judges) || !Array.isArray(fresh.announcements)) {
       throw Error('The event desk could not load the current round. Please try again.');
     }
+    if (state.accessDenied) return;
+    el('desk-updated').textContent = 'Last updated ' + when(Date.now()) + ' · Philippine time';
     data = state.dashboard = fresh; lastRefresh = Date.now(); render(); el('dashboard').hidden = false; el('ops-recovery').hidden = true;
-    if (text || !loadedOnce) announce(text || 'Private organizer controls.');   // a background refresh keeps the last message on screen
+    if (text || !loadedOnce) announce(text || 'Organizer access verified. Choose a task below.');   // a background refresh keeps the last message on screen
     loadedOnce = true;
     window.QOQ.changed();
   }

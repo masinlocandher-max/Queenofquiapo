@@ -133,3 +133,37 @@ test('webhook streams are bounded without trusting Content-Length', async t=>{
   assert.equal((await worker.fetch(request,env)).status,413);
   assert.equal(upstream.mock.callCount(),0);
 });
+
+test('private entrance gives safe role-specific sign-in and wrong-account recovery without exposing the assigned email', async () => {
+  for (const host of [org,judge]) {
+    const anonymous=await call(host,'/');
+    assert.equal(anonymous.status,401);
+    const html=await anonymous.text();
+    assert.match(html,/Sign in with ChatGPT/); assert.match(html,/return_to=%2F/);
+    assert.match(html,/Candidate application/); assert.doesNotMatch(html,/owner@example.invalid|candidate-form|candidates-list/);
+    assert.match(anonymous.headers.get('content-security-policy'),/default-src 'none'/);
+  }
+  const denied=await call(org,'/',{headers:member});
+  assert.equal(denied.status,403);
+  const html=await denied.text();
+  assert.match(html,/Sign out and switch account/); assert.match(html,/\/signout-with-chatgpt\?return_to=%2F/);
+  assert.doesNotMatch(html,/owner@example.invalid|member@example.invalid|candidates-list/);
+});
+
+test('authorized organizer sees only their escaped account identity and explicit sign-out', async () => {
+  const email='owner<test>@example.invalid';
+  const response=await call(org,'/',{headers:{...owner,'oai-authenticated-user-email':email}}, {...baseEnv,REVIEWER_EMAIL:email});
+  assert.equal(response.status,200);
+  const html=await response.text();
+  assert.match(html,/Signed in as owner&lt;test&gt;@example.invalid/);
+  assert.doesNotMatch(html,/owner<test>/); assert.match(html,/\/signout-with-chatgpt\?return_to=%2F/);
+  assert.match(response.headers.get('cache-control'),/no-store/);
+});
+
+test('temporary assignment service failure offers a retry without displaying a private workspace', async t => {
+  t.mock.method(globalThis,'fetch',async()=>{throw new TypeError('network unavailable')});
+  const response=await call(judge,'/',{headers:member});
+  assert.equal(response.status,503);
+  const html=await response.text();
+  assert.match(html,/Try again/); assert.doesNotMatch(html,/scorecard-form|test-server-secret|network unavailable/);
+});

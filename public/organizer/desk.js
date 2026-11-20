@@ -13,16 +13,33 @@ window.QOQ = (() => {
   const count = value => new Intl.NumberFormat('en-PH').format(Number(value || 0));
   const announce = (message, error = false) => { el('ops-message').textContent = message; el('ops-message').classList.toggle('error', error); };
 
+  const state = {accessDenied:false};
+  function accessDenied(status) {
+    state.accessDenied = true; state.dashboard = null;
+    el('dashboard').hidden = el('applications').hidden = true;
+    document.querySelector('.desk-tabs').hidden = true;
+    const account = document.querySelector('.session-email');
+    if (account) account.textContent = status === 401 ? 'Session expired' : 'Organizer access unavailable';
+    el('ops-recovery').hidden = false;
+    el('ops-signin').hidden = status !== 401; el('ops-switch').hidden = status !== 403;
+    el('ops-retry').hidden = true;
+    document.querySelectorAll('.desk-section').forEach(section => { section.hidden = true; });
+    for (const id of ['rows','fields','pictures','app-history','candidate','order-detail','print-sheet']) el(id)?.replaceChildren();
+    el('app-note').value = '';
+    const message = status === 401 ? 'Your session has ended. Sign in again to continue.' : 'This account does not have organizer access. Sign out and use your assigned account.';
+    announce(message, true); el('ops-message').focus();
+    window.dispatchEvent(new Event('qoq-access-ended'));
+    return new Error(message);
+  }
   async function api(action, payload = {}) {
-    const response = await fetch('/api/competition/organizer.' + action, {method:'POST', credentials:'same-origin', cache:'no-store',
+    if (state.accessDenied) throw Error('Sign in again to continue.');
+    const response = await fetch('/api/competition/organizer.' + action, {method:'POST', credentials:'same-origin', cache:'no-store', signal:AbortSignal.timeout(25000),
       headers:{'Content-Type':'application/json', Accept:'application/json'}, body:JSON.stringify(payload)});
     const body = await response.json().catch(() => null);
-    if (response.status === 401 || response.status === 403) {
-      el('dashboard').hidden = true; el('ops-recovery').hidden = false; el('ops-signin').hidden = response.status !== 401;
-      throw Error(response.status === 401 ? 'Sign in with the organizer account to open the event desk.' : 'This account does not have organizer access.');
-    }
+    if (response.status === 401 || response.status === 403) throw accessDenied(response.status);
+    if (state.accessDenied) throw Error('Sign in again to continue.');
     if (!response.ok || !body || body.error) {
-      if (response.status === 503) throw Error('Event management is temporarily unavailable. Nothing was changed. Please try again.');
+      if (response.status === 503) throw Error('Event management is temporarily unavailable. Refresh to check the latest records before retrying a change.');
       throw Error(typeof body?.error === 'string' ? body.error : 'This change could not be confirmed. Refresh the desk and try again.');
     }
     return body;
@@ -75,6 +92,6 @@ window.QOQ = (() => {
     window.print();
   }
   const listeners = [];
-  return {el, make, when, peso, count, announce, api, perform, table, pill, checklist, print,
-    state: {}, onChange: fn => listeners.push(fn), changed: () => listeners.forEach(fn => fn())};
+  return {el, make, when, peso, count, announce, api, perform, table, pill, checklist, print, accessDenied,
+    state, onChange: fn => listeners.push(fn), changed: () => listeners.forEach(fn => fn())};
 })();

@@ -1,5 +1,6 @@
 import {createServer} from 'node:http';
 import {stat} from 'node:fs/promises';
+import {journeyPreview} from './journey-preview.mjs';
 
 // Render the built Worker locally. No production identity or data bindings.
 const entry = new URL('../dist/server/index.js', import.meta.url);
@@ -10,7 +11,7 @@ createServer(async (incoming, outgoing) => {
   try {
     const previewUrl = new URL(incoming.url, 'http://localhost:' + port);
     if (previewUrl.pathname === '/__preview/responsive') {
-      const pages = ['/', '/about/', '/schedule/', '/apply/', '/vote/'];
+      const pages = ['/', '/about/', '/schedule/', '/apply/', '/vote/', '/organizer/'];
       const page = pages.includes(previewUrl.searchParams.get('page')) ? previewUrl.searchParams.get('page') : '/';
       const width = [320, 390, 768].includes(Number(previewUrl.searchParams.get('width'))) ? Number(previewUrl.searchParams.get('width')) : 390;
       outgoing.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', 'Cache-Control':'no-store'});
@@ -26,7 +27,7 @@ createServer(async (incoming, outgoing) => {
       method, headers: incoming.headers,
       ...(!['GET', 'HEAD'].includes(method) ? {body: Buffer.concat(body)} : {})
     });
-    const response = await worker.fetch(request, {});
+    const response = await journeyPreview(request, worker) || await worker.fetch(request, {});
     outgoing.writeHead(response.status, Object.fromEntries(response.headers));
     outgoing.end(Buffer.from(await response.arrayBuffer()));
   } catch {
