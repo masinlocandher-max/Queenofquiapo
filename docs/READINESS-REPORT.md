@@ -1,3 +1,5 @@
+> Historical report from 14 November. The site has since been published and its dedicated backend configured. Read [SOURCE-RECONCILIATION-2026-11-20.md](SOURCE-RECONCILIATION-2026-11-20.md) for current verification. The package names below are historical; current names are Quartz, Amethyst, Sapphire, Emerald, Ruby and Diamond.
+
 # Queen of Quiapo 2027 — engineering readiness report
 
 **Follow-up:** See [RELEASE-VERIFICATION.md](RELEASE-VERIFICATION.md) for the independently rerun 43-test suite, payment-guard fixes, restored approved design and verified production blockers.

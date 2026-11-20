@@ -185,7 +185,7 @@ test('paid voting stays closed in production; in a rehearsal only a correctly si
   const {db, act, send} = platform(t, rehearsal);
   const candidate = (await act(org, 'organizer.candidate', owner, {name: 'Alma', number: 1, published: true, consentRef: 'On file'})).body.id;
   let catalog = (await act(vote, 'public.catalog')).body;
-  const pack = catalog.packages.find(p => p.name === 'Supporter');
+  const pack = catalog.packages.find(p => p.name === 'Amethyst');
   assert.equal(catalog.paymentsEnabled, false); assert.equal(catalog.packages.length, 6);
   const purchase = () => ({candidateId: candidate, packageId: pack.id, requestId: randomUUID(), email: 'Fan@Example.invalid'});
   assert.equal((await act(preview, 'order.create', {}, purchase())).status, 409);            // database gate still closed
@@ -241,7 +241,7 @@ test('paid voting stays closed in production; in a rehearsal only a correctly si
   const found = (await act(org, 'organizer.orders', owner, {q: 'pay_1'})).body.orders;
   assert.equal(found.length, 1); assert.equal(found[0].email, 'fan@example.invalid');
   assert.equal((await send(main, '/api/competition/export/orders.csv', {headers: owner})).status, 404);
-  assert.match(await (await send(org, '/api/competition/export/orders.csv', {headers: owner})).text(), /"QV-[A-F0-9]{32}","[^"]+","paid","credited","1","Alma","Supporter","5000","5000","500.00"/);
+  assert.match(await (await send(org, '/api/competition/export/orders.csv', {headers: owner})).text(), /"QV-[A-F0-9]{32}","[^"]+","paid","credited","1","Alma","Amethyst","5000","5000","500.00"/);
 
   // Switching the deployment flag off closes checkout at once; refunds for past orders still arrive.
   assert.equal((await deliver({id: 'evt_2', type: 'refunded', orderRef: order.orderRef, amountCentavos: 50000, currency: 'PHP'})).status, 200);

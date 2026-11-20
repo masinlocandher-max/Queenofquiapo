@@ -1,3 +1,5 @@
+> Historical review. Read [SOURCE-RECONCILIATION-2026-11-20.md](SOURCE-RECONCILIATION-2026-11-20.md) for current source verification and [PRODUCTION-RELEASE-2026-11-16.md](PRODUCTION-RELEASE-2026-11-16.md) for the deployment baseline: public version 16, configured Supabase and seven recorded migrations. Private version 11 and missing-backend statements below are historical. Paid voting remains disabled.
+
 # Release verification — 15 November 2026 (Asia/Manila)
 
 Reviewed source: `92c9b7c`, branch `claude/queen-of-quiapo-2027-so8cs2`.

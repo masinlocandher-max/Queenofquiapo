@@ -28,16 +28,20 @@
   }
   function render() {
     const candidates = (Array.isArray(catalog.candidates) ? catalog.candidates : []).filter(valid);
-    const packages = (Array.isArray(catalog.packages) ? catalog.packages : []).filter(p => typeof p?.id === 'string' && Number.isSafeInteger(p.points) && Number.isSafeInteger(p.priceCentavos) && p.priceCentavos === p.points * 10);
+    const packages = (Array.isArray(catalog.packages) ? catalog.packages : []).filter(p => typeof p?.id === 'string' && Number.isSafeInteger(p.points) && Number.isSafeInteger(p.priceCentavos) && p.points >= 1000 && p.priceCentavos >= 10000 && p.priceCentavos === p.points * 10);
     const live = catalog.paymentsEnabled === true && catalog.voting === 'open';
     candidateGrid.replaceChildren(...candidates.map(item => choice('candidate', item.id, candidateCard(item, catalog.pointsPublic === true), () => { candidate = item; requestId = newRequestId(); summary(); })));
     byId('roster-empty').hidden = candidates.length > 0;
     byId('candidate-help').hidden = !candidates.length;
     packageGrid.replaceChildren(...packages.map(item => {
-      const card = make('div', undefined, 'package-card');
-      card.append(make('p', item.name.toUpperCase(), 'eyebrow'), make('p', number(item.points), 'package-points'), make('p', 'voting points', 'package-unit'), make('p', peso(item.priceCentavos), 'package-price'));
+      const card = window.QOQPackageCard(item, live ? 'Select package' : 'Preview package');
       return choice('package', item.id, card, () => { pack = item; requestId = newRequestId(); summary(); });
     }));
+    const requested = new URLSearchParams(location.search).get('package');
+    if (!pack && requested) {
+      pack = packages.find(p => p.id === requested) || null;
+      if (pack) for (const input of packageGrid.querySelectorAll('input')) input.checked = input.value === pack.id;
+    }
     soon.hidden = live; checkout.hidden = !live;
     status.textContent = live ? 'Voting is open. Choose a candidate and a package below.'
       : catalog.voting === 'closed' || catalog.voting === 'finalized' ? 'Voting has closed for this edition. Thank you for supporting the queens of Quiapo.'

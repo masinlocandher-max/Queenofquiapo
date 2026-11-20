@@ -36,10 +36,14 @@ async function setup(t, {live = true} = {}) {
 test('PHP 100 buys exactly 1,000 points in every package, and the rate is a database constraint', {skip}, async t => {
   const {db, pkg} = await setup(t, {live: false});
   assert.deepEqual(Object.values(pkg).map(p => [p.name, p.points, p.priceCentavos]),
-    [['Starter', 1000, 10000], ['Supporter', 5000, 50000], ['Champion', 10000, 100000], ['Diamond', 25000, 250000], ['Royal', 50000, 500000], ['Crown', 100000, 1000000]]);
+    [['Quartz', 1000, 10000], ['Amethyst', 5000, 50000], ['Sapphire', 10000, 100000], ['Emerald', 25000, 250000], ['Ruby', 50000, 500000], ['Diamond', 100000, 1000000]]);
   for (const p of Object.values(pkg)) assert.equal(p.priceCentavos / 100 / 100 * 1000, p.points);
+  // Both inserts and edits below PHP 100 fail at the database, even at the correct rate.
+  assert.throws(() => exec(db, "insert into qoq_private.packages(name,points,price_centavos) values('Below minimum',999,9990)"), /packages_minimum_php_100/);
+  assert.throws(() => exec(db, "update qoq_private.packages set points=999,price_centavos=9990 where name='Quartz'"), /packages_minimum_php_100/);
+  assert.equal((await points(db, owner, 'organizer.package', {name: 'Below minimum', points: 999})).error.code, '23514');
   assert.throws(() => exec(db, "insert into qoq_private.packages(name,points,price_centavos) values('Cheap',1000,9000)"), /packages_fixed_rate/);
-  assert.throws(() => exec(db, "update qoq_private.packages set price_centavos=1 where name='Crown'"), /packages_fixed_rate/);
+  assert.throws(() => exec(db, "update qoq_private.packages set price_centavos=1 where name='Diamond'"), /packages_fixed_rate/);
   // A price in the request is ignored: the server derives it from the points.
   const id = ok(await points(db, owner, 'organizer.package', {name: 'Patron', points: 2500, priceCentavos: 1, price: 1})).id;
   assert.equal(one(db, `select price_centavos from qoq_private.packages where id='${id}'`), '25000');
@@ -51,7 +55,7 @@ test('PHP 100 buys exactly 1,000 points in every package, and the rate is a data
 
 test('payments are off by default and cannot be switched on without a provider and an approved catalog', {skip}, async t => {
   const {db, candidates, pkg} = await setup(t, {live: false});
-  const attempt = extra => points(db, null, 'order.create', {candidateId: candidates[0], packageId: pkg.Starter.id, email: 'fan@example.invalid', idempotencyKey: key(), gate: 'open', ...extra});
+  const attempt = extra => points(db, null, 'order.create', {candidateId: candidates[0], packageId: pkg.Quartz.id, email: 'fan@example.invalid', idempotencyKey: key(), gate: 'open', ...extra});
   const catalog = ok(await points(db, null, 'public.catalog'));
   assert.equal(catalog.paymentsEnabled, false); assert.equal(catalog.voting, 'not_configured'); assert.equal(catalog.candidates.length, 2);
   assert.match((await attempt()).error.message, /coming soon/i);
@@ -74,8 +78,8 @@ test('payments are off by default and cannot be switched on without a provider a
 test('a verified settlement credits the purchased points once; supporters may buy repeatedly', {skip}, async t => {
   const {order, event, totals, view} = await setup(t);
   // Candidate A: 1,000 + 5,000 + 10,000. Candidate B: 25,000. The same supporter buys three times.
-  for (const name of ['Starter', 'Supporter', 'Champion']) assert.equal(ok(await event(await order(0, name))).outcome, 'credited');
-  assert.equal(ok(await event(await order(1, 'Diamond', 'other@example.invalid'))).outcome, 'credited');
+  for (const name of ['Quartz', 'Amethyst', 'Sapphire']) assert.equal(ok(await event(await order(0, name))).outcome, 'credited');
+  assert.equal(ok(await event(await order(1, 'Emerald', 'other@example.invalid'))).outcome, 'credited');
   assert.deepEqual(await totals(), {'Candidate A': 16000, 'Candidate B': 25000});
   const v = await view();
   assert.deepEqual(v.candidates.map(c => [c.name, c.rank, c.purchases, c.share]), [['Candidate B', 1, 1, 60.98], ['Candidate A', 2, 3, 39.02]]);
@@ -85,7 +89,7 @@ test('a verified settlement credits the purchased points once; supporters may bu
 
 test('an order without a verified payment never earns points', {skip}, async t => {
   const {db, order, event, totals} = await setup(t);
-  const o = await order(0, 'Crown');
+  const o = await order(0, 'Diamond');
   assert.equal(o.status, 'created'); assert.equal(o.creditStatus, 'none');
   assert.deepEqual(await totals(), {'Candidate A': 0, 'Candidate B': 0});
   for (const type of ['processing', 'failed']) ok(await event(o, type));
@@ -105,7 +109,7 @@ test('an order without a verified payment never earns points', {skip}, async t =
 
 test('replayed, duplicated and concurrent notifications cannot credit twice', {skip}, async t => {
   const {db, order, event, totals} = await setup(t);
-  const o = await order(0, 'Royal');
+  const o = await order(0, 'Ruby');
   const same = {eventId: 'evt_fixed_1'};
   const burst = await Promise.all(Array.from({length: 30}, () => event(o, 'paid', same)));
   assert.equal(burst.filter(r => r.outcome === 'credited').length, 1);
@@ -127,7 +131,7 @@ test('replayed, duplicated and concurrent notifications cannot credit twice', {s
 
 test('many supporters paying at the same moment are all counted exactly once', {skip}, async t => {
   const {db, order, event, totals, view} = await setup(t);
-  const names = ['Starter', 'Supporter', 'Champion', 'Diamond'], value = {Starter: 1000, Supporter: 5000, Champion: 10000, Diamond: 25000};
+  const names = ['Quartz', 'Amethyst', 'Sapphire', 'Emerald'], value = {Quartz: 1000, Amethyst: 5000, Sapphire: 10000, Emerald: 25000};
   const orders = await Promise.all(Array.from({length: 60}, (_, i) => order(i % 2, names[i % 4], 'fan' + i + '@example.invalid')));
   await Promise.all(orders.flatMap(o => [event(o), event(o)]));            // every payment notified twice, all at once
   const expected = {'Candidate A': 0, 'Candidate B': 0};
@@ -140,19 +144,19 @@ test('many supporters paying at the same moment are all counted exactly once', {
 test('out-of-order and late provider events resolve to the true payment state', {skip}, async t => {
   const {order, event, totals} = await setup(t);
   // "failed" arrives, then the capture is confirmed: the payment is real and is credited.
-  const a = await order(0, 'Starter'); ok(await event(a, 'failed'));
+  const a = await order(0, 'Quartz'); ok(await event(a, 'failed'));
   assert.equal(ok(await event(a)).outcome, 'credited');
   // "failed", "expired" or "processing" after a settlement changes nothing.
   for (const type of ['failed', 'expired', 'cancelled', 'processing']) assert.equal(ok(await event(a, type)).outcome, 'ignored');
   // A refund notice before any payment is flagged, not applied.
-  const b = await order(1, 'Starter');
+  const b = await order(1, 'Quartz');
   assert.equal(ok(await event(b, 'refunded')).outcome, 'refund_without_payment');
   assert.deepEqual(await totals(), {'Candidate A': 1000, 'Candidate B': 0});
 });
 
 test('refunds and chargebacks reverse points with new ledger entries; history is never edited', {skip}, async t => {
   const {db, order, event, totals, view} = await setup(t);
-  const full = await order(0, 'Champion'), charge = await order(0, 'Supporter'), part = await order(1, 'Diamond');
+  const full = await order(0, 'Sapphire'), charge = await order(0, 'Amethyst'), part = await order(1, 'Emerald');
   for (const o of [full, charge, part]) ok(await event(o));
   assert.equal(ok(await event(full, 'refunded')).outcome, 'reversed');
   assert.equal(ok(await event(full, 'refunded')).outcome, 'ignored');                      // refund notified twice
@@ -184,13 +188,13 @@ test('refunds and chargebacks reverse points with new ledger entries; history is
 
 test('package history is reproducible after the catalog changes', {skip}, async t => {
   const {db, order, event, pkg} = await setup(t);
-  const o = await order(0, 'Starter'); ok(await event(o));
-  ok(await points(db, owner, 'organizer.archivePackage', {id: pkg.Starter.id}));
+  const o = await order(0, 'Quartz'); ok(await event(o));
+  ok(await points(db, owner, 'organizer.archivePackage', {id: pkg.Quartz.id}));
   const detail = ok(await points(db, owner, 'organizer.order', {orderRef: o.orderRef}));
-  assert.equal(detail.order.package, 'Starter'); assert.equal(detail.order.points, 1000); assert.equal(detail.order.amountCentavos, 10000);
+  assert.equal(detail.order.package, 'Quartz'); assert.equal(detail.order.points, 1000); assert.equal(detail.order.amountCentavos, 10000);
   assert.equal(detail.ledger.length, 1); assert.equal(detail.events[0].outcome, 'credited');
-  assert.equal(ok(await points(db, null, 'public.catalog')).packages.some(p => p.name === 'Starter'), false);
-  assert.match((await points(db, null, 'order.create', {candidateId: one(db, 'select candidate_id from qoq_private.orders'), packageId: pkg.Starter.id, email: 'fan@example.invalid', idempotencyKey: key(), gate: 'open'})).error.message, /available voting package/);
+  assert.equal(ok(await points(db, null, 'public.catalog')).packages.some(p => p.name === 'Quartz'), false);
+  assert.match((await points(db, null, 'order.create', {candidateId: one(db, 'select candidate_id from qoq_private.orders'), packageId: pkg.Quartz.id, email: 'fan@example.invalid', idempotencyKey: key(), gate: 'open'})).error.message, /available voting package/);
   // The public order view carries no purchaser or provider detail.
   const pub = ok(await points(db, null, 'order.status', {orderRef: o.orderRef}));
   for (const field of ['email', 'name', 'providerRef', 'provider', 'flag']) assert.ok(!(field in pub), field);
@@ -198,7 +202,7 @@ test('package history is reproducible after the catalog changes', {skip}, async 
 
 test('closing, late settlements and finalization follow recorded decisions, not assumptions', {skip}, async t => {
   const {db, order, event, totals, view} = await setup(t);
-  const early = await order(0, 'Starter'), late = await order(1, 'Crown'), late2 = await order(1, 'Royal'), never = await order(0, 'Royal');
+  const early = await order(0, 'Quartz'), late = await order(1, 'Diamond'), late2 = await order(1, 'Ruby'), never = await order(0, 'Ruby');
   ok(await event(early));
   assert.equal((await points(db, owner, 'organizer.finalizeVoting')).error.code, '55000');           // still open
   ok(await points(db, owner, 'organizer.closeVoting'));
@@ -232,7 +236,7 @@ test('closing, late settlements and finalization follow recorded decisions, not 
 
 test('purchased points and judges\' scores are separate systems', {skip}, async t => {
   const {db, order, event} = await setup(t);
-  ok(await event(await order(0, 'Crown')));
+  ok(await event(await order(0, 'Diamond')));
   ok(await ops(db, owner, 'organizer.judge', {name: 'Judge', email: 'j@example.invalid'}));
   ok(await ops(db, owner, 'organizer.criterion', {name: 'Overall', weight: 100}));
   ok(await ops(db, owner, 'organizer.openScoring'));

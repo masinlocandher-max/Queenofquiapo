@@ -126,11 +126,15 @@ test('upgrading a database that already holds a live edition keeps every record'
   exec(db, old(judge, 'judge.save', {scores: [{candidateId: a, criterionId: k, score: 91.5}, {candidateId: b, criterionId: k, score: 88}]})); exec(db, old(judge, 'judge.lock'));
   const ref = await (async () => { const r = 'QOQ-0123456789ABCDEF'; exec(db, `select public.qoq_intake('${secret}','create','${JSON.stringify({reference: r, requestKey: hex('k'), fingerprint: hex('f'), storageKey: randomUUID(),
     profile: {legalName: 'L', femaleName: 'F', email: 'e@example.invalid', locality: 'Manila', heightCm: 170, bustIn: 34, waistIn: 26, hipsIn: 35, consentVersion: 'screening-v1'}, portraitType: 'image/jpeg', swimsuitType: 'image/png'})}'::jsonb)`); return r; })();
-  const before = exec(db, 'select (select count(*) from qoq_private.candidates),(select count(*) from qoq_private.scores),(select count(*) from qoq_private.votes),(select count(*) from qoq_private.audit),(select count(*) from qoq_private.applications)');
+  const before = exec(db, "select (select count(*) from qoq_private.candidates),(select count(*) from qoq_private.scores),(select count(*) from qoq_private.votes),(select count(*) from qoq_private.audit where action <> 'package.rename'),(select count(*) from qoq_private.applications)");
 
+  const auditBefore = exec(db, "select jsonb_agg(to_jsonb(a)-'details'-'edition_id' order by id) from qoq_private.audit a");
   migrate(db, migrationFiles().slice(3));
+  assert.equal(exec(db, "select jsonb_agg(to_jsonb(a)-'details'-'edition_id' order by id) from qoq_private.audit a where action <> 'package.rename'"), auditBefore);
+  assert.equal(exec(db, "select count(*) from qoq_private.audit where action <> 'package.rename' and edition_id='qoq-2027'"), String(JSON.parse(auditBefore).length));
+  assert.equal(exec(db, "select count(*) from qoq_private.audit where action='package.rename'"), '6');
 
-  assert.equal(exec(db, 'select (select count(*) from qoq_private.candidates),(select count(*) from qoq_private.scores),(select count(*) from qoq_private.votes),(select count(*) from qoq_private.audit),(select count(*) from qoq_private.applications)'), before);
+  assert.equal(exec(db, "select (select count(*) from qoq_private.candidates),(select count(*) from qoq_private.scores),(select count(*) from qoq_private.votes),(select count(*) from qoq_private.audit where action <> 'package.rename'),(select count(*) from qoq_private.applications)"), before);
   assert.equal(exec(db, 'select voting,phase from qoq_private.settings'), 'closed|scoring');                    // 'ended' became 'closed'; scoring continues
   assert.equal(exec(db, "select count(*) from qoq_private.scores where edition_id='qoq-2027'"), '2');
   const dash = ok(await ops(db, owner, 'organizer.dashboard'));

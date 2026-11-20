@@ -1,34 +1,20 @@
 # Deployment and activation
 
-Read [RELEASE-VERIFICATION.md](RELEASE-VERIFICATION.md) first. Production currently uses D1/R2 intake, not the Supabase backend assumed by the sequence below. Preserve access to existing application records and photos before any backend switch.
+Read [SOURCE-RECONCILIATION-2026-11-20.md](SOURCE-RECONCILIATION-2026-11-20.md) for the current source verification and [PRODUCTION-RELEASE-2026-11-16.md](PRODUCTION-RELEASE-2026-11-16.md) for the production baseline. The public site is version 16 with Supabase configured. The previous D1-only/private-site description is historical.
 
-## What I could and could not verify (14 November 2026)
+## Source reconciliation authorized on 20 November
 
-| Item | Status |
-| --- | --- |
-| Build, 41 automated tests, browser run at 320–1280 px | **Verified locally** |
-| Migrations on a clean database and over an existing live edition | **Verified locally** (PostgreSQL 16; production Supabase runs 17) |
-| `queenofquiapo.com`, `www`, `org.`, `judge.`, `vote.` DNS, TLS and routing | **UNVERIFIED** — the build environment's network policy blocks these hosts |
-| Hosting project and deployed version | **UNVERIFIED** — the site is hosted on the ChatGPT Sites runtime (`queen-of-quiapo.fbautisat23.chatgpt.site`); there is no deploy access from this repository |
-| Supabase project, applied migrations, Edge Function, private bucket | **UNVERIFIED** — the connected Supabase account holds only two unrelated, inactive projects; no Queen of Quiapo project is visible |
-| Secrets and environment variables | **UNVERIFIED** — names are documented in `.env.example`; values were never visible |
+1. Synchronize the already-live public files into GitHub PR #1, preserving the Sites project identity and D1/R2 bindings.
+2. Align migration filenames with the seven existing production migration records using [PRODUCTION-MIGRATION-MAP-2026-11-16.json](PRODUCTION-MIGRATION-MAP-2026-11-16.json). Every SQL body is unchanged and already applied. Do not run these migrations again or edit production migration history.
+3. Synchronize the missing gemstone migration and current release documentation into the Sites source repository. Saving source does not require a new production deployment.
+4. Run the corrected suite against a disposable local database with QOQ_REQUIRE_TEST_DB=1. Keep the PR draft until the source review is accepted.
+5. Source reconciliation preserves the deployed application, draft PR status, backend, payment gates and public audience. It does not activate purchases or approve commercial terms.
 
-Nothing in this branch has been deployed. Production is exactly as it was.
+## Future deployments
 
-## Release sequence
+Capture the then-current live version and migration ledger before proposing any change. Review a version-specific diff and backup/recovery plan. Keep application data and private media available; never reset production to reconcile source. Deploy only a reviewed saved version within the organizer-authorized scope, preserve the public audience, and recheck the catalog and payment gates. A rollback must be reviewed for compatibility with the current database; an arbitrary older Worker may not support it. Never assume a catalog code change authorizes a payment launch.
 
-1. **Back up** the production database (Supabase dashboard → Database → Backups, or `pg_dump`).
-2. **Rehearse the migration** on a Supabase branch or a restored copy: apply `supabase/migrations` in filename order. The three files dated `20261114…` are additive; they delete nothing and keep legacy votes read-only.
-3. **Apply to production** in a quiet period. They run in seconds.
-4. **Deploy the Worker** from this branch (`npm run build`, then publish `dist/` through Sites).
-5. **Do not set any payment variable.** Leave `QOQ_PAYMENTS_ENABLED` unset.
-6. **Smoke test** (below). Keep `QOQ_CSP` unset (report-only) until sign-in is confirmed, then set `QOQ_CSP=enforce`.
-
-Order matters: the new Worker calls database functions that exist only after step 3. Deploying the Worker first would make the organizer desk and voting page show "temporarily unavailable" (applications would still be accepted).
-
-**Rollback:** redeploy the previous Worker build. The new tables and columns can stay; the previous Worker ignores them. The one behaviour that does not roll back is the retired one-vote ballot — by design.
-
-## Production smoke test (non-destructive)
+## Future acceptance checks
 
 - [ ] `https://queenofquiapo.com/` loads over HTTPS; `www` redirects or serves the same site
 - [ ] `/vote/` shows six packages and "Payment coming soon"; there is no pay button
@@ -37,7 +23,7 @@ Order matters: the new Worker calls database functions that exist only after ste
 - [ ] Signed in as the organizer: the desk loads, Overview shows the readiness list
 - [ ] Signed in as any other account on `org.`: "does not have access"
 - [ ] `https://judge.queenofquiapo.com/` signed out: sign-in prompt; signed in as a non-judge: no access
-- [ ] `POST /api/competition/order.create` returns 409 "coming soon"
+- [ ] Exercise order creation refusal in an isolated rehearsal. Do not POST to the production order route without approval; even refusal may update rate-limit records.
 - [ ] Verify application availability without submitting synthetic production records; perform submission/review/removal in an explicitly isolated rehearsal
 - [ ] In the isolated rehearsal, Organizer desk → Audit log shows the authorized removal
 
@@ -54,6 +40,7 @@ Database suites need a local PostgreSQL (`QOQ_TEST_PG`, default `postgres://post
 | `worker-access.mjs` | Host and role isolation, secret handling, checkout refusal, rate limits |
 | `db-tabulation.mjs` | Weighted scoring against an independent calculator, ties, near ties, locks, snapshot, certification, concurrency |
 | `db-points.mjs` | Fixed rate, payment gates, crediting, duplicates, 60 concurrent payments, refunds, reversals, late settlement, finalization |
+| `db-stone-upgrade.mjs` | Preserves applications, candidate and package IDs, historical purchases, credited points and audit history through the gemstone migration |
 | `db-intake.mjs` | Status lifecycle, inbox, promotion, roster lock, upgrade over live data, privileges |
 | `e2e-platform.mjs` | Real HTTP through the Worker into PostgreSQL: application reliability, private review, a judging night, a signed rehearsal payment, security headers |
 | `edition-consistency.mjs` | Every page, calendar file and the database seed agree with `config/edition.json` |

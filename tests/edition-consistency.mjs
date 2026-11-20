@@ -17,10 +17,10 @@ test('calendar files match the edition', () => {
 });
 
 test('the database seed matches the edition', () => {
-  const sql = read('supabase/migrations/20261114100000_qoq_editions_lifecycle.sql');
+  const sql = read('supabase/migrations/20261114183420_20261114100000_qoq_editions_lifecycle.sql');
   for (const text of [`'${edition.id}'`, `'${edition.name}'`, `'${edition.theme}'`, `'${edition.timezone}'`, `'${edition.organizer}'`,
     `'${edition.screening.date} ${edition.screening.start}:00+08'`, `'${edition.screening.date} ${edition.screening.end}:00+08'`, `'${edition.coronation.date}'`]) assert.ok(sql.includes(text), text);
-  const points = read('supabase/migrations/20261114101000_qoq_points_ledger.sql');
+  const points = read('supabase/migrations/20261114183422_20261114101000_qoq_points_ledger.sql');
   assert.ok(points.includes('price_centavos = points::bigint * ' + edition.pointsRate.pesos * 100 / edition.pointsRate.points));
 });
 
