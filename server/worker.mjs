@@ -27,6 +27,7 @@ export default {
         if(path.startsWith('/api/reviewer/')&&!['preview','org'].includes(area))return hidden();
         if(path.startsWith('/api/applications')&&!['preview','public'].includes(area))return hidden();
         if(path==='/api/applications'&&request.method==='POST')await edgeLimit(request,env,'intake',60,600);   // Screening Day: many applicants on one venue Wi-Fi
+        if(path.startsWith('/api/applications/')&&['POST','DELETE'].includes(request.method))await edgeLimit(request,env,'applicant',60,600);   // status checks and withdrawals
         return await handleApi(request,env);
       }catch(e){return json({error:e instanceof IntakeError?e.message:'The service is temporarily unavailable. Please try again.'},e instanceof IntakeError?e.status:503);}
     }

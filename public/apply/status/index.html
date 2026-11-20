@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#090c20">
+  <meta name="description" content="Check that your Queen of Quiapo application arrived, or withdraw it.">
+  <meta property="og:title" content="Application status · Queen of Quiapo">
+  <meta property="og:description" content="Check that your Queen of Quiapo application arrived, or withdraw it.">
+  <title>Application status · Queen of Quiapo</title>
+  <link rel="icon" href="/assets/icon.png">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/subpages.css">
+  <link rel="stylesheet" href="/application-form.css">
+  <script src="/script.js" defer></script>
+  <script src="/apply/status.js" defer></script>
+  <link rel="stylesheet" href="/pearl.css">
+  <link rel="stylesheet" href="/refinement.css">
+  <link rel="stylesheet" href="/pageant.css">
+  <link rel="stylesheet" href="/voting.css">
+</head>
+<body class="pearl-site page-apply subpage application">
+<a class="skip" href="#application">Skip to application</a>
+<header class="mast"><div class="mast-inner">
+    <a class="mast-brand" href="/" aria-label="Queen of Quiapo homepage"><img src="/assets/icon.png" alt="" width="32" height="32"><span>Queen of Quiapo<small>FAITH · TRADITION · GRACE</small></span></a>
+    <nav class="desk-nav" aria-label="Main navigation"><a href="/about/">The Pageant</a><a href="/schedule/">Schedule</a><a href="/candidates/">Candidates</a><a href="/vote/">Voting</a><a href="/apply/" aria-current="page">Apply Now</a></nav>
+    <button class="menu-trigger icon-button" type="button" aria-haspopup="dialog" aria-controls="menu-dialog" aria-label="Open navigation" data-open="menu-dialog"><svg viewBox="0 0 28 20" aria-hidden="true"><path d="M2 5h24M2 15h24"/></svg></button>
+  </div></header>
+<main id="content">
+  <header class="subpage-hero"><div class="subpage-wrap">
+    <p class="eyebrow">CANDIDATE APPLICATION</p>
+    <h1>Your <em>application</em></h1>
+    <p class="subpage-lead">Check that your application arrived, or withdraw it. You need the reference number from your receipt.</p>
+  </div></header>
+  <div class="application-wrap status-wrap">
+    <section class="form-part" aria-labelledby="check-title">
+      <h2 class="status-heading" id="check-title">Check your application</h2>
+      <form id="status-form" class="field-grid" novalidate>
+        <label>Reference number<input name="reference" required maxlength="24" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="QOQ-…" inputmode="text"></label>
+        <label>Email address you applied with<input name="email" type="email" required maxlength="254" autocomplete="email" inputmode="email"></label>
+        <div><button class="pearl" type="submit" id="status-submit">Check status</button></div>
+      </form>
+      <p id="status-error" class="submit-error" role="alert" tabindex="-1" hidden></p>
+      <div class="receipt status-result" id="status-result" hidden aria-live="polite">
+        <p class="eyebrow" id="result-ref"></p>
+        <h3 id="result-title" tabindex="-1"></h3>
+        <p id="result-body"></p>
+        <p class="small-note" id="result-time"></p>
+      </div>
+      <p class="section-help">For your privacy, this page shows only whether your application arrived and how far review has gone. Screening decisions are given to you directly by the organizers.</p>
+    </section>
+    <section class="form-part" aria-labelledby="withdraw-title">
+      <h2 class="status-heading" id="withdraw-title">Withdraw your application</h2>
+      <p class="section-help">Withdrawing permanently removes your details and both photographs. You need the private withdrawal key shown on your receipt. If you no longer have it, ask the organizers to remove your application.</p>
+      <details class="withdrawal" id="withdraw-panel"><summary>Withdraw my application</summary>
+        <form id="withdraw-form" class="field-grid" novalidate>
+          <label>Reference number<input name="reference" required maxlength="24" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
+          <label>Private withdrawal key<input name="key" required maxlength="40" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+          <label class="consent"><input type="checkbox" name="sure" required><span>I understand this cannot be undone.</span></label>
+          <div><button type="submit" id="withdraw-submit">Withdraw permanently</button></div>
+        </form>
+        <p id="withdraw-error" class="submit-error" role="alert" tabindex="-1" hidden></p>
+      </details>
+      <div class="receipt" id="withdraw-done" hidden><h3 tabindex="-1" id="withdraw-done-title">Application withdrawn</h3><p>Your application and both photographs have been removed.</p></div>
+    </section>
+    <p><a class="quiet-link" href="/apply/">Back to the application form</a></p>
+  </div>
+</main>
+<footer class="site-foot"><div class="footer-main pageant-shell"><div><a class="footer-title" href="/">Queen of Quiapo</a><p class="footer-edition">THE 2027 EDITION</p></div><nav aria-label="Footer navigation"><a href="/about/">The Pageant</a><a href="/schedule/">Schedule</a><a href="/candidates/">Candidates</a><a href="/vote/">Voting</a><a href="/apply/" aria-current="page">Apply Now</a></nav></div>
+  <div class="foot-inner"><address>Barangay 306, Quiapo, Manila</address><nav class="foot-legal" aria-label="Rules and policies"><a href="/voting-rules/">Voting Rules</a><a href="/privacy/">Privacy Notice</a><a href="/terms/">Terms</a></nav><p>This website is managed by <strong>FMB&amp;CO.</strong></p></div>
+</footer>
+<dialog id="menu-dialog" class="menu-dialog" aria-label="Main navigation">
+  <div class="dialog-top"><span>The Pageant</span><button class="icon-button close" aria-label="Close navigation" type="button" data-close><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19"/></svg></button></div>
+  <nav aria-label="Mobile navigation"><a href="/about/">The Pageant</a><a href="/schedule/">Schedule</a><a href="/candidates/">Candidates</a><a href="/vote/">Voting</a><a href="/apply/" aria-current="page">Apply Now</a></nav>
+</dialog>
+</body></html>

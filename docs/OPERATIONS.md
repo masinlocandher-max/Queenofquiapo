@@ -8,7 +8,10 @@ For the organizer and tabulation staff. Everything happens in the organizer desk
 2. A yellow **Possible duplicate** tag means the same email or mobile number applied twice. Open both before deciding.
 3. Use **Export CSV** for the registration desk list. The export is recorded in the audit log. Treat the file as confidential and delete it after the event.
 4. Applicants are told on their receipt to come 3:00–4:00 PM for registration. The venue still says "to be announced" on the website — publish it as an Announcement once confirmed.
-5. Confirmation emails are **not** sent by this system. Applicants keep their on-screen receipt.
+5. Confirmation emails are **not** sent by this system. Applicants keep their receipt (reference number + private withdrawal key) and can check at any time on `queenofquiapo.com/apply/status/` with their reference number and email.
+6. What applicants see there: *Received* → *In review* → *Please expect a message* (when you mark **Correction requested**) → *Reviewed* (for qualified, screened, approved **and** not selected alike). The page never reveals a decision: tell each applicant the result yourself.
+7. Set the application closing time under **Overview → Edition → Record confirmed details**. The form shows the deadline, and closes itself at that moment. Record the screening venue there too: it then appears on every new receipt.
+8. An applicant who lost her withdrawal key can ask you to remove her application (Applications → open it → Remove this application).
 
 ## On Screening Day
 

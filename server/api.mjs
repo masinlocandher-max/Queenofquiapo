@@ -132,7 +132,12 @@ function keys(reference) {
 }
 
 function receiptForRetry(row, fingerprint) {
-  if (row.fingerprint !== fingerprint) reject(409, 'This submission ID was already used. Reload the form for a new application.');
+  // Only the browser holding this form's private id can reach this. If its first attempt already arrived (for example the
+  // reply was lost and the applicant changed something before retrying), tell her so and show that receipt.
+  if (row.fingerprint !== fingerprint) {
+    return json({error: 'Your application from this form had already arrived. Changes made after that were not sent; contact the organizers to correct anything.',
+      reference: row.reference, submittedAt: row.submittedAt || null, alreadyReceived: true}, 409);
+  }
   return json({reference: row.reference, submittedAt: row.submittedAt || null});
 }
 
@@ -229,6 +234,22 @@ async function removeApplication(env, row, actor) {
   return json({ok:true});
 }
 
+// What an applicant may learn about her own application: that it arrived, and a coarse stage. Screening decisions are not
+// disclosed here; the organizers contact applicants directly. Needs both the reference number and the email used.
+const APPLICANT_STAGES = {submitted:'received', under_review:'review', correction_requested:'correction', qualified:'reviewed',
+  screened:'reviewed', approved:'reviewed', not_selected:'reviewed', withdrawn:'withdrawn'};
+async function applicantStatus(request, env) {
+  requireSameOrigin(request);
+  const input = await smallJson(request);
+  const reference = typeof input.reference === 'string' ? input.reference.trim().toUpperCase() : '';
+  const email = typeof input.email === 'string' ? input.email.trim().toLowerCase() : '';
+  const notFound = 'No application matches that reference number and email address. Check both and try again.';
+  if (!REFERENCE.test(reference) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) reject(404, notFound);
+  const row = await intakeRpc(env, 'details', {reference});
+  if (!row.reference || String(row.email || '').toLowerCase() !== email) reject(404, notFound);
+  return json({reference: row.reference, submittedAt: row.submittedAt, stage: APPLICANT_STAGES[row.status] || 'received'});
+}
+
 async function withdraw(request,env,reference) {
   requireSameOrigin(request);
   const token = request.headers.get('x-application-token') || '';
@@ -303,6 +324,10 @@ export async function handleApi(request,env) {
     if (path === '/api/applications') {
       if (request.method !== 'POST') reject(405,'Method not allowed.');
       return await submit(request,env);
+    }
+    if (path === '/api/applications/status') {
+      if (request.method !== 'POST') reject(405,'Method not allowed.');
+      return await applicantStatus(request,env);
     }
     if (request.method==='DELETE' && path.startsWith('/api/applications/')) {
       return await withdraw(request,env,path.slice('/api/applications/'.length));

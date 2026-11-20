@@ -166,3 +166,24 @@ Still open after the review (not fixable in code): the single organizer account;
 A bug found while testing — every site session was being rejected because of an ambiguous column name in the session check — was fixed before commit.
 
 Remaining limits: a judge should keep to one sign-in method (the first account used is bound to the ballot); there is still one organizer account; there is no self-service “forgot password” email because no email provider exists.
+
+## P. Applicant journey, 22 November 2026
+
+Reviewed as an applicant on a phone with Philippine mobile data. Verified end to end in an emulated phone browser with throttled upload, and by `tests/applicant.mjs` (5 tests; suite now 64).
+
+| Problem an applicant would hit | Now |
+| --- | --- |
+| Photos over 5 MB rejected — common for current phone cameras (12–50 MP) | Photos are resized on the phone (longest side 2,400 px, JPEG) before upload. A 13.1 MB camera photo arrived as 2.8 MB. |
+| Hidden GPS location of the applicant’s home sent to the organizers | Re-encoding removes location and camera data; verified on the stored file. The Privacy Notice now says so. |
+| No upload progress; a 90-second cut-off could kill a slow but working upload | Live percentage and progress bar; five-minute allowance. |
+| An accidental reload lost everything typed | Typed answers are kept for that browser tab (not photos, never after the tab closes — shared phones). |
+| A reload after a lost reply created a duplicate application | The form’s private id survives a reload; a retry returns the same receipt. A changed retry after the first arrived now shows that receipt with a clear note instead of an error. |
+| A reload after success showed an empty form | The receipt stays on screen; “Submit another application” starts fresh for someone else on the same phone. |
+| No way to know later whether the application arrived | `/apply/status/` with reference + email shows a coarse stage. Decisions are not disclosed; one message for every mismatch. Rate limited. |
+| Withdrawal only possible while the receipt was open | Receipt shows a private withdrawal key; withdraw any time, from any device, on the status page. |
+| A closed application window was discovered only after filling the form and uploading | The form shows the deadline in advance and says so before anything is typed when closed. |
+| Robotic validation (“Value must be ≥ 100”) | Plain messages with an example for every measurement. |
+| Receipt always said the venue was “to be announced” | Shows the screening venue once the organizer records it. |
+| No link to privacy information at the consent | Consent links to the Privacy Notice. |
+
+Not changed, by design: the photo requirements, the screening guide and every field the organizers defined. No confirmation email (no email provider exists).

@@ -26,3 +26,22 @@
 
 .withdrawal{padding-top:18px;margin-top:22px;border-top:1px solid var(--rule);font:400 14px/1.55 var(--sans)}
 .withdrawal summary{color:var(--soft);cursor:pointer;padding:8px 0;width:fit-content}.withdrawal button{display:inline-block;min-height:44px;margin:0 9px 7px 0;padding:7px 11px;border:1px solid var(--rule);border-radius:7px;font:500 14px/1.4 var(--sans)}.withdrawal button:disabled{opacity:.6}
+/* Applicant journey polish */
+.apply-window{font:600 14px/1.5 var(--sans);color:#3c2a5c;margin:.4rem 0 1rem}
+.application-notice.soft{border-left-color:#9b7fbf;background:#f4eefa;color:#3a2f48}
+.photo-tips{margin:0 0 16px;font-size:14px;line-height:1.6}.photo-tips summary{cursor:pointer;font-weight:600;padding:.7rem 0;display:list-item}.photo-tips ul{margin:.3rem 0 0;padding-left:1.2rem}
+.photo-ready{font-size:13px;margin:6px 0 0;color:#3b6b45}.photo-ready:empty{display:none}
+.submit-meter{display:block;width:100%;height:10px;margin:14px 0 4px;accent-color:#5d4580}
+.copy-button{margin-left:.4rem;min-height:36px;padding:.25rem .7rem;border:1px solid #b9a7cc;border-radius:999px;background:#fff;color:#3c2a5c;font:600 12px/1 var(--sans);cursor:pointer}
+.receipt-key{margin:1rem 0;font-size:14px}.receipt-key summary{cursor:pointer;font-weight:600;padding:.7rem 0;display:list-item}
+.receipt-key code{font:600 14px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere;background:#f4eefa;padding:.2rem .4rem;border-radius:4px}
+.receipt-actions{display:flex;flex-wrap:wrap;gap:.2rem 1.4rem}
+.status-wrap .form-part{margin-bottom:28px}
+.status-heading{font:400 clamp(24px,4.4vw,32px)/1.15 var(--serif);margin:0 0 14px;color:#241d33}
+.status-result{margin-top:18px}.status-result h3{font:400 26px/1.2 var(--serif);margin:.2rem 0}.small-note{font-size:13px;opacity:.8}
+#withdraw-submit{min-height:48px;padding:.6rem 1.1rem;border:1px solid #a13e68;border-radius:999px;background:#fff;color:#7e2643;font:600 14px/1 var(--sans);cursor:pointer}
+@media print{.receipt-key{display:block}.copy-button,.receipt-actions{display:none!important}}
+.photo-tips>summary,.receipt-key>summary{list-style:none}
+.photo-tips>summary::-webkit-details-marker,.receipt-key>summary::-webkit-details-marker{display:none}
+.photo-tips>summary::before,.receipt-key>summary::before{content:"+";display:inline-block;width:1.3em;font-weight:700;color:#5d4580}
+.photo-tips[open]>summary::before,.receipt-key[open]>summary::before{content:"−"}

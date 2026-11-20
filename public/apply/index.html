@@ -30,21 +30,24 @@
   <header class="subpage-hero"><div class="subpage-wrap">
     <p class="eyebrow">CANDIDATE APPLICATION</p>
     <h1>Apply for<br><em>Queen of Quiapo</em></h1>
-    <p class="subpage-lead">Send your details and two photos for screening. Have a close-up and a full-body swimsuit photo ready, both against a white background.</p>
-    <div class="subpage-actions"><a class="pearl" href="#application">Start application</a><a class="quiet-link" href="/schedule/">Pageant Schedule</a></div>
+    <p class="subpage-lead">Send your details and two photos for screening. Have a close-up and a full-body swimsuit photo ready, both against a white background. It takes about ten minutes.</p>
+    <p class="apply-window" id="apply-window" hidden></p>
+    <div class="subpage-actions"><a class="pearl" href="#application">Start application</a><a class="quiet-link" href="/apply/status/">Already applied? Check your application</a></div>
   </div></header>
   <div class="application-wrap" id="application">
     <noscript><p class="application-notice">Please enable JavaScript in your browser to send your application and receive your reference number.</p></noscript>
     <nav class="form-index" aria-label="Application sections"><h2>Application sections</h2><ol><li><a href="#candidate-details">Candidate details</a></li><li><a href="#measurements">Height and vital stats</a></li><li><a href="#profile">Your pageant profile</a></li><li><a href="#photos">Required photographs</a></li><li><a href="#submit">Send application</a></li></ol></nav>
     <form id="candidate-form" method="post" enctype="multipart/form-data" action="/api/applications">
       <input type="hidden" name="submissionId">
-      <p class="form-guide">Complete the required fields. Fields marked optional may be left blank.</p>
+      <div class="application-notice" id="apply-closed" role="status" hidden></div>
+      <p class="application-notice soft" id="draft-restored" role="status" hidden>We kept what you typed before the page reloaded. Please choose your two photos again.</p>
+      <p class="form-guide">Complete the required fields. Fields marked optional may be left blank. What you type stays on this page if it reloads.</p>
       <fieldset class="form-part"><legend id="candidate-details"><span>01</span> Candidate details</legend>
         <div class="field-grid">
           <label>Legal name<input type="text" name="legalName" required maxlength="120" autocomplete="name"></label>
           <label>Female name<input type="text" name="femaleName" required maxlength="120" autocomplete="nickname" aria-describedby="female-name-note"><small id="female-name-note">The name you use in pageants.</small></label>
           <label>Email address<input type="email" name="email" required maxlength="254" autocomplete="email"></label>
-          <label>Mobile number <small class="optional">(optional)</small><input type="tel" name="mobile" inputmode="tel" maxlength="32" autocomplete="tel"></label>
+          <label>Mobile number <small class="optional">(optional)</small><input type="tel" name="mobile" inputmode="tel" maxlength="32" autocomplete="tel" aria-describedby="mobile-note"><small id="mobile-note">For example 0917 123 4567. Organizers may text you about screening.</small></label>
           <label class="wide">City or municipality you represent<input type="text" name="locality" required maxlength="120" autocomplete="address-level2"></label>
         </div>
       </fieldset>
@@ -66,13 +69,15 @@
         </div>
       </fieldset>
       <fieldset class="form-part"><legend id="photos"><span>04</span> Required photographs</legend>
-        <p class="section-help" id="photo-formats">Use a plain white background for both photos. Choose a JPG, PNG or WebP file up to 5 MB each. On iPhone, export HEIC photos as JPEG before uploading.</p>
+        <p class="section-help" id="photo-formats">Use a plain white background for both photos. Any photo straight from your phone camera or gallery is fine: this page resizes it for a faster upload and removes its location details before sending.</p>
+        <details class="photo-tips"><summary>Tips for clear photos</summary><ul><li>Face a window or use bright light, so your face has no strong shadows.</li><li>Stand a few steps in front of a plain white wall or sheet.</li><li>For the full-body photo, ask someone to hold the phone at chest height, about three metres away.</li><li>If an iPhone photo will not open, set Settings › Camera › Formats to “Most Compatible” and take it again, or share it as JPEG.</li></ul></details>
         <div class="upload-grid">
           <div class="photo-field">
             <label for="portrait">Close-up portrait</label>
             <p id="portrait-note">Show your face clearly, wearing light makeup.</p>
             <input type="file" id="portrait" name="portrait" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" aria-describedby="portrait-note photo-formats portrait-error" required>
             <p id="portrait-error" class="photo-error" aria-live="polite"></p>
+            <p id="portrait-ready" class="photo-ready" aria-live="polite"></p>
             <img id="portrait-preview" class="photo-preview" alt="Your selected close-up portrait" hidden>
           </div>
           <div class="photo-field">
@@ -80,34 +85,41 @@
             <p id="swimsuit-note">Wear a swimsuit and include your entire body, from head to toe.</p>
             <input type="file" id="swimsuit" name="swimsuit" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" aria-describedby="swimsuit-note photo-formats swimsuit-error" required>
             <p id="swimsuit-error" class="photo-error" aria-live="polite"></p>
+            <p id="swimsuit-ready" class="photo-ready" aria-live="polite"></p>
             <img id="swimsuit-preview" class="photo-preview" alt="Your selected full-body swimsuit photo" hidden>
           </div>
         </div>
       </fieldset>
       <fieldset class="form-part send"><legend id="submit"><span>05</span> Send your application</legend>
         <p class="section-help">Your details and photos are for private screening review. Any public use of your profile or photos, including for voting, requires separate permission.</p>
-        <label class="consent"><input type="checkbox" name="consent" value="yes" required><span>I agree that the Queen of Quiapo organizers may review my details and photos for screening and contact me about this application.</span></label>
+        <label class="consent"><input type="checkbox" name="consent" value="yes" required><span>I agree that the Queen of Quiapo organizers may review my details and photos for screening and contact me about this application. <a href="/privacy/" target="_blank" rel="noopener">How we protect your information</a></span></label>
         <button class="pearl" type="submit" id="submit-application" disabled><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/ui-icons.svg#apply"/></svg>Submit application</button>
+        <progress id="submit-meter" class="submit-meter" max="100" value="0" hidden></progress>
         <p id="submit-progress" class="submit-message" role="status" aria-live="polite"></p>
         <p id="submit-error" class="submit-error" role="alert" tabindex="-1" hidden></p>
       </fieldset>
     </form>
     <section class="receipt" id="receipt" aria-labelledby="receipt-title" hidden>
       <h2 tabindex="-1" id="receipt-title">Application received</h2>
-      <p>Your candidate details and both photographs are saved for screening.</p>
+      <p id="receipt-lead">Your candidate details and both photographs are saved for screening.</p>
+      <p class="application-notice soft" id="receipt-note" hidden></p>
       <dl class="receipt-facts">
-        <div><dt>Reference number</dt><dd id="receipt-reference"></dd></div>
+        <div><dt>Reference number</dt><dd><span id="receipt-reference"></span> <button type="button" class="copy-button" data-copy="receipt-reference">Copy</button></dd></div>
         <div><dt>Pageant</dt><dd id="receipt-edition">Queen of Quiapo 2027</dd></div>
         <div><dt>Received</dt><dd id="receipt-time"></dd></div>
         <div><dt>Status</dt><dd>Submitted for screening</dd></div>
       </dl>
-      <p><strong>What happens next.</strong> Attend Screening Day on January 4, 2027, 3:00–9:00 PM (Philippine time). Registration is 3:00–4:00 PM; the venue will be announced on this website. Wear a maroon cocktail dress with light, natural makeup and a slicked-back ponytail. Official candidates are announced after screening.</p>
-      <p>Keep this reference number. It identifies your application to the organizers; it does not give anyone access to your details. We do not yet send confirmation emails, so print or save this page.</p>
-      <button type="button" class="receipt-print" id="receipt-print">Print or save this receipt</button>
+      <p><strong>What happens next.</strong> Attend Screening Day on January 4, 2027, 3:00–9:00 PM (Philippine time). Registration is 3:00–4:00 PM; <span id="receipt-venue">the venue will be announced on this website</span>. Wear a maroon cocktail dress with light, natural makeup and a slicked-back ponytail. Official candidates are announced after screening.</p>
+      <p>You can check your application at any time on the <a href="/apply/status/">application status page</a> with your reference number and email. We do not send confirmation emails yet, so print or save this page.</p>
+      <details class="receipt-key"><summary>Your private withdrawal key</summary>
+        <p>Only this key lets you withdraw your application later. Keep it private: do not post or share it.</p>
+        <p><code id="receipt-key"></code> <button type="button" class="copy-button" data-copy="receipt-key">Copy</button></p>
+      </details>
+      <div class="receipt-actions"><button type="button" class="receipt-print" id="receipt-print">Print or save this receipt</button><button type="button" class="receipt-print" id="receipt-another">Submit another application</button></div>
       <a class="pearl" href="/schedule/">View Pageant Schedule</a>
       <details class="withdrawal" id="withdraw-options">
         <summary>Withdraw this application</summary>
-        <p>You can withdraw this entry while this receipt is open. Confirm below to remove your application and both photos.</p>
+        <p>This removes your application and both photographs permanently. You can also do this later on the application status page with your withdrawal key.</p>
         <div><button type="button" id="withdraw-confirm">Confirm withdrawal</button><button type="button" id="withdraw-cancel">Keep my application</button></div>
         <p id="withdraw-error" class="submit-error" role="alert" tabindex="-1" hidden></p>
       </details>

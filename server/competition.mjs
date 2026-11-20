@@ -27,7 +27,7 @@ const ops = (request,env,action,data={}) => {
   return qoqRpc(env,'qoq_operations',{p_actor:actor,p_email:email,p_organizer:organizer,p_action:action,p_data:data});
 };
 // Each browser-callable action is listed here with the database function that owns it. Anything else is a 404.
-const publicActions=new Map([['public.announcements','qoq_operations'],['public.event','qoq_operations'],['public.results','qoq_operations'],['public.catalog','qoq_points'],['order.status','qoq_points'],['public.peoplesChoice','qoq_award']]);
+const publicActions=new Map([['public.announcements','qoq_operations'],['public.event','qoq_operations'],['public.results','qoq_operations'],['public.catalog','qoq_points'],['order.status','qoq_points'],['public.peoplesChoice','qoq_award'],['public.applications','qoq_edition']]);
 const orgActions=new Map([
   ...['dashboard','candidate','judge','criterion','announcement','remove','lockRoster','unlockRoster','openScoring','lockTabulation','certifyResults','publishResults','unpublishResults','audit'].map(name=>['organizer.'+name,'qoq_operations']),
   ...['voting','orders','order','package','archivePackage','approvePackages','scheduleVoting','openVoting','closeVoting','setPayments','setPointsPublic','resolveHeld','adjust','resolveFlag','abandonOrder','finalizeVoting'].map(name=>['organizer.'+name,'qoq_points']),
@@ -126,6 +126,7 @@ async function competition(request,env,path) {
     if(action==='public.catalog')return json({voting:'not_configured',paymentsEnabled:false,packages:[],candidates:[],rate:{pesos:100,points:1000}});
     if(action==='public.announcements')return json({announcements:[]});
     if(action==='public.results'||action==='public.peoplesChoice')return json({published:false});
+    if(action==='public.applications')return json({open:true});
   }
   if(action==='order.status'){
     if(!ORDER_REF.test(data.orderRef||''))reject(404,'Order not found.');
