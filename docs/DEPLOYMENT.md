@@ -1,6 +1,6 @@
 # Deployment and activation
 
-Read [SOURCE-RECONCILIATION-2026-11-20.md](SOURCE-RECONCILIATION-2026-11-20.md) for the current source verification and [PRODUCTION-RELEASE-2026-11-16.md](PRODUCTION-RELEASE-2026-11-16.md) for the production baseline. The public site is version 16 with Supabase configured. The previous D1-only/private-site description is historical.
+Read [SOURCE-RECONCILIATION-2026-11-20.md](SOURCE-RECONCILIATION-2026-11-20.md) for the current source verification and [PRODUCTION-RELEASE-2026-11-16.md](PRODUCTION-RELEASE-2026-11-16.md) for the production baseline. The public site has Supabase configured. The gemstone rules-table correction was published and verified in version 17; all five custom domains are active with active certificates. The previous D1-only/private-site description is historical.
 
 ## Source reconciliation authorized on 20 November
 

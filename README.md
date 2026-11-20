@@ -4,7 +4,7 @@ Mobile-first pageant site managed by FMB&CO, Barangay 306, Quiapo, Manila. The p
 
 ## Current state
 
-The public website is [Queen of Quiapo](https://queen-of-quiapo.fbautisat23.chatgpt.site/), deployed at version 16. The dedicated Supabase project is configured; checkout remains disabled. [The 20 November source reconciliation](docs/SOURCE-RECONCILIATION-2026-11-20.md) records the current source changes and verification. Older readiness reports describe historical checkpoints.
+The public website is [Queen of Quiapo](https://queenofquiapo.com/). All five custom domains and their certificates were validated on 20 November 2026. The dedicated Supabase project is configured; checkout remains disabled. [The 20 November source reconciliation](docs/SOURCE-RECONCILIATION-2026-11-20.md) records the current source changes and verification. Older readiness reports describe historical checkpoints.
 
 ## Running and testing
 

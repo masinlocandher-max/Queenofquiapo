@@ -22,12 +22,24 @@ Tests now use the gemstone names and account for the six additional rename audit
 - Production read-only state: phase `setup`, voting `not_configured`, payments disabled, provider unset, package approval unset, public point totals off, and no configured judging criteria. Application close and voting times remain unset. Counts for applications, candidates, judges, orders and ledger rows are zero; no contents of private records were retrieved.
 - Current catalog: Quartz PHP100/1,000 points; Amethyst PHP500/5,000; Sapphire PHP1,000/10,000; Emerald PHP2,500/25,000; Ruby PHP5,000/50,000; Diamond PHP10,000/100,000. The fixed rate and minimum remain enforced.
 
-No synthetic production applicants, purchases, votes or ballots were created. No merchant, provider, commercial approval, judging criterion or schedule was invented or activated. The corrected public rules table requires publication from the synchronized source; confirm its saved version and deployment status before claiming it is live. The PR remains a draft for review.
+No synthetic production applicants, purchases, votes or ballots were created. No merchant, provider, commercial approval, judging criterion or schedule was invented or activated. The corrected rules table was published in Sites version 17 from source `86ab6534cb4468108e47a1ae7406fb5aa923e2da`. Deployment `appgdep_6afff65935288191a3be9792f9dda1ac` succeeded at 15:27 Manila time and the corrected table was verified live. Later documentation-only commits do not change that runtime behavior. The PR remains a draft for review.
 
 ## Domains and launch decisions
 
-A fresh hosting validation on 20 November still reported all five custom names pending. GoDaddy's zone showed seven existing records: one root A record, www pointing to the root, the existing NS/SOA records, Domain Connect and DMARC. An additive 12-record import was prepared: the second root A address, three service CNAMEs, five ownership TXT records and three certificate-validation TXT records. GoDaddy requires the account owner's SMS verification before committing the import. Do not claim these records or the domains are active until the zone and hosting validation confirm them.
+GoDaddy accepted the additive 12-record import after secure account-owner SMS verification. The zone now has 19 records. Both pages of the zone were checked: the second root A address, three service CNAMEs, five ownership TXT records and three certificate TXT records match the prepared values. Existing nameservers, Domain Connect, DMARC and root/www routing were preserved.
+
+By 15:48 Manila time, hosting validation reported `active` domain, provider and SSL status with no error for all five names. Browser checks confirmed the following over HTTPS:
+
+| Hostname | Observed result |
+| --- | --- |
+| queenofquiapo.com | Public homepage and six correct gemstone packages |
+| www.queenofquiapo.com | Public homepage |
+| vote.queenofquiapo.com | Six voting package choices; Quartz shows PHP100 and 1,000 points; payment notice remains closed |
+| org.queenofquiapo.com | Private access page requiring the assigned organizer account |
+| judge.queenofquiapo.com | Private access page requiring the assigned judge account |
+
+These are routing and unauthenticated access checks, not proof that a particular organizer or judge can complete sign-in. No credentials were retained, no private account was opened, and no access policy was widened.
 
 The private rules and commercial review pack separates proposed terms from approved configuration. It covers the People's Choice award, gemstone catalog, deadlines, refunds, late confirmations, tie treatment, judging criteria, service scope, a proposed fixed fee, payment recipient and settlement controls. It is not an executed agreement and is not public website policy.
 
-Remaining launch work: complete DNS identity verification and validate HTTPS/host access; obtain named organizer decisions and signed commercial terms; publish approved candidates and rules; integrate and verify a real payment provider; rehearse actual organizer/judge access, devices, private uploads and certification. Payments remain disabled until that separate launch work is accepted.
+Remaining launch work: obtain named organizer decisions and signed commercial terms; publish approved candidates and rules; integrate and verify a real payment provider; rehearse actual organizer/judge access, devices, private uploads and certification. Payments remain disabled until that separate launch work is accepted.
