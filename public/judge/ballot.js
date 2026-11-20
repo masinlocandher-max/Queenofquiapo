@@ -28,15 +28,15 @@
     const editable=phase==='scoring'&&!locked;
     const host=el('score-fields');host.replaceChildren();inputs=[];dirty=false;
     el('ballot-state').textContent=locked?'Locked':phase==='setup'?'Upcoming':editable?'Draft':'Closed';
-    el('ballot-help').textContent=locked?'Your locked scores are shown below.':phase==='setup'?'Your scorecard will be available when judging opens.':editable?'Score each criterion from 0 to 100. A draft can be saved before all scores are entered.':'Judging is closed.';
+    el('ballot-help').textContent=locked?'Your ballot was locked'+(current.lockedAt?' on '+new Intl.DateTimeFormat('en-PH',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Manila'}).format(new Date(current.lockedAt))+' (Philippine time)':'')+'. Your submitted scores are shown below and can no longer be changed.':phase==='setup'?'Your scorecard will be available when judging opens.':editable?'Score each criterion from 0 to 100. A draft can be saved before all scores are entered.':'Judging is closed.';
     const records=new Map(scores.map(s=>[s.candidateId+'/'+s.criterionId,s.score]));
     if(phase!=='setup')for(const c of candidates){
       const card=make('section');card.className='card';const title=make('div');title.className='candidate-title';
-      if(c.photoKey){const image=make('img');image.alt='';image.src='/api/competition/photo/'+encodeURIComponent(c.photoKey);image.loading='lazy';title.append(image);}
-      title.append(make('h2',c.name));card.append(title);
+      if(c.photoKey){const image=make('img');image.alt='';image.src='/api/competition/photo/'+encodeURIComponent(c.photoKey);image.loading='lazy';image.addEventListener('error',()=>image.remove(),{once:true});title.append(image);}
+      title.append(make('h2',(c.number!=null?'No. '+c.number+' · ':'')+c.name));card.append(title);
       const grid=make('div');grid.className='scoresheet';card.append(grid);
       for(const criterion of criteria){
-        const label=make('label');label.append(document.createTextNode(criterion.name+' '),make('small',criterion.weight+'%'));
+        const label=make('label');label.append(document.createTextNode(criterion.name+' '),make('small',criterion.weight+'%'+(criterion.description?' · '+criterion.description:'')));
         const field=make('input');field.type='number';field.inputMode='decimal';field.min='0';field.max='100';field.step='0.01';field.readOnly=!editable;field.setAttribute('aria-label',c.name+', '+criterion.name+' score out of 100');
         const original=records.get(c.id+'/'+criterion.id);
         if(original!==undefined&&original!==null)field.value=String(original);
@@ -74,9 +74,9 @@
       if(rows.length)await api('save',{scores:rows});
       if(locking)await api('lock');
       dirty=false;await load();
-      status(locking?'Your ballot has been locked.':'Draft saved.');
+      status(locking?'Your ballot has been locked and received. Thank you.':'Draft saved at '+new Intl.DateTimeFormat('en-PH',{timeStyle:'medium',timeZone:'Asia/Manila'}).format(new Date())+'. You can keep editing until you lock your ballot.');
     } catch(e) {
-      status(e instanceof TypeError?'The connection was interrupted. Please check your scorecard before retrying.':e.message,true);
+      status(e instanceof TypeError?'The connection was interrupted. Your typed scores are still on this screen. Do not close the page: press Save draft again when you are back online.':e.message,true);
       if(!el('ballot').hidden)inputs.forEach(i=>i.field.readOnly=current.locked||current.phase!=='scoring');
       el('judge-recovery').hidden=false;
     } finally {busy=false;updateProgress();}
@@ -85,7 +85,7 @@
     if(busy)return;
     if(dirty&&!window.confirm('Reload your scorecard and discard unsaved changes?'))return;
     busy=true;
-    try {await load();status('Private judge scorecard.');}
+    try {await load();status(current.judgeName?'Private scorecard of '+current.judgeName+'.':'Private judge scorecard.');}
     catch(e){status(e instanceof TypeError?'Your scorecard could not connect. Please try again.':e.message,true);el('judge-recovery').hidden=false;}
     finally {busy=false;updateProgress();}
   }

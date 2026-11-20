@@ -1,5 +1,9 @@
 {
   "private": true,
   "type": "module",
-  "scripts": {"build": "node scripts/build.mjs", "dev": "node scripts/preview.mjs"}
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/preview.mjs",
+    "test": "node scripts/build.mjs && node --test --test-concurrency=2 tests/*.mjs"
+  }
 }

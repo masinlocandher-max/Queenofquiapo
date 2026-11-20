@@ -89,10 +89,13 @@ function field(form, name, max, optional = false) {
   return value;
 }
 
+// Plausibility bounds only: they catch a slipped decimal or the wrong unit, not a judgement about any applicant.
+const MEASURE_RANGE = {heightCm:[100,250], bustIn:[10,80], waistIn:[10,80], hipsIn:[10,80]};
 function measurement(form, name) {
   const value = field(form, name, 8);
-  if (!/^\d{1,3}(\.\d)?$/.test(value) || Number(value) <= 0) {
-    reject(422, 'Use positive numbers for your height and measurements.');
+  const [min, max] = MEASURE_RANGE[name];
+  if (!/^\d{1,3}(\.\d)?$/.test(value) || Number(value) < min || Number(value) > max) {
+    reject(422, name === 'heightCm' ? 'Enter your height in centimeters, for example 168.' : 'Enter your bust, waist and hips in inches, for example 34.');
   }
   return Number(value);
 }
@@ -133,7 +136,7 @@ function keys(reference) {
 
 function receiptForRetry(row, fingerprint) {
   if (row.fingerprint !== fingerprint) reject(409, 'This submission ID was already used. Reload the form for a new application.');
-  return json({reference: row.reference});
+  return json({reference: row.reference, submittedAt: row.submittedAt || null});
 }
 
 // Transitional adapter for the current private site. Selection is explicit and never depends on an RPC failure.
@@ -207,7 +210,7 @@ async function submit(request, env) {
     await mediaStore(env).put(owned[1], swimsuit.bytes, {httpMetadata:{contentType:swimsuit.type}});
     inserting = true;
     const result = await intakeRpc(env,'create',{reference,requestKey,fingerprint,storageKey,profile,portraitType:portrait.type,swimsuitType:swimsuit.type});
-    if (result.reference) return json({reference:result.reference},201);
+    if (result.reference) return json({reference:result.reference,submittedAt:result.submittedAt||null,edition:result.edition||null},201);
   } catch (err) {
     if (inserting) {
       // A database acknowledgement can be lost after commit. Preserve a committed record and its uploads.
@@ -223,9 +226,9 @@ async function submit(request, env) {
   reject(503, 'The application could not be saved. Please retry.');
 }
 
-async function removeApplication(env, row) {
+async function removeApplication(env, row, actor) {
   await mediaStore(env).delete(keys(row.storageKey));
-  await intakeRpc(env,'remove',{reference:row.reference,storageKey:row.storageKey});
+  await intakeRpc(env,'remove',{reference:row.reference,storageKey:row.storageKey,actor});
   return json({ok:true});
 }
 
@@ -236,28 +239,54 @@ async function withdraw(request,env,reference) {
   const key = await digest(encode.encode(token));
   const row = await intakeRpc(env,'withdrawal',{reference,requestKey:key});
   if (!row.reference) reject(404,'Application not found.');
-  return removeApplication(env,row);
+  return removeApplication(env,row,'applicant');
 }
 
+const APPLICATION_STATUSES = ['submitted','under_review','correction_requested','qualified','screened','approved','not_selected','withdrawn'];
 async function review(request, env, pathname) {
   requireReviewer(request,env);
+  const reviewer = request.headers.get('oai-authenticated-user-email').trim().toLowerCase();
+  if (pathname === '/api/reviewer/export.csv') {
+    if (request.method !== 'GET') reject(405, 'Method not allowed.');
+    const {rows} = await intakeRpc(env,'export',{actor:reviewer});
+    return csvResponse('qoq-applications.csv', csv(rows, [['Reference',r=>r.reference],['Received',r=>r.submittedAt],['Status',r=>r.status],['Legal name',r=>r.legalName],
+      ['Pageant name',r=>r.femaleName],['Email',r=>r.email],['Mobile',r=>r.mobile],['Locality',r=>r.locality],['Height (cm)',r=>r.heightCm],['Bust (in)',r=>r.bustIn],
+      ['Waist (in)',r=>r.waistIn],['Hips (in)',r=>r.hipsIn],['Talent',r=>r.talent],['Experience',r=>r.experience],['Motivation',r=>r.motivation]]));
+  }
   const suffix = pathname.slice(APPLICATIONS.length);
   if (!suffix && request.method === 'GET') {
     const params = new URL(request.url).searchParams;
     const cursor = params.get('cursor'), rawLimit = params.get('limit') || '25';
+    const status = params.get('status') || '', q = (params.get('q') || '').trim(), sort = params.get('sort') || 'newest';
     if ((cursor != null && (!/^\d{1,15}$/.test(cursor) || Number(cursor)<1)) ||
-        !/^\d{1,2}$/.test(rawLimit) || Number(rawLimit)<1 || Number(rawLimit)>50) reject(400, 'Invalid page parameters.');
+        !/^\d{1,2}$/.test(rawLimit) || Number(rawLimit)<1 || Number(rawLimit)>50 ||
+        (status && !APPLICATION_STATUSES.includes(status)) || q.length>120 || !['newest','oldest'].includes(sort)) reject(400, 'Invalid page parameters.');
+    if (env.QOQ_INTAKE_BACKEND === 'legacy' && (status || q || sort !== 'newest')) reject(409, 'Search and status filters need the current application service.');
     const limit = Number(rawLimit);
-    return json(await intakeRpc(env,'list',{cursor:cursor?Number(cursor):null,limit}));
+    return json(await intakeRpc(env,'list',{cursor:cursor?Number(cursor):null,limit,status,q,sort}));
   }
   const parts = suffix.split('/').slice(1);
   const [reference, kind] = parts;
-  if (!REFERENCE.test(reference || '') || parts.length>2 || (parts.length===2 && !['portrait','swimsuit'].includes(kind))) reject(404, 'Application not found.');
+  if (!REFERENCE.test(reference || '') || parts.length>2) reject(404, 'Application not found.');
+  if (request.method === 'POST' && ['status','note','promote'].includes(kind)) {
+    // Review decisions. The reviewer identity comes from the verified sign-in, never from the request body.
+    requireSameOrigin(request);
+    if (env.QOQ_INTAKE_BACKEND === 'legacy') reject(409, 'Status tracking needs the current application service.');
+    const input = await smallJson(request);
+    const note = typeof input.note === 'string' ? input.note.slice(0,1000) : '';
+    if (kind === 'status') {
+      if (!APPLICATION_STATUSES.includes(input.status)) reject(422, 'Choose a valid status.');
+      return json(await intakeRpc(env,'setStatus',{reference,status:input.status,note,actor:reviewer}));
+    }
+    if (kind === 'note') return json(await intakeRpc(env,'note',{reference,note,actor:reviewer}));
+    return json(await intakeRpc(env,'promote',{reference,actor:reviewer}));
+  }
+  if (parts.length===2 && !['portrait','swimsuit'].includes(kind)) reject(404, 'Application not found.');
   if (request.method !== 'GET' && !(request.method==='DELETE' && parts.length===1)) reject(405, 'Method not allowed.');
   if (request.method==='DELETE') requireSameOrigin(request);
   const row = await intakeRpc(env,'details',{reference});
   if (!row.reference) reject(404,'Application not found.');
-  if (request.method==='DELETE') return removeApplication(env,row);
+  if (request.method==='DELETE') return removeApplication(env,row,reviewer);
   if (kind) {
     const object = await mediaStore(env).get(objectKey(row.storageKey,kind));
     if (!object) reject(404,'Photograph not found.');
@@ -281,7 +310,7 @@ export async function handleApi(request,env) {
     if (request.method==='DELETE' && path.startsWith('/api/applications/')) {
       return await withdraw(request,env,path.slice('/api/applications/'.length));
     }
-    if (path===APPLICATIONS || path.startsWith(APPLICATIONS+'/')) return await review(request,env,path);
+    if (path===APPLICATIONS || path.startsWith(APPLICATIONS+'/') || path==='/api/reviewer/export.csv') return await review(request,env,path);
     reject(404,'Not found.');
   } catch (error) {
     if (error instanceof IntakeError) return json({error:error.message},error.status);

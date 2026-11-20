@@ -1,0 +1,65 @@
+[
+  {
+    "file": "20261109080112_qoq_competition.sql",
+    "appliedVersion": "20261114183336",
+    "appliedName": "20261109080112_qoq_competition",
+    "matchesExactly": true,
+    "matchesTrimmed": true,
+    "sha256": "bbc99ca9d15ac70722e324c3466d485685241ad8c672d8257526ee6a43d4acfd",
+    "proposedFile": "20261114183336_20261109080112_qoq_competition.sql"
+  },
+  {
+    "file": "20261109080253_qoq_intake.sql",
+    "appliedVersion": "20261114183353",
+    "appliedName": "20261109080253_qoq_intake",
+    "matchesExactly": true,
+    "matchesTrimmed": true,
+    "sha256": "896b1717c4c177fd6d40801152633ff4c52c1384b7bbba8edec91f15bdfce27a",
+    "proposedFile": "20261114183353_20261109080253_qoq_intake.sql"
+  },
+  {
+    "file": "20261109080819_qoq_private_media_guard.sql",
+    "appliedVersion": "20261114183355",
+    "appliedName": "20261109080819_qoq_private_media_guard",
+    "matchesExactly": true,
+    "matchesTrimmed": true,
+    "sha256": "d560c57852305a7a327d2eb849cf3df548e986cf3c4d2418a7ee6331331313c6",
+    "proposedFile": "20261114183355_20261109080819_qoq_private_media_guard.sql"
+  },
+  {
+    "file": "20261114100000_qoq_editions_lifecycle.sql",
+    "appliedVersion": "20261114183420",
+    "appliedName": "20261114100000_qoq_editions_lifecycle",
+    "matchesExactly": true,
+    "matchesTrimmed": true,
+    "sha256": "2d902ed9654137e9cdc8773477b363c3ad05c2ce5266a073db20d19327ddb1cc",
+    "proposedFile": "20261114183420_20261114100000_qoq_editions_lifecycle.sql"
+  },
+  {
+    "file": "20261114101000_qoq_points_ledger.sql",
+    "appliedVersion": "20261114183422",
+    "appliedName": "20261114101000_qoq_points_ledger",
+    "matchesExactly": true,
+    "matchesTrimmed": true,
+    "sha256": "51c969d95bc21f14d1672a07ac9b2af4ace92fa6286d92e55b27e9828762fbab",
+    "proposedFile": "20261114183422_20261114101000_qoq_points_ledger.sql"
+  },
+  {
+    "file": "20261114102000_qoq_tabulation_results.sql",
+    "appliedVersion": "20261115231549",
+    "appliedName": "20261114102000_qoq_tabulation_results",
+    "matchesExactly": true,
+    "matchesTrimmed": true,
+    "sha256": "cbd1fa20ef4f459a8c3ed0e2a171fcea3475934d2d33fd2deb7c5296ad8cca4c",
+    "proposedFile": "20261115231549_20261114102000_qoq_tabulation_results.sql"
+  },
+  {
+    "file": "20261116010000_qoq_stone_packages.sql",
+    "appliedVersion": "20261115235136",
+    "appliedName": "qoq_stone_packages",
+    "matchesExactly": true,
+    "matchesTrimmed": true,
+    "sha256": "aec30e8d921681f68bfdabfceefe30445c0d0b13ca3be8a287c10f9682d43649",
+    "proposedFile": "20261115235136_qoq_stone_packages.sql"
+  }
+]

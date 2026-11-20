@@ -63,15 +63,21 @@ test('judge pages require assignment and refusals never expose the score workspa
   }
 });
 
-test('voting invokes rate limits before storage and never reports success after a rejected or closed vote',async t=>{
+test('checkout is refused before any storage while payments are off, and attempts are rate limited',async t=>{
   const db=limitStore(),env={...baseEnv,DB:db,QOQ_RATE_SALT:'rate-test-salt'};t.after(()=>db.close());
-  let calls=0; t.mock.method(Date,'now',()=>1800000000000);
-  t.mock.method(globalThis,'fetch',async()=>{calls++;return Response.json({code:'55000',message:'Voting is not open'},{status:400});});
-  assert.equal((await action(vote,'voter.cast',{})).status,401);
-  assert.equal((await action(org,'voter.cast',member)).status,404);
-  for(let i=0;i<8;i++){const r=await action(vote,'voter.cast',member,{candidateId:'x'},env);assert.equal(r.status,409);assert.equal((await r.json()).error,'Voting is not open');}
-  assert.equal((await action(vote,'voter.cast',member,{candidateId:'x'},env)).status,429);
-  assert.equal(calls,8);
+  const upstream=t.mock.method(globalThis,'fetch',async()=>Response.json({ok:true}));t.mock.method(Date,'now',()=>1800000000000);
+  const visitor={'cf-connecting-ip':'203.0.113.9'};
+  const purchase={candidateId:'9800a230-90d4-4fb0-82b5-83b855757eae',packageId:'9800a230-90d4-4fb0-82b5-83b855757eaf',requestId:'9800a230-90d4-4fb0-82b5-83b855757eb0',email:'fan@example.invalid'};
+  assert.equal((await action(org,'order.create',visitor,purchase,env)).status,404);
+  assert.equal((await action(vote,'voter.cast',member,{candidateId:'x'},env)).status,404);
+  // Each of these alone is not enough to open checkout on a production hostname.
+  for(const extra of [{},{QOQ_PAYMENTS_ENABLED:'yes'},{QOQ_PAYMENTS_ENABLED:'yes',QOQ_PAYMENT_PROVIDER:'sandbox',QOQ_PAYMENT_WEBHOOK_SECRET:'s'.repeat(40),QOQ_ALLOW_SANDBOX_PAYMENTS:'yes'},{QOQ_PAYMENTS_ENABLED:'yes',QOQ_PAYMENT_PROVIDER:'unknown',QOQ_PAYMENT_WEBHOOK_SECRET:'s'.repeat(40)}]){
+    const r=await action(vote,'order.create',visitor,purchase,{...env,...extra});assert.equal(r.status,409);assert.match((await r.json()).error,/coming soon/i);
+  }
+  for(let i=0;i<6;i++)assert.equal((await action(main,'order.create',visitor,purchase,env)).status,409);
+  assert.equal((await action(main,'order.create',visitor,purchase,env)).status,429);
+  assert.equal((await call(vote,'/api/payments/webhook/sandbox',{method:'POST',data:{}},env)).status,404);
+  assert.equal(upstream.mock.callCount(),0);
 });
 
 test('judge final lock conflict stays a conflict; no score data or secret can leak through database errors',async t=>{
@@ -108,5 +114,56 @@ test('secrets only go directly to the configured HTTPS Supabase origin for RPC a
   assert.equal((await action(org,'organizer.dashboard',owner)).status,200);
   assert.equal((await call(org,'/api/competition/photo/'+photoKey,{headers:owner})).status,200);
   assert.equal(calls.length,2);
-  for(const {url,init} of calls){assert.equal(new URL(url).origin,baseEnv.QOQ_SUPABASE_URL);assert.equal(init.redirect,'error');}
+  for(const {url,init} of calls){assert.equal(new URL(url).origin,baseEnv.QOQ_SUPABASE_URL);assert.equal(init.redirect,'manual');}
+});
+
+ test('rehearsal payments are rejected on the live Sites hostname even with every deployment switch enabled', async t=>{
+  const upstream=t.mock.method(globalThis,'fetch',async()=>Response.json({paymentsEnabled:true}));
+  const env={...baseEnv,QOQ_PAYMENTS_ENABLED:'yes',QOQ_PAYMENT_PROVIDER:'sandbox',QOQ_ALLOW_SANDBOX_PAYMENTS:'yes',QOQ_PAYMENT_WEBHOOK_SECRET:'s'.repeat(40)};
+  assert.equal((await action(preview,'order.create',{}, {},env)).status,409);
+  assert.equal((await call(preview,'/api/payments/webhook/sandbox',{method:'POST',data:{}},env)).status,404);
+  assert.equal(upstream.mock.callCount(),0);
+  assert.equal((await (await action(preview,'public.catalog',{}, {},env)).json()).paymentsEnabled,false);
+});
+
+test('webhook streams are bounded without trusting Content-Length', async t=>{
+  const upstream=t.mock.method(globalThis,'fetch',async()=>Response.json({}));
+  const env={...baseEnv,QOQ_PAYMENT_PROVIDER:'sandbox',QOQ_ALLOW_SANDBOX_PAYMENTS:'yes',QOQ_PAYMENT_WEBHOOK_SECRET:'s'.repeat(40)};
+  const request=new Request('http://127.0.0.1/api/payments/webhook/sandbox',{method:'POST',body:'x'.repeat(65537)});
+  assert.equal((await worker.fetch(request,env)).status,413);
+  assert.equal(upstream.mock.callCount(),0);
+});
+
+test('private entrance gives safe role-specific sign-in and wrong-account recovery without exposing the assigned email', async () => {
+  for (const host of [org,judge]) {
+    const anonymous=await call(host,'/');
+    assert.equal(anonymous.status,401);
+    const html=await anonymous.text();
+    assert.match(html,/Sign in with ChatGPT/); assert.match(html,/return_to=%2F/);
+    assert.match(html,/Candidate application/); assert.doesNotMatch(html,/owner@example.invalid|candidate-form|candidates-list/);
+    assert.match(anonymous.headers.get('content-security-policy'),/default-src 'none'/);
+  }
+  const denied=await call(org,'/',{headers:member});
+  assert.equal(denied.status,403);
+  const html=await denied.text();
+  assert.match(html,/Sign out and switch account/); assert.match(html,/\/signout-with-chatgpt\?return_to=%2F/);
+  assert.doesNotMatch(html,/owner@example.invalid|member@example.invalid|candidates-list/);
+});
+
+test('authorized organizer sees only their escaped account identity and explicit sign-out', async () => {
+  const email='owner<test>@example.invalid';
+  const response=await call(org,'/',{headers:{...owner,'oai-authenticated-user-email':email}}, {...baseEnv,REVIEWER_EMAIL:email});
+  assert.equal(response.status,200);
+  const html=await response.text();
+  assert.match(html,/Signed in as owner&lt;test&gt;@example.invalid/);
+  assert.doesNotMatch(html,/owner<test>/); assert.match(html,/\/signout-with-chatgpt\?return_to=%2F/);
+  assert.match(response.headers.get('cache-control'),/no-store/);
+});
+
+test('temporary assignment service failure offers a retry without displaying a private workspace', async t => {
+  t.mock.method(globalThis,'fetch',async()=>{throw new TypeError('network unavailable')});
+  const response=await call(judge,'/',{headers:member});
+  assert.equal(response.status,503);
+  const html=await response.text();
+  assert.match(html,/Try again/); assert.doesNotMatch(html,/scorecard-form|test-server-secret|network unavailable/);
 });

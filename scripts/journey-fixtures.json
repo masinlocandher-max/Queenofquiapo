@@ -1,0 +1,144 @@
+{
+  "dashboard": {
+    "round": {
+      "phase": "setup",
+      "voting": "not_configured",
+      "rosterLockedAt": null,
+      "paymentsEnabled": false,
+      "scoringOpenedAt": null,
+      "providerConfigured": false
+    },
+    "judges": [],
+    "edition": {
+      "id": "qoq-2027",
+      "name": "Queen of Quiapo 2027",
+      "theme": "A Tribute to Faith, Tradition, and Grace",
+      "timezone": "Asia/Manila",
+      "coronationDate": "2027-01-06",
+      "screeningVenue": null,
+      "coronationVenue": null,
+      "screeningEndsAt": "2027-01-04T13:00:00+00:00",
+      "screeningStartsAt": "2027-01-04T07:00:00+00:00",
+      "applicationsOpenAt": null,
+      "coronationStartsAt": null,
+      "applicationsCloseAt": null
+    },
+    "criteria": [],
+    "candidates": [],
+    "tabulation": {
+      "cells": 0,
+      "final": false,
+      "scope": null,
+      "total": 0,
+      "digest": null,
+      "ballots": [],
+      "pending": 0,
+      "results": [],
+      "verified": null,
+      "certifiedAt": null,
+      "certifiedBy": null,
+      "finalizedAt": null,
+      "finalizedBy": null,
+      "publishedAt": null
+    },
+    "legacyVotes": 0,
+    "applications": {
+      "total": 0,
+      "pending": 0,
+      "approved": 0
+    },
+    "announcements": []
+  },
+  "voting": {
+    "state": {
+      "voting": "not_configured",
+      "opensAt": null,
+      "closedAt": null,
+      "closesAt": null,
+      "openedAt": null,
+      "finalizedAt": null,
+      "pointsPublic": false,
+      "paymentsEnabled": false,
+      "packagesApprovedAt": null,
+      "providerConfigured": false
+    },
+    "issues": [],
+    "metrics": {
+      "heldOrders": 0,
+      "failedOrders": 0,
+      "grossCentavos": 0,
+      "pendingOrders": 0,
+      "settledOrders": 0,
+      "creditedPoints": 0,
+      "refundedCentavos": 0,
+      "reversedCentavos": 0
+    },
+    "packages": [
+      {
+        "id": "bc90997b-a661-42d7-a852-7ceed136f66f",
+        "name": "Quartz",
+        "active": true,
+        "points": 1000,
+        "archived": false,
+        "displayOrder": 1,
+        "priceCentavos": 10000,
+        "settledOrders": 0
+      },
+      {
+        "id": "f7bec036-7f69-4a03-b1ab-986e36026ff7",
+        "name": "Amethyst",
+        "active": true,
+        "points": 5000,
+        "archived": false,
+        "displayOrder": 2,
+        "priceCentavos": 50000,
+        "settledOrders": 0
+      },
+      {
+        "id": "03326100-f2fd-4c19-807f-fabc780034d8",
+        "name": "Sapphire",
+        "active": true,
+        "points": 10000,
+        "archived": false,
+        "displayOrder": 3,
+        "priceCentavos": 100000,
+        "settledOrders": 0
+      },
+      {
+        "id": "67a998d3-77f1-476b-a752-11806a21cca5",
+        "name": "Emerald",
+        "active": true,
+        "points": 25000,
+        "archived": false,
+        "displayOrder": 4,
+        "priceCentavos": 250000,
+        "settledOrders": 0
+      },
+      {
+        "id": "ea35ec1b-c0c8-4028-83e0-8c9c0b6301cb",
+        "name": "Ruby",
+        "active": true,
+        "points": 50000,
+        "archived": false,
+        "displayOrder": 5,
+        "priceCentavos": 500000,
+        "settledOrders": 0
+      },
+      {
+        "id": "3dcccfe6-672f-41c9-8919-8dc2db536b92",
+        "name": "Diamond",
+        "active": true,
+        "points": 100000,
+        "archived": false,
+        "displayOrder": 6,
+        "priceCentavos": 1000000,
+        "settledOrders": 0
+      }
+    ],
+    "snapshot": null,
+    "candidates": []
+  },
+  "orders": {
+    "orders": []
+  }
+}

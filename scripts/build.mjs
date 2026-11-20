@@ -18,7 +18,7 @@ async function collect(dir){
 }
 await collect(source);
 const api=await readFile(join(root,'server/api.mjs'),'utf8');
-const helpers=(await Promise.all(['storage','competition'].map(name=>readFile(join(root,'server',name+'.mjs'),'utf8')))).join('\n');
+const helpers=(await Promise.all(['storage','competition','payments'].map(name=>readFile(join(root,'server',name+'.mjs'),'utf8')))).join('\n');
 const router=await readFile(join(root,'server/worker.mjs'),'utf8');
 if(!api.includes('function handleApi('))throw Error('Missing application API handler');
 await mkdir(join(root,'dist/server'),{recursive:true});

@@ -22,7 +22,7 @@ function mediaStore(env) {
     return '/object/'+key;
   }
   async function send(path,init) {
-    const response=await fetch(endpoint+path,{...init,headers:{...headers,...init.headers},redirect:'error'});
+    const response=await fetch(endpoint+path,{...init,headers:{...headers,...init.headers},redirect:'manual'});
     if(!response.ok && !(response.status===404 && init.method==='GET'))throw Error('Private media request failed');
     return response;
   }

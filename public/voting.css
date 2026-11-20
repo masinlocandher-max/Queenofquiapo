@@ -1,0 +1,83 @@
+/* Candidates, voting packages, results and policy pages. Midnight, plum and pearl, in keeping with the pageant identity. */
+.vote-flow{padding-block:clamp(26px,5vw,64px);display:grid;gap:clamp(34px,6vw,72px)}
+.vote-step h2{font:400 clamp(27px,4.4vw,44px)/1.1 var(--serif);letter-spacing:-.03em;margin:.2rem 0 .6rem;color:#241d33}
+.vote-step h2 em,.subpage-hero h1 em{font-style:italic}
+.vote-help{max-width:60ch;color:#5d5068;font:400 15px/1.7 var(--sans);margin:0 0 1.2rem}
+.vote-help strong{color:#2c2140}
+.queen-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,168px),1fr));gap:clamp(12px,2vw,22px)}
+.queen-grid.gallery{grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr))}
+.choice{position:relative;display:block;cursor:pointer;border-radius:6px}
+.choice input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;margin:0}
+.choice:has(input:focus-visible){outline:3px solid #62469a;outline-offset:3px}
+.choice:has(input:checked) .candidate-card,.choice:has(input:checked) .package-card{border-color:#3c2a5c;box-shadow:0 0 0 2px #3c2a5c,0 14px 30px #2a1d4022}
+.choice:has(input:checked) .candidate-card::after,.choice:has(input:checked) .package-card::after{content:"Selected";position:absolute;top:10px;right:10px;padding:.2rem .55rem;border-radius:999px;background:#3c2a5c;color:#fff;font:600 10px/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase}
+.candidate-card{position:relative;height:100%;display:flex;flex-direction:column;background:#fff;border:1px solid #ddd2e6;border-radius:6px;overflow:hidden;transition:box-shadow .2s,border-color .2s}
+.candidate-portrait{position:relative;aspect-ratio:3/4;background:linear-gradient(160deg,#17132e,#2d2147)}
+.candidate-portrait img{width:100%;height:100%;object-fit:cover;display:block}
+.candidate-portrait.no-portrait::before{content:"";position:absolute;inset:0;background:url(/assets/emblem-transparent.png) center/62% no-repeat;opacity:.28}
+.candidate-number{position:absolute;left:0;bottom:0;padding:.35rem .7rem;background:#0b0923e6;color:#f3e9ff;font:400 22px/1 var(--serif);letter-spacing:.02em}
+.candidate-body{padding:.9rem 1rem 1.1rem}
+.candidate-body .eyebrow{margin:0 0 .25rem}
+.candidate-body h3{font:400 20px/1.2 var(--serif);margin:0;color:#241d33;overflow-wrap:anywhere}
+.candidate-bio{font:400 13px/1.6 var(--sans);color:#5d5068;margin:.5rem 0 0}
+.candidate-points{font:600 13px/1.4 var(--sans);color:#3c2a5c;margin:.5rem 0 0;font-variant-numeric:tabular-nums}
+.package-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:clamp(10px,1.6vw,18px)}
+.package-card{position:relative;height:100%;padding:1.3rem 1rem 1.2rem;text-align:center;background:linear-gradient(170deg,#fff,#f6f1fa);border:1px solid #ddd2e6;border-radius:6px;transition:box-shadow .2s,border-color .2s}
+.package-card .eyebrow{margin:0 0 .7rem;color:#6a5880}
+.package-points{font:400 clamp(28px,4vw,36px)/1 var(--serif);color:#241d33;margin:0;font-variant-numeric:tabular-nums}
+.package-unit{font:400 12px/1.4 var(--sans);color:#6d5d77;margin:.25rem 0 .9rem}
+.package-price{font:600 16px/1.2 var(--sans);color:#3c2a5c;margin:0;padding-top:.8rem;border-top:1px solid #e3d9ec;font-variant-numeric:tabular-nums}
+.purchase-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:0;margin:1rem 0 1.4rem;border:1px solid #ddd2e6;border-radius:6px;background:#fff;overflow:hidden}
+.purchase-summary div{padding:.9rem 1.1rem;border-right:1px solid #ece4f1;border-bottom:1px solid #ece4f1;margin:-0px -1px -1px 0}
+.purchase-summary dt{font:550 10px/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#71627d}
+.purchase-summary dd{margin:.25rem 0 0;font:400 18px/1.3 var(--serif);color:#241d33;overflow-wrap:anywhere}
+.soon-panel{padding:clamp(22px,4vw,40px);border:1px solid #ddd2e6;border-radius:6px;background:#fff}
+.soon-panel h2,.soon-panel h3{font:400 clamp(22px,3.4vw,30px)/1.15 var(--serif);margin:0 0 .6rem;color:#241d33}
+.soon-panel p{max-width:62ch;font:400 15px/1.7 var(--sans);color:#5d5068;margin:0 0 1rem}
+.soon-panel.midnight{background:radial-gradient(ellipse at 100% 0,#3a2a5c66,transparent 60%),linear-gradient(160deg,#0b0923,#1a1436);border-color:#2f2450;color:#efe6fb}
+.soon-panel.midnight h3{color:#fff}.soon-panel.midnight p{color:#cfc3e2}.soon-panel.midnight .eyebrow{color:#bca7d1;margin:0 0 .6rem}
+.soon-panel.midnight .quiet-link{color:#e9dcfb}
+.checkout{display:grid;gap:.5rem;max-width:520px}
+.checkout label{font:550 13px/1.4 var(--sans);color:#3a2f48;margin-top:.6rem}
+.checkout input[type=email],.checkout input[type=text]{min-height:48px;padding:.6rem .8rem;border:1px solid #cbbfd6;border-radius:4px;font:400 16px/1.3 var(--sans);background:#fff;color:#241d33}
+.checkout .consent{display:grid;grid-template-columns:auto 1fr;gap:.6rem;align-items:start;font-weight:400}
+.checkout .consent input{width:20px;height:20px;margin-top:.1rem;accent-color:#3c2a5c}
+.checkout .pearl{margin-top:1rem;justify-self:start}
+.checkout .pearl:disabled{opacity:.55;cursor:not-allowed}
+#checkout-feedback:not(:empty),.order-receipt{padding:1rem 1.1rem;border-left:3px solid #7a5aa6;background:#f6f1fa;border-radius:0 6px 6px 0;font:400 14px/1.6 var(--sans);color:#3a2f48}
+.order-receipt h3{font:400 24px/1.2 var(--serif);margin:0 0 .4rem}
+.order-receipt .quiet-link{background:none;border:0;padding:.6rem 0;margin-right:1.2rem;cursor:pointer;font:inherit;text-decoration:underline}
+.placements{list-style:none;padding:0;margin:0;display:grid;gap:14px}
+.placements li{padding:clamp(18px,3vw,30px);background:#fff;border:1px solid #ddd2e6;border-radius:6px}
+.placements li.winner{background:linear-gradient(160deg,#0b0923,#241a45);border-color:#2f2450}
+.placements h2{font:400 clamp(24px,4vw,40px)/1.1 var(--serif);margin:.2rem 0}
+.placements li.winner h2{color:#fff}.placements li.winner .eyebrow{color:#cbb6e6}.placements li.winner .placement-detail{color:#cfc3e2}
+.placement-detail{font:400 14px/1.5 var(--sans);color:#5d5068;margin:0}
+.prose{max-width:760px}
+.prose .subpage-section{margin-block:clamp(22px,4vw,40px)}
+.prose h2{font:400 clamp(22px,3.2vw,30px)/1.2 var(--serif)!important;letter-spacing:-.02em!important;margin:0 0 .6rem!important;color:#241d33}
+.prose p,.prose li{font:400 16px/1.75 var(--sans);color:#463a52}
+.prose ul,.prose ol{padding-left:1.3rem;display:grid;gap:.35rem}
+.prose a{color:#3c2a5c;text-decoration:underline;text-underline-offset:3px}
+.rate-table{width:100%;max-width:440px;border-collapse:collapse;margin:1rem 0;font:400 15px/1.5 var(--sans);font-variant-numeric:tabular-nums}
+.rate-table caption{text-align:left;font:550 10px/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#71627d;padding-bottom:.4rem}
+.rate-table th,.rate-table td{padding:.55rem .6rem;border-bottom:1px solid #e3d9ec;text-align:right;color:#2c2140}
+.rate-table th:first-child,.rate-table td:first-child{text-align:left}
+.foot-legal{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;font:400 12px/1.6 var(--sans)}
+.foot-legal a{color:inherit;opacity:.85;text-decoration:underline;text-underline-offset:3px;min-height:32px;display:inline-flex;align-items:center}
+.receipt-facts{display:grid;gap:.3rem;margin:1rem 0;padding:0}
+.receipt-facts div{display:flex;flex-wrap:wrap;gap:.3rem .8rem;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid #8881}
+.receipt-facts dt{font:550 11px/1.6 var(--sans);letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+.receipt-facts dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+.receipt .receipt-print{margin:.8rem 1rem 0 0;background:none;border:0;padding:.5rem 0;font:inherit;color:inherit;text-decoration:underline;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.candidate-card,.package-card{transition:none}}
+@media print{
+  .mast,.site-foot,.menu-dialog,.subpage-hero,.form-index,.withdrawal,.receipt .pearl,.receipt-print,.vote-step:not(:has(#order-receipt:not([hidden]))),.soon-panel,#purchase-summary,.order-receipt .quiet-link,#order-pay{display:none!important}
+  body,.pearl-site{background:#fff!important;color:#000!important}
+  .receipt,.order-receipt{border:1px solid #000!important;background:#fff!important;color:#000!important;box-shadow:none!important}
+  .receipt *,.order-receipt *{color:#000!important}
+}
+.consent input[type=checkbox]{width:24px;height:24px;flex:none}
+/* Approved header treatment: the public header scrolls away with the page; it does not stick. */
+.pearl-site .mast{position:relative}
+.choice:has(input:checked) .package-card::after{top:-11px;right:50%;transform:translateX(50%)}

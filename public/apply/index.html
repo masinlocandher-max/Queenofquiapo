@@ -17,43 +17,49 @@
   <link rel="stylesheet" href="/pearl.css">
   <link rel="stylesheet" href="/refinement.css">
   <link rel="stylesheet" href="/pageant.css">
+  <link rel="stylesheet" href="/voting.css">
+  <link rel="stylesheet" href="/application-journey.css">
 </head>
 <body class="pearl-site page-apply subpage application">
 <a class="skip" href="#application">Skip to application</a>
 <header class="mast"><div class="mast-inner">
     <a class="mast-brand" href="/" aria-label="Queen of Quiapo homepage"><img src="/assets/icon.png" alt="" width="32" height="32"><span>Queen of Quiapo<small>FAITH · TRADITION · GRACE</small></span></a>
-    <nav class="desk-nav" aria-label="Main navigation"><a href="/about/">The Pageant</a><a href="/schedule/">Schedule</a><a href="/vote/">Voting</a><a href="/apply/" aria-current="page">Apply Now</a></nav>
+    <nav class="desk-nav" aria-label="Main navigation"><a href="/">Home</a><a href="/about/">The Pageant</a><a href="/schedule/">Schedule</a><a href="/candidates/">Candidates</a><a href="/vote/">Voting</a><a href="/apply/" aria-current="page">Apply Now</a></nav>
     <button class="menu-trigger icon-button" type="button" aria-haspopup="dialog" aria-controls="menu-dialog" aria-label="Open navigation" data-open="menu-dialog"><svg viewBox="0 0 28 20" aria-hidden="true"><path d="M2 5h24M2 15h24"/></svg></button>
   </div></header>
 <main>
   <header class="subpage-hero"><div class="subpage-wrap">
     <p class="eyebrow">CANDIDATE APPLICATION</p>
     <h1>Apply for<br><em>Queen of Quiapo</em></h1>
-    <p class="subpage-lead">Send your details and two photos for screening. Have a close-up and a full-body swimsuit photo ready, both against a white background.</p>
+    <p class="subpage-lead">Your journey begins with screening. Complete five short sections, check your details, then save your application reference.</p>
+    <ul class="application-prep"><li>Your contact details and measurements</li><li>A close-up and a full-body swimsuit photo, both against a white background</li><li>JPG, PNG or WebP · up to 5 MB per photo</li></ul>
     <div class="subpage-actions"><a class="pearl" href="#application">Start application</a><a class="quiet-link" href="/schedule/">Pageant Schedule</a></div>
   </div></header>
   <div class="application-wrap" id="application">
     <noscript><p class="application-notice">Please enable JavaScript in your browser to send your application and receive your reference number.</p></noscript>
-    <nav class="form-index" aria-label="Application sections"><h2>Application sections</h2><ol><li><a href="#candidate-details">Candidate details</a></li><li><a href="#measurements">Height and vital stats</a></li><li><a href="#profile">Your pageant profile</a></li><li><a href="#photos">Required photographs</a></li><li><a href="#submit">Send application</a></li></ol></nav>
+    <nav class="form-index" aria-label="Application sections"><h2>Your application</h2><ol><li><a href="#candidate-details">Candidate details</a></li><li><a href="#measurements">Height and vital stats</a></li><li><a href="#profile">Your pageant profile</a></li><li><a href="#photos">Required photographs</a></li><li><a href="#submit">Review and send</a></li></ol><p class="section-help">Your screening photos stay private. Nothing is sent until you submit.</p></nav>
     <form id="candidate-form" method="post" enctype="multipart/form-data" action="/api/applications">
       <input type="hidden" name="submissionId">
-      <p class="form-guide">Complete the required fields. Fields marked optional may be left blank.</p>
+      <div class="application-state" id="application-state" role="status"><p id="availability-message">Checking application availability…</p><button type="button" class="journey-secondary" id="availability-retry" hidden>Check again</button></div>
+      <div class="journey-progress" id="journey-progress" hidden><p id="step-label" role="status"></p><progress id="step-progress" max="5" value="1" aria-label="Application progress"></progress></div>
+      <p class="form-guide">All fields are required unless marked optional. Keep this page open; your entries are not saved as a draft.</p>
+      <p class="submit-error" id="step-error" role="alert" tabindex="-1" hidden></p>
       <fieldset class="form-part"><legend id="candidate-details"><span>01</span> Candidate details</legend>
         <div class="field-grid">
           <label>Legal name<input type="text" name="legalName" required maxlength="120" autocomplete="name"></label>
-          <label>Female name<input type="text" name="femaleName" required maxlength="120" autocomplete="nickname" aria-describedby="female-name-note"><small id="female-name-note">The name you use in pageants.</small></label>
-          <label>Email address<input type="email" name="email" required maxlength="254" autocomplete="email"></label>
-          <label>Mobile number <small class="optional">(optional)</small><input type="tel" name="mobile" maxlength="32" autocomplete="tel"></label>
+          <label>Pageant name<input type="text" name="femaleName" required maxlength="120" autocomplete="nickname" aria-describedby="female-name-note"><small id="female-name-note">The name you would like the screening team to use.</small></label>
+          <label>Email address<input type="email" name="email" required maxlength="254" autocomplete="email" autocapitalize="none" spellcheck="false" aria-describedby="email-note"><small id="email-note">Use an address you check regularly.</small></label>
+          <label>Mobile number <small class="optional">(optional)</small><input type="tel" name="mobile" inputmode="tel" maxlength="32" autocomplete="tel"></label>
           <label class="wide">City or municipality you represent<input type="text" name="locality" required maxlength="120" autocomplete="address-level2"></label>
         </div>
       </fieldset>
       <fieldset class="form-part"><legend id="measurements"><span>02</span> Height and vital stats</legend>
         <p class="section-help">Enter your height in centimeters and your bust, waist and hip measurements in inches.</p>
         <div class="field-grid measures">
-          <label>Height (cm)<input name="heightCm" type="number" inputmode="decimal" min="0.1" max="999.9" step="0.1" required></label>
-          <label>Bust (in)<input name="bustIn" type="number" inputmode="decimal" min="0.1" max="999.9" step="0.1" required></label>
-          <label>Waist (in)<input name="waistIn" type="number" inputmode="decimal" min="0.1" max="999.9" step="0.1" required></label>
-          <label>Hips (in)<input name="hipsIn" type="number" inputmode="decimal" min="0.1" max="999.9" step="0.1" required></label>
+          <label>Height (cm)<input name="heightCm" type="number" inputmode="decimal" min="100" max="250" step="0.1" required></label>
+          <label>Bust (in)<input name="bustIn" type="number" inputmode="decimal" min="10" max="80" step="0.1" required></label>
+          <label>Waist (in)<input name="waistIn" type="number" inputmode="decimal" min="10" max="80" step="0.1" required></label>
+          <label>Hips (in)<input name="hipsIn" type="number" inputmode="decimal" min="10" max="80" step="0.1" required></label>
         </div>
       </fieldset>
       <fieldset class="form-part"><legend id="profile"><span>03</span> Your pageant profile</legend>
@@ -73,6 +79,7 @@
             <input type="file" id="portrait" name="portrait" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" aria-describedby="portrait-note photo-formats portrait-error" required>
             <p id="portrait-error" class="photo-error" aria-live="polite"></p>
             <img id="portrait-preview" class="photo-preview" alt="Your selected close-up portrait" hidden>
+            <button type="button" class="journey-secondary" data-remove-photo="portrait" hidden>Remove portrait</button>
           </div>
           <div class="photo-field">
             <label for="swimsuit">Full-body swimsuit photo</label>
@@ -80,22 +87,33 @@
             <input type="file" id="swimsuit" name="swimsuit" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" aria-describedby="swimsuit-note photo-formats swimsuit-error" required>
             <p id="swimsuit-error" class="photo-error" aria-live="polite"></p>
             <img id="swimsuit-preview" class="photo-preview" alt="Your selected full-body swimsuit photo" hidden>
+            <button type="button" class="journey-secondary" data-remove-photo="swimsuit" hidden>Remove swimsuit photo</button>
           </div>
         </div>
       </fieldset>
-      <fieldset class="form-part send"><legend id="submit"><span>05</span> Send your application</legend>
+      <fieldset class="form-part send"><legend id="submit"><span>05</span> Review and send</legend>
+        <div id="application-review"></div>
         <p class="section-help">Your details and photos are for private screening review. Any public use of your profile or photos, including for voting, requires separate permission.</p>
+        <p class="section-help"><a href="/privacy/" target="_blank" rel="noopener">Read the Privacy Notice (opens a new tab)</a>. Submitting an application does not confirm selection as an official candidate.</p>
         <label class="consent"><input type="checkbox" name="consent" value="yes" required><span>I agree that the Queen of Quiapo organizers may review my details and photos for screening and contact me about this application.</span></label>
         <button class="pearl" type="submit" id="submit-application" disabled><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/ui-icons.svg#apply"/></svg>Submit application</button>
         <p id="submit-progress" class="submit-message" role="status" aria-live="polite"></p>
         <p id="submit-error" class="submit-error" role="alert" tabindex="-1" hidden></p>
       </fieldset>
+      <div class="journey-navigation" id="journey-navigation" hidden><button type="button" class="journey-secondary" id="step-back">Back</button><button type="button" class="pearl" id="step-next">Continue</button></div>
     </form>
     <section class="receipt" id="receipt" aria-labelledby="receipt-title" hidden>
       <h2 tabindex="-1" id="receipt-title">Application received</h2>
-      <p>The organizers received your candidate details and both photographs for screening.</p>
-      <p class="receipt-id">Your reference number <strong id="receipt-reference"></strong></p>
-      <p>Keep this number with your records. Official candidates will be announced after screening.</p>
+      <p>Your candidate details and both photographs are saved for screening.</p>
+      <dl class="receipt-facts">
+        <div><dt>Reference number</dt><dd id="receipt-reference"></dd></div>
+        <div><dt>Pageant</dt><dd id="receipt-edition">Queen of Quiapo 2027</dd></div>
+        <div><dt>Received</dt><dd id="receipt-time"></dd></div>
+        <div><dt>Status</dt><dd>Submitted for screening</dd></div>
+      </dl>
+      <p><strong>What happens next.</strong> Attend Screening Day on January 4, 2027, 3:00–9:00 PM (Philippine time). Registration is 3:00–4:00 PM; the venue will be announced on this website. Wear a maroon cocktail dress with light, natural makeup and a slicked-back ponytail. Official candidates are announced after screening.</p>
+      <p>Keep this reference number. It identifies your application to the organizers; it does not give anyone access to your details. We do not yet send confirmation emails, so print or save this page.</p>
+      <div class="receipt-actions"><button type="button" class="journey-secondary" id="receipt-copy">Copy reference</button><button type="button" class="journey-secondary" id="receipt-download">Download receipt</button><button type="button" class="receipt-print" id="receipt-print">Print or save this receipt</button></div><p id="receipt-feedback" role="status"></p>
       <a class="pearl" href="/schedule/">View Pageant Schedule</a>
       <details class="withdrawal" id="withdraw-options">
         <summary>Withdraw this application</summary>
@@ -111,11 +129,11 @@
     </section>
   </div>
 </main>
-<footer class="site-foot"><div class="footer-main pageant-shell"><div><a class="footer-title" href="/">Queen of Quiapo</a><p class="footer-edition">THE 2027 EDITION</p></div><nav aria-label="Footer navigation"><a href="/about/">The Pageant</a><a href="/schedule/">Schedule</a><a href="/vote/">Voting</a><a href="/apply/" aria-current="page">Apply Now</a></nav></div>
-  <div class="foot-inner"><address>Barangay 306, Quiapo, Manila</address><p>This website is managed by <strong>FMB&amp;CO.</strong></p></div>
+<footer class="site-foot"><div class="footer-main pageant-shell"><div><a class="footer-title" href="/">Queen of Quiapo</a><p class="footer-edition">THE 2027 EDITION</p></div><nav aria-label="Footer navigation"><a href="/">Home</a><a href="/about/">The Pageant</a><a href="/schedule/">Schedule</a><a href="/candidates/">Candidates</a><a href="/vote/">Voting</a><a href="/apply/" aria-current="page">Apply Now</a></nav></div>
+  <div class="foot-inner"><address>Barangay 306, Quiapo, Manila</address><nav class="foot-legal" aria-label="Rules and policies"><a href="/voting-rules/">Voting Rules</a><a href="/privacy/">Privacy Notice</a><a href="/terms/">Terms</a></nav><p>This website is managed by <strong>FMB&amp;CO.</strong></p></div>
 </footer>
 <dialog id="menu-dialog" class="menu-dialog" aria-label="Main navigation">
   <div class="dialog-top"><span>The Pageant</span><button class="icon-button close" aria-label="Close navigation" type="button" data-close><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19"/></svg></button></div>
-  <nav aria-label="Mobile navigation"><a href="/about/">The Pageant</a><a href="/schedule/">Schedule</a><a href="/vote/">Voting</a><a href="/apply/" aria-current="page">Apply Now</a></nav>
+  <nav aria-label="Mobile navigation"><a href="/">Home</a><a href="/about/">The Pageant</a><a href="/schedule/">Schedule</a><a href="/candidates/">Candidates</a><a href="/vote/">Voting</a><a href="/apply/" aria-current="page">Apply Now</a></nav>
 </dialog>
 </body></html>
